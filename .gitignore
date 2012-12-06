@@ -39,8 +39,8 @@ nosetests.xml
 src/GDGUkraine/__pycache__/
 env/
 log/*
-config
-config/
-config/dev/app.yml
+# config
+# config/
+# config/dev/app.yml
 *.py.bak
 .hidden

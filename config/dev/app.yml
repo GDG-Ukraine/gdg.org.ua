@@ -1,0 +1,45 @@
+project_metadata:
+  package: GDGUkraine
+
+global:
+  engine.logging.on: true
+  engine.sqlalchemy.on: true
+
+controllers:
+  '':
+    controller: !!python/name:GDGUkraine.controller.Root
+    /:
+      tools.orm_session.on: true
+      tools.sessions.on: true
+      tools.staticdir.root: /home/gtug2/gdg.org.ua/static
+      tools.staticfile.root: /home/gtug2/gdg.org.ua/static
+    /css:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: css
+    /js:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: js
+    /img:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: img
+    /favicon.ico:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: favicon.ico
+
+sqlalchemy_engine:
+  url: <connection uri here>
+  #pool_recycle: 3600
+  pool_recycle: 60
+
+jinja2:
+  loader: !!python/object:jinja2.loaders.FileSystemLoader
+          encoding: utf-8
+          searchpath: [/home/gtug2/gdg.org.ua/src/GDGUkraine/templates]
+  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: /home/gtug2/gdg.org.ua/.cache,
+                                                                          pattern: __jinja2_%s.cache}
+  auto_reload: true
+  use_webassets: true

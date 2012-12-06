@@ -1,0 +1,49 @@
+version: 1
+disable_existing_loggers: false
+loggers:
+  root:
+    level: WARNING
+    handlers: [trfile]
+  GDGUkraine:
+    level: WARNING
+    handlers: [trfile]
+    propagate: false
+handlers:
+  stdout:
+    class: logging.StreamHandler
+    formatter: debug
+    stream: ext://sys.stdout
+  stderr:
+    class: logging.StreamHandler
+    formatter: debug
+    stream: ext://sys.stderr
+  rfile:
+    class: logging.handlers.RotatingFileHandler
+    formatter: debug
+    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    maxBytes: 1048576
+    backupCount: 5
+    encoding: utf8
+  trfile:
+    class: logging.handlers.TimedRotatingFileHandler
+    formatter: warning
+    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    when: midnight
+    backupCount: 60
+    encoding: utf8
+  sa:
+    class: logging.handlers.RotatingFileHandler
+    formatter: debug
+    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    maxBytes: 1048576
+    backupCount: 5
+    encoding: utf8
+formatters:
+  debug:
+    format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(message)s'
+  info:
+    format: '%(asctime)s [%(levelname)s] %(name)s %(message)s'
+  warning:
+    format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(module)s.%(funcName)s: line %(lineno)d %(message)s'
+  error:
+    format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(module)s.%(funcName)s: line %(lineno)d %(message)s'

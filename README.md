@@ -4,8 +4,9 @@ gdg.org.ua
 Database of GDG members' contacts, events and some 'kostyl's
 
 # Requirements:
-&gt;=Python 3.2 (not tested on older versions)
-&gt;=virtualenv 1.8 (at least, otherwise you will not be able to set python 3.2 version as default into the env)
+
+    >=Python 3.2 (not tested on older versions)
+    >=virtualenv 1.8 (at least, otherwise you will not be able to set python 3.2 version as default into the env)
 
 # How to run it on localhost
 
@@ -21,7 +22,7 @@ Database of GDG members' contacts, events and some 'kostyl's
         $ pip install -e .
         $ blueberrypy -b 0.0.0.0:8080
 
-* Open http://localhost:8080/ in favourite browser and have fun :)
+* Open ```http://localhost:8080/``` in your favourite browser and have fun :)
 
 Finally, to log out from virtualenv you may simply type:
 

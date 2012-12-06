@@ -26,10 +26,10 @@ Database of GDG members' contacts, events and some 'kostyl's
 
 Finally, to log out from virtualenv you may simply type:
 
-        $ deactivate
+    $ deactivate
 
 # Trouble shooting
 
 You may need to use 2to3 utility to convert 2nd python version code into py3k, i.e.:
 
-        $ 2to3 -w path/to/gdg.org.ua/env/lib/python3.2/site-packages/package
+    $ 2to3 -w path/to/gdg.org.ua/env/lib/python3.2/site-packages/package

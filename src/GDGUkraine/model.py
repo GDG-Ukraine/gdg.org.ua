@@ -14,7 +14,7 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
-__all__ = ["User"]
+__all__ = ['User', 'Event', 'EventParticipant']
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -25,7 +25,7 @@ class User(Base):
     however you want.
     """
 
-    __tablename__ = "user"
+    __tablename__ = 'gdg_participants'
 
 
     def __init__(self, **kwargs):
@@ -34,32 +34,65 @@ class User(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(UnicodeText, nullable=False)
     surname = Column(UnicodeText, nullable=False)
-    nickname = Column(UnicodeText, unique=True, index=True)
+    nickname = Column(UnicodeText, unique=True, index=True) # Should we accept handles without Full Name?
     email = Column(UnicodeText, unique=True, nullable=False, index=True)
+    
+    phone = Column(UnicodeText, default=None, unique=True, index=True)
+    gplus = Column(UnicodeText, default=None, unique=True, index=True)
+    hometown = Column(UnicodeText, default=None, index=True)
+    company = Column(UnicodeText, default=None, index=True)
+    position = Column(UnicodeText, default=None, index=True)
+    www = Column(UnicodeText, default=None, unique=True)
+        
+    experience = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)
+    experience_desc = Column(UnicodeText)
+    interests = Column(UnicodeText)
+    
+    events_visited = Column(UnicodeText) # TODO: make normal previous/upcoming events DB\nnow it is JSON field.
+    english_knowledge = Column(Enum('elementary', 'intermediate', 'upper intermediate', 'advanced', 'native', name="english_knowledge"), default=None)
+    t_shirt_size = Column(Enum('S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"), default=None)
+    gender = Column(Enum('male', 'female', name="gender"), nullable=False)
+    
+    additional_info = deferred(Column(UnicodeText))
+    local_gdg_id = Column(Integer, index=True)
+    uid = Column(BigInteger)
 
-    sex = Column(Enum("m", "f", name="sex"))
-    date_of_birth = Column(Date)
-    bio = deferred(Column(UnicodeText))
 
-    @hybrid_property
-    def age(self):
-        """Property calculated from (current time - :attr:`User.date_of_birth` - leap days)"""
-        if self.date_of_birth:
-            today = (datetime.utcnow() + timedelta(hours=self.timezone)).date()
-            birthday = self.date_of_birth
-            if isinstance(birthday, datetime):
-                birthday = birthday.date()
-            age = today - (birthday or (today - timedelta(1)))
-            return (age.days - calendar.leapdays(birthday.year, today.year)) / 365
-        return -1
+class Event(Base):
+    """
+    Class represents a G+ event. 
+    """
 
-    @age.expression
-    def age(cls):
-        return func.date_part("year", func.age(cls.date_of_birth))
+    __tablename__ = 'gdg_events'
 
-    locale = Column(String(10))
-    timezone = Column(SmallInteger)
 
-    created = Column(DateTime, default=datetime.utcnow, server_default=text("now()"), nullable=False)
-    lastmodified = Column(DateTime, default=datetime.utcnow, server_default=text("now()"), nullable=False)
-    lastaccessed = Column(DateTime, default=datetime.utcnow, server_default=text("now()"), nullable=False)
+    def __init__(self, **kwargs):
+        super(Event, self).__init__(**kwargs)
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    url = Column(UnicodeText, nullable=False)
+    title = Column(UnicodeText, nullable=False)
+    desc = deferred(Column(UnicodeText, nullable=False))
+    gplus_event_id = Column(BigInteger, unique=True, index=True)
+    host_gdg_id = Column(Integer, index=True)
+
+    date = Column(Date)
+
+
+class EventParticipant(Base):
+    """
+    Class represents a G+ event participant. 
+    """
+
+    __tablename__ = 'gdg_events_participation'
+
+
+    def __init__(self, **kwargs):
+        super(EventParticipant, self).__init__(**kwargs)
+
+    googler_id = Column(Integer, nullable=False, index=True)
+    event_id = Column(Integer, nullable=False, index=True)
+
+    register_date = Column(Date)
+    accepted = Column(Boolean)
+    visited = Column(Boolean)

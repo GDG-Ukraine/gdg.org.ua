@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 from hashlib import sha256
 
 from sqlalchemy import Column, Integer, UnicodeText, Date, DateTime, String, \
-    BigInteger, Enum, SmallInteger, func, text
+    BigInteger, Enum, SmallInteger, func, text, \
+    Boolean
 from sqlalchemy.orm import deferred
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -90,6 +91,7 @@ class EventParticipant(Base):
     def __init__(self, **kwargs):
         super(EventParticipant, self).__init__(**kwargs)
 
+    id = Column(Integer, autoincrement=True, primary_key=True)
     googler_id = Column(Integer, nullable=False, index=True)
     event_id = Column(Integer, nullable=False, index=True)
 

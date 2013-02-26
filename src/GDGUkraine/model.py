@@ -36,7 +36,7 @@ class User(Base):
     name = Column(UnicodeText, nullable=False)
     surname = Column(UnicodeText, nullable=False)
     nickname = Column(UnicodeText, unique=True, index=True) # Should we accept handles without Full Name?
-    email = Column(UnicodeText, unique=True, nullable=False, index=True)
+    email = Column(String(64), unique=True, nullable=False, index=True)
     
     phone = Column(UnicodeText, default=None, unique=True, index=True)
     gplus = Column(UnicodeText, default=None, unique=True, index=True)
@@ -45,7 +45,7 @@ class User(Base):
     position = Column(UnicodeText, default=None, index=True)
     www = Column(UnicodeText, default=None, unique=True)
         
-    experience = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)
+    experience_level = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)
     experience_desc = Column(UnicodeText)
     interests = Column(UnicodeText)
     

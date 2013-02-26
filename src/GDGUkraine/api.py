@@ -1,6 +1,6 @@
 import logging
 
-from GDGUkraine.model import User
+from GDGUkraine.model import User, Event, EventParticipant, Place
 
 
 logger = logging.getLogger(__name__)

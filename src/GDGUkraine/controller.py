@@ -17,7 +17,7 @@ class API:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        return "API is private"
+        return "API is privatei"
 
     @cherrypy.expose
     def default(self, *unparsed):
@@ -30,7 +30,7 @@ class Participants:
     
     @cherrypy.expose
     def index(self, **kwargs):
-        return "API is private"
+        return "API is privates"
 
     @cherrypy.expose
     def default(self, **unparsed):
@@ -53,28 +53,28 @@ class Participants:
     #    return 'changing' # self.index()
 
     #@cherrypy.expose
-    class get:
-        """docstring for get"""
+    #class get:
+    #    """docstring for get"""
 
-        #def __init__(self, **arg):
-            #super(ClassName, self).__init__()
-            #self.arg = arg
-        #    pass
-         
-        @cherrypy.expose
-        def index(self, **uid):
-            return 'get index' # self.index()
+    #    #def __init__(self, **arg):
+    #        #super(ClassName, self).__init__()
+    #        #self.arg = arg
+    #    #    pass
+    #     
+    #    @cherrypy.expose
+    #    def index(self, **uid):
+    #        return 'get index' # self.index()
 
-        @cherrypy.expose
-        def x(self, **uid):
-            return 'get index' # self.index()
+    #    @cherrypy.expose
+    #    def x(self, **uid):
+    #        return 'get index' # self.index()
 
-        @cherrypy.expose
-        def default(self, **unparsed):
-            return 'changing' # self.index()
+    #    @cherrypy.expose
+    #    def default(self, **unparsed):
+    #        return 'changing' # self.index()
 
-    get = get()
-    get.default = default
+    #get = get()
+    #get.default = default
 
-Root.api = API()
-Root.api.participants = Participants()
+#Root.api = API()
+#Root.api.participants = Participants()

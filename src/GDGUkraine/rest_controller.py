@@ -10,7 +10,7 @@ from cherrypy.lib import httputil as cphttputil
 from blueberrypy.util import from_collection, to_collection
 
 from GDGUkraine import api
-from GDGUkraine.model import User
+from GDGUkraine.model import User, Event, EventParticipant, Place
 
 
 class Participants:
@@ -19,23 +19,24 @@ class Participants:
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
-        return 'creating someone'
+        #return 'creating someone'
         req = cherrypy.request
         orm_session = req.orm_session
         user = from_collection(req.json, User())
         orm_session.add(user)
         orm_session.commit()
-        return to_collection(user, includes="age", excludes=("password", "salt"),
-                          sort_keys=True)
+        return to_collection(user, sort_keys=True)
 
     @cherrypy.tools.json_out()
     def show(self, id, **kwargs):
-        return 'getting someone'
+        #return 'getting someone'
         id = int(id)
         user = api.find_user_by_id(cherrypy.request.orm_session, id)
         if user:
-            return to_collection(user, includes="age", excludes=("password", "salt"),
+            return to_collection(user, excludes=("password", "salt"),
                               sort_keys=True)
+        #else:
+        #    return {}
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
@@ -65,7 +66,7 @@ class Participants:
 
 participants_api = cherrypy.dispatch.RoutesDispatcher()
 participants_api.mapper.explicit = False
-participants_api.connect("add", "/add/", Participants, action="create",
+participants_api.connect("add", "/add", Participants, action="create",
                         conditions={"method":["POST","GET"]})
 participants_api.connect("get", "/get/{id}", Participants, action="show",
                         conditions={"method":["POST","GET"]})

@@ -103,7 +103,7 @@ class EventParticipant(Base):
 
 class Place(Base):
     """
-    Class represents a G+ event participant. 
+    Class represents locations GDG's.
     """
 
     __tablename__ = 'gdg_places'
@@ -119,4 +119,4 @@ class Place(Base):
     url = Column(UnicodeText, nullable=False, default='')
     geo = Column(UnicodeText, nullable=False, default='')
     
-    show = Column(Enum(1, 0, name="show"), nullable=False, default=0)
+    show = Column(Enum('1', '0', name="show"), nullable=False, default='0')

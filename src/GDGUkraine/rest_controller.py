@@ -66,14 +66,14 @@ class Participants:
 
 participants_api = cherrypy.dispatch.RoutesDispatcher()
 participants_api.mapper.explicit = False
-participants_api.connect("add", "/add", Participants, action="create",
-                        conditions={"method":["POST","GET"]})
-participants_api.connect("get", "/get/{id}", Participants, action="show",
-                        conditions={"method":["POST","GET"]})
-participants_api.connect("edit", "/edit/{id}", Participants, action="update",
-                        conditions={"method":["POST","GET"]})
-participants_api.connect("remove", "/remove/{id}", Participants, action="delete",
-                        conditions={"method":["POST","GET"]})
+participants_api.connect("add", "/", Participants, action="create",
+                        conditions={"method":["GET"]})
+participants_api.connect("get", "/{id}", Participants, action="show",
+                        conditions={"method":["POST"]})
+participants_api.connect("edit", "/{id}", Participants, action="update",
+                        conditions={"method":["PUT"]})
+participants_api.connect("remove", "/{id}", Participants, action="delete",
+                        conditions={"method":["DELETE"]})
 
 # Error handlers
 

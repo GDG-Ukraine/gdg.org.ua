@@ -15,7 +15,7 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
-__all__ = ['User', 'Event', 'EventParticipant']
+__all__ = ['User', 'Event', 'EventParticipant', 'Place']
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -98,3 +98,25 @@ class EventParticipant(Base):
     register_date = Column(Date)
     accepted = Column(Boolean)
     visited = Column(Boolean)
+
+
+
+class Place(Base):
+    """
+    Class represents a G+ event participant. 
+    """
+
+    __tablename__ = 'gdg_places'
+
+
+    def __init__(self, **kwargs):
+        super(Place, self).__init__(**kwargs)
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+
+    city = Column(UnicodeText, nullable=False, default='')
+    name = Column(UnicodeText, nullable=True, default=None)
+    url = Column(UnicodeText, nullable=False, default='')
+    geo = Column(UnicodeText, nullable=False, default='')
+    
+    show = Column(Enum(1, 0, name="show"), nullable=False, default=0)

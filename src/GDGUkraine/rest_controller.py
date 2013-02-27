@@ -40,6 +40,14 @@ class Participants:
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
+    def list_all(self, **kwargs):
+        users = api.get_all_users(cherrypy.request.orm_session)
+        if users:
+            return to_collection(users, excludes=("password", "salt"),
+                              sort_keys=True)
+        raise HTTPError(404)
+
+    @cherrypy.tools.json_out()
     def update(self, id, **kwargs):
         return 'changing someone'
         id = int(id)
@@ -67,9 +75,11 @@ class Participants:
 participants_api = cherrypy.dispatch.RoutesDispatcher()
 participants_api.mapper.explicit = False
 participants_api.connect("add", "/", Participants, action="create",
+                        conditions={"method":["POST"]})
+participants_api.connect("list", "/", Participants, action="list_all",
                         conditions={"method":["GET"]})
 participants_api.connect("get", "/{id}", Participants, action="show",
-                        conditions={"method":["POST"]})
+                        conditions={"method":["GET"]})
 participants_api.connect("edit", "/{id}", Participants, action="update",
                         conditions={"method":["PUT"]})
 participants_api.connect("remove", "/{id}", Participants, action="delete",

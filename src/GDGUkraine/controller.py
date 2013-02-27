@@ -9,6 +9,11 @@ class Root:
         return tmpl.render()
 
     @cherrypy.expose
+    def admin(self, **kwargs):
+        tmpl = get_template("participants.html")
+        return tmpl.render()
+
+    @cherrypy.expose
     def default(self, *unparsed):
         return self.index()
 

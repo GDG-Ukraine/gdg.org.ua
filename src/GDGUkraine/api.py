@@ -18,3 +18,6 @@ def find_user_by_email(session, email):
 def delete_user_by_id(session, id):
     id = int(id)
     return session.query(User).filter(User.id == id).delete()
+
+def get_all_users(session):
+    return session.query(User).values()

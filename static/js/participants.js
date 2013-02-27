@@ -19,7 +19,7 @@ angular.module('gdgorgua', ['ngResource'])
       $location.path('/edit/' + participant.id);
     });
   }
-});
+})
 
 
 .controller('EditCtrl', function ($scope, $location, $routeParams, Participant) {
@@ -45,7 +45,7 @@ angular.module('gdgorgua', ['ngResource'])
       $location.path('/');
     });
   };
-}
+})
 
 .factory('Participant', function($resource) {
       var Participant = $resource('/api/participants/:id',

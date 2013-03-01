@@ -20,4 +20,4 @@ def delete_user_by_id(session, id):
     return session.query(User).filter(User.id == id).delete()
 
 def get_all_users(session):
-    return session.query(User).values()
+    return session.query(User).all()

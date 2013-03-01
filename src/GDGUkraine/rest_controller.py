@@ -42,9 +42,11 @@ class Participants:
     @cherrypy.tools.json_out()
     def list_all(self, **kwargs):
         users = api.get_all_users(cherrypy.request.orm_session)
+        #return [to_collection(user.serialize) for user in users]
+        #x = [u for u in users]
         if users:
-            return to_collection(users, excludes=("password", "salt"),
-                              sort_keys=True)
+            return [to_collection(u, excludes=("password", "salt"),
+                              sort_keys=True) for u in users]
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()

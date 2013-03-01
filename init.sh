@@ -10,9 +10,10 @@
 
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-APP_PATH=/home/gtug2/gdg.org.ua
+APP_PATH=/home/gtug2/production/gdg.org.ua
+PID=/var/run/gdg.org.ua.pid
 IF=0.0.0.0
-PORT=11010
+PORT=11020
 cd $APP_PATH
 
 . /lib/init/vars.sh
@@ -21,7 +22,7 @@ cd $APP_PATH
 
 case "$1" in
     start)
-        blueberrypy serve -b $IF:$PORT -d
+        blueberrypy serve -b $IF:$PORT -P $PID -e production -d
     	#start-stop-daemon --start --background --exec /etc/init.d/ondemand -- background
         ;;
     restart|reload|force-reload)
@@ -29,6 +30,8 @@ case "$1" in
         exit 3
         ;;
     stop)
+        kill $PID
+        exit $?
         ;;
     *)
         echo "Usage: $0 start|stop" >&2

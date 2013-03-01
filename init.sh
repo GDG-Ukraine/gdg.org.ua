@@ -11,10 +11,12 @@
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 APP_PATH=/home/gtug2/production/gdg.org.ua
-PID=/var/run/gdg.org.ua.pid
+PID_PATH=/var/tmp/run/
+PID=$PID_PATH/gdg.org.ua.pid
 IF=0.0.0.0
 PORT=11020
 cd $APP_PATH
+mkdir -p $PID_PATH
 
 . /lib/init/vars.sh
 . /lib/lsb/init-functions
@@ -26,8 +28,9 @@ case "$1" in
     	#start-stop-daemon --start --background --exec /etc/init.d/ondemand -- background
         ;;
     restart|reload|force-reload)
-        echo "Error: argument '$1' not supported" >&2
-        exit 3
+        stop()
+        start()
+        exit $?
         ;;
     stop)
         kill $PID

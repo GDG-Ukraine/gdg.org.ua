@@ -21,3 +21,9 @@ def delete_user_by_id(session, id):
 
 def get_all_users(session):
     return session.query(User).all()
+
+def get_all_gdg_places(session, filtered = False):
+    q = session.query(Place)
+    if filtered:
+        q = q.filter(Place.show=='1')
+    return q.order_by(Place.city).all()

@@ -5,8 +5,10 @@ class Root:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        tmpl = get_template("index.html")
-        return tmpl.render()
+        from .api import get_all_gdg_places
+        #tmpl = get_template("index.html")
+        tmpl = get_template("gdg.org.ua_old.html")
+        return tmpl.render(places=get_all_gdg_places(cherrypy.request.orm_session, filtered = True))
 
     #@cherrypy.expose
     #def admin(self, **kwargs):

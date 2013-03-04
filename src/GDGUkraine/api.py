@@ -27,3 +27,14 @@ def get_all_gdg_places(session, filtered = False):
     if filtered:
         q = q.filter(Place.show=='1')
     return q.order_by(Place.city).all()
+
+def find_event_by_id(session, id):
+    id = int(id)
+    return session.query(Event).get(id)
+
+def get_all_events(session):
+    return session.query(Event).all()
+
+def delete_event_by_id(session, id):
+    id = int(id)
+    return session.query(Event).filter(Event.id == id).delete()

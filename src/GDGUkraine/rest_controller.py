@@ -51,7 +51,6 @@ class Participants:
 
     @cherrypy.tools.json_out()
     def update(self, id, **kwargs):
-        return 'changing someone'
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
@@ -59,12 +58,11 @@ class Participants:
         if user:
             user = from_collection(req.json, user)
             orm_session.commit()
-            return to_collection(user, includes="age", excludes=("password", "salt"),
+            return to_collection(user, excludes=("password", "salt"),
                               sort_keys=True)
         raise HTTPError(404)
 
     def delete(self, id, **kwargs):
-        return 'removing someone'
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
@@ -73,6 +71,58 @@ class Participants:
         else:
             orm_session.commit()
 
+class Events:
+
+    _cp_config = {"tools.json_in.on": True}
+
+    @cherrypy.tools.json_out()
+    def create(self, **kwargs):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        event = from_collection(req.json, Event())
+        orm_session.add(event)
+        orm_session.commit()
+        return to_collection(event, sort_keys=True)
+
+    @cherrypy.tools.json_out()
+    def show(self, id, **kwargs):
+        #return 'getting someone'
+        id = int(id)
+        event = api.find_event_by_id(cherrypy.request.orm_session, id)
+        if event:
+            return to_collection(event,
+                              sort_keys=True)
+        raise HTTPError(404)
+
+    @cherrypy.tools.json_out()
+    def list_all(self, **kwargs):
+        events = api.get_all_events(cherrypy.request.orm_session)
+        if events:
+            return [to_collection(e,
+                              sort_keys=True) for e in events]
+        raise HTTPError(404)
+
+    @cherrypy.tools.json_out()
+    def update(self, id, **kwargs):
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        event = api.find_event_by_id(orm_session, id)
+        if event:
+            event = from_collection(req.json, event)
+            orm_session.commit()
+            return to_collection(event,
+                              sort_keys=True)
+        raise HTTPError(404)
+
+    def delete(self, id, **kwargs):
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        if not api.delete_event_by_id(orm_session, id):
+            raise HTTPError(404)
+        else:
+            orm_session.commit()
 
 participants_api = cherrypy.dispatch.RoutesDispatcher()
 participants_api.mapper.explicit = False
@@ -85,6 +135,19 @@ participants_api.connect("get", "/{id}", Participants, action="show",
 participants_api.connect("edit", "/{id}", Participants, action="update",
                         conditions={"method":["PUT"]})
 participants_api.connect("remove", "/{id}", Participants, action="delete",
+                        conditions={"method":["DELETE"]})
+
+events_api = cherrypy.dispatch.RoutesDispatcher()
+events_api.mapper.explicit = False
+events_api.connect("add", "/", Events, action="create",
+                        conditions={"method":["POST"]})
+events_api.connect("list", "/", Events, action="list_all",
+                        conditions={"method":["GET"]})
+events_api.connect("get", "/{id}", Events, action="show",
+                        conditions={"method":["GET"]})
+events_api.connect("edit", "/{id}", Events, action="update",
+                        conditions={"method":["PUT"]})
+events_api.connect("remove", "/{id}", Events, action="delete",
                         conditions={"method":["DELETE"]})
 
 # Error handlers

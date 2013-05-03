@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/sh -e
 ### BEGIN INIT INFO
 # Provides:          blueberrypy
 # Required-Start:    $remote_fs $all
@@ -10,11 +10,11 @@
 
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-APP_PATH=/home/gtug2/production/gdg.org.ua
-PID_PATH=/var/tmp/run/
+APP_PATH=/home/gtug2/gdg.org.ua
+PID_PATH=/var/tmp/run
 PID=$PID_PATH/gdg.org.ua.pid
 IF=0.0.0.0
-PORT=11020
+PORT=11010
 cd $APP_PATH
 mkdir -p $PID_PATH
 
@@ -22,22 +22,29 @@ mkdir -p $PID_PATH
 . /lib/lsb/init-functions
 . $APP_PATH/env/bin/activate
 
+set -e
+
 case "$1" in
     start)
-        blueberrypy serve -b $IF:$PORT -P $PID -e production -d
-    	#start-stop-daemon --start --background --exec /etc/init.d/ondemand -- background
+        test -f $PID && log_daemon_msg "PID exists: `cat $PID`." && exit 1
+        log_daemon_msg "Starting web server" "blueberrypy"
+        blueberrypy serve -b $IF:$PORT -P $PID -d && sleep 2 && \
+        log_daemon_msg "New blueberrypy with PID `cat $PID` has been started."
+        exit $?
         ;;
     restart|reload|force-reload)
-        stop()
-        start()
+        $0 stop
+        $0 start
         exit $?
         ;;
     stop)
-        kill $PID
+        PROC_PID=`cat $PID`
+        kill $PROC_PID && \
+        log_daemon_msg "Killed blueberrypy with PID $PROC_PID."
         exit $?
         ;;
     *)
-        echo "Usage: $0 start|stop" >&2
+        log_daemon_msg "Usage: $0 start|stop" >&2
         exit 3
         ;;
 esac

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GDG Events | Registration info to "{{ event.title }}"</title>
+    <style>
+        table {
+            width: 100%;
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        td {
+            border: solid 1px #BBB;
+            padding: 10px;
+            margin: 0;
+        }
+        .header {
+            background-color: #EEE;
+        }
+        .img {
+           text-align: center;
+        }
+        .notapproved {
+            background-color: red;
+            color: yellow;
+            text-align: center;
+            font-size: 2em;
+            font-family: monospace;
+        }
+        div {
+            text-align: justify;
+        }
+    </style>
+</head>
+<body>
+    <% var fieldsCount = 1; for (var f in fields) fieldsCount++; %>
+    <table>
+        <% if (!reg.accepted) { %>
+        <tr><td class="notapproved" colspan="3">Registration is not approved yet</td></tr>
+        <% } %>
+        <tr>
+        <td colspan="2" class="header">
+            <h3>Register to {{ event.title }}</h3>
+            <div><%= event.desc %></div>
+        </td>
+            <td class="img" rowspan="<%= fieldsCount %>"><img src="http://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=<%= qrdata %>&choe=UTF-8" /></td>
+        </tr>
+        <% for(var field in fields) { %>
+            <tr>
+                <td><b><%= field %></b></td>
+                <td><%= fields[field] %></td>
+            </tr>
+        <% } %>
+    </table>
+
+</body>
+</html>

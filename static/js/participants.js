@@ -1,33 +1,45 @@
-angular.module('gdgorgua', ['ngResource'])
+angular.module('gdgorgua')
 
-.config(function($routeProvider) {
-    $routeProvider.
-      when('/', {controller:'ListCtrl', templateUrl:'list.html'}).
-      when('/edit/:participantId', {controller:'EditCtrl', templateUrl:'detail.html'}).
-      when('/new', {controller:'CreateCtrl', templateUrl:'detail.html'}).
-      otherwise({redirectTo:'/'});
-  })
+.controller('ParticipantsListCtrl', function ($scope, Participant, $location, $window) {
+  if ($window.sessionStorage) {
+            try {
+                $scope.participants = JSON.parse($window.sessionStorage.getItem('gdgparticipants'));
+            } catch (err) {}
+  }
 
-.controller('ListCtrl', function ($scope, Participant) {
-  $scope.participants = Participant.query();
+  Participant.query({},function(ps) {
+      $scope.participants = ps;
+      if ($window.sessionStorage) {
+          $window.sessionStorage.setItem("gdgparticipants",JSON.stringify(ps));
+      }
+  });
+  $scope.edit = function(id) {
+      $location.path('/participants/'+id);
+  }
 })
 
 
-.controller('CreateCtrl', function ($scope, $location, Participant) {
+.controller('ParticipantsCreateCtrl', function ($scope, $location, Participant) {
   $scope.save = function() {
     Participant.save($scope.p, function(participant) {
-      $location.path('/edit/' + participant.id);
+      $location.path('/participants/' + participant.id);
     });
   }
 })
 
 
-.controller('EditCtrl', function ($scope, $location, $routeParams, Participant) {
+.controller('ParticipantsEditCtrl', function ($scope, $location, $routeParams, Participant, $window,GEvent, $http) {
   var self = this;
-
+  if ($window.sessionStorage) {
+            try {
+                $scope.p = JSON.parse($window.sessionStorage.getItem('gdgparticipant'+$routeParams.participantId));
+            } catch(err) {};
+  }
   Participant.get({id: $routeParams.participantId}, function(participant) {
     self.original = participant;
     $scope.p = new Participant(self.original);
+    if ($window.sessionStorage)  $window.sessionStorage.setItem('gdgparticipant'+$routeParams.participantId, JSON.stringify(participant));
+
   });
 
   $scope.isClean = function() {
@@ -35,21 +47,28 @@ angular.module('gdgorgua', ['ngResource'])
   }
 
   $scope.destroy = function() {
-    self.original.remove(function() {
-      $location.path('/list');
+    self.original.$remove(function() {
+      $location.path('/participants/');
     });
   };
 
   $scope.save = function() {
-    $scope.p.update(function() {
-      $location.path('/');
+    $scope.p.$update(function() {
+      $location.path('/participants/');
     });
   };
+  $scope.back = function() {
+      $window.history.back();
+  }
+  $scope.show = function(id) {
+      $location.path('/events/'+id);
+  }
+
 })
 
 .factory('Participant', function($resource) {
       var Participant = $resource('/api/participants/:id',
-          { apiKey: 'getkeyduringauth' }, {
+          { id: "@id" }, {
             update: { method: 'PUT' }
           }
       );

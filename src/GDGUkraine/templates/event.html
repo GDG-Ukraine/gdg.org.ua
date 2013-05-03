@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<base href="/"></base>
+    <title>GDG Events | {{ event.title }}</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="author" content="Oleh Zasadnyy">
+	<meta name="author" content="Svyatoslav Sydorenko">
+	<meta name="author" content="Valentyn Shybanov">
+	<link href="/favicon.ico" rel="icon" type="image/x-icon">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+	<link href="/css/style.css" rel="stylesheet">
+</head>	
+
+<body>
+
+	<div class="wrapper">
+		<div id="main" role="main">
+			<div id="contact-form">
+                <img id="logo" src="/img/logo.png" alt="logo">
+                <h1>{{ event.title }}</h2>
+                <div id="desc">
+                    <label><span>Опис:</span> {{ event.desc }}</label>
+                </div>
+                <div id="host_gdg">
+                    <label><span>Організатор:</span> {{ host_gdg.name }}</label>
+                </div>
+                <div>
+                    <label><span>Google+:</span> {{ event.gplus_id }}</label>
+                </div>
+                <div>
+                    <center><strong><a href="/events/{{ event.id }}/register">Participate!</a></strong></center>
+                </div>
+            </div>
+		</div>
+	</div>
+</body>
+</html>

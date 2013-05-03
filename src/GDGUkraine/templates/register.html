@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<base href="/"></base>
+    <title>GDG Events | {{ event.title }} registration</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="author" content="Oleh Zasadnyy">
+	<meta name="author" content="Svyatoslav Sydorenko">
+	<meta name="author" content="Valentyn Shybanov">
+	<link href="/favicon.ico" rel="icon" type="image/x-icon">
+	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+	<link href="/css/style.css" rel="stylesheet">
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
+    <script src="/js/contact_form.js"></script>
+
+</head>	
+
+<body>
+
+	<div class="wrapper" ng-app="gdgorgua">
+		<div id="main" role="main" ng-controller="contactForm">
+			<form id="contact-form" name="contactForm">
+                {% if event.host_gdg_id and event.host_gdg %}<a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>{% else %}<img id="logo" src="/img/logo.png" alt="logo">{% endif %}
+                <h1>Register to {{ event.title }}</h2>
+                    <div ng-show="fromGoogle">
+                        <img align="right" width="64px" ng-src="{{ '{{picture}}' }}">
+                    </div>
+				<h3>Please fill this form if you want to participate at this event
+					<span> (in English only)</span>
+				</h3>
+                <!--div>
+                    <div ng-hide="fromGoogle">
+                        If you have Google account, please <a href="/auth">
+                        <img style="vertical-align:middle" src="/img/social-google-box-icon.png" />
+                        login using Google Account</a>
+                    </div>
+                    <div ng-show="fromGoogle">
+                        Wellcome, <strong>{{ '{{user.name}}' }}</strong>.
+                        <a href="/logout">Use another account</a>
+                    </div>
+                </div-->
+				<div>
+					<label>
+						<span>Name*</span>
+						<input placeholder="e.g. Sergey" type="text" tabindex="1" pattern="[A-Za-z]{2,16}" required autofocus ng-model="user.name" ng-disabled="fromGoogle">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Surname*</span>
+						<input placeholder="e.g. Brin" type="text" tabindex="2" pattern="[A-Za-z]{2,16}" required ng-model="user.surname" ng-disabled="fromGoogle">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Nickname</span>
+						<input placeholder="e.g. SuperBrin" type="text" tabindex="3" ng-model="user.nickname">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Email*</span>
+						<input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email" ng-disabled="fromGoogle">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Telephone</span>
+						<input placeholder="0930000042" type="tel" tabindex="5" ng-model="user.phone">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Google+ *</span>
+						<input placeholder="e.g. 1000000000042" type="text" tabindex="6" ng-model="user.gplus" ng-disabled="fromGoogle" required>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Website</span>
+						<input placeholder="Start with http://" type="url" tabindex="7" ng-model="user.www">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>City*</span>
+						<input placeholder="e.g. Mountain View" type="text" tabindex="8" required ng-model="user.hometown">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Company</span>
+						<input placeholder="e.g. Google" type="text" tabindex="9" ng-model="user.company">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Position</span>
+						<input placeholder="e.g. Cofounder" type="text" tabindex="10" ng-model="user.position">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Experience level</span>
+						<select name="expereence_level" tabindex="11" ng-model="user.experience_level">
+							<option value="newbie">Newbie</option>
+							<option value="elementary">Elementary</option>
+							<option value="intermediate" selected>Intermediate</option>
+							<option value="advanced">Advanced</option>
+							<option value="jedi">Jedi</option>
+						</select>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Experience description</span>
+						<textarea placeholder="e.g. Software developer particularly interested in Java technologies and Google applications. Worked in various countries: Ukraine, USA, Poland. Have great ability to work remotely, high mobility, sense of humor." tabindex="12" ng-model="user.experience_desc"></textarea>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Interests</span>
+						<textarea placeholder="e.g. Google, Android, Chrome" tabindex="13" ng-model="user.interests"></textarea>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Events visited</span>
+						<input placeholder="e.g. IO Extended 2012, GDG DevFest, MapMaker" type="text" tabindex="14" ng-model="user.events_visited">
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>English knowledge</span>
+						<select name="english_knowledge" tabindex="15" ng-model="user.english_knowledge">
+							<option value="elementary">Elementary</option>
+							<option value="intermediate">Intermediate</option>
+							<option value="upper intermediate" selected>Upper intermediate</option>
+							<option value="advanced">Advanced</option>
+							<option value="native">Native</option>
+						</select>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>T-Shirt size</span>
+						<select name="t_shirt_size" tabindex="16" ng-model="user.t_shirt_size">
+							<option value="xs">XS</option>
+							<option value="s">S</option>
+							<option value="m" selected>M</option>
+							<option value="l">L</option>
+							<option value="xl">XL</option>
+							<option value="xxl">XXL</option>
+						</select>
+					</label>
+				</div>
+				<div>
+					<label>
+						<span>Gender</span>
+						<input type="radio" name="sex" id="male" value="male" tabindex="17" ng-model="user.gender" ng-disabled="fromGoogle">
+						<label for="male">Male</label>
+						<input type="radio" name="sex" id="female" value="female" ng-model="user.gender" ng-disabled="fromGoogle">
+						<label for="female">Female</label>
+					</label>
+				</div>
+				<div>
+		           <label>
+		               <span>Comments</span>
+		               <textarea placeholder="Some comments" tabindex="18" ng-model="user.additional_info"></textarea>
+		           </label>
+		        </div>
+                {% for f in event.fields %}
+                <div>
+                    <label>
+                        <span>{{ f.title }}</span>
+                        <input type="text" ng-model="fields.{{ f.name }}">
+                    </label>
+                </div>
+                {% endfor %}
+			<div ng-show="showOk" class="alert alert-success">
+				Your application was saved. See you on event!
+			</div>
+			<div ng-show="showError" class="alert alert-error">
+				There is an error while saving your application. Please check details of your application.
+			</div>
+
+				<div>
+		            <button name="submit" type="submit" id="contact-submit" class="action red" tabindex="19"  ng-class="{disabled: !contactForm.$valid}" ng-click="submit()"><span class="label red">Submit</span></button>
+		        </div>
+		        <p>*denotes a required field</p>
+			</form>
+		</div>
+	</div>
+    <div id="footer" style="text-align: center; color: rgba(50, 50, 50, 0.7);">
+        <small>
+            Regform by <a href="https://plus.google.com/102989169039151799851/about">Oleh Zasadnyy</a>, <a href="https://plus.google.com/112452406409308053659/about">Valentyn Shybanov</a> and <a href="https://plus.google.com/110108248841907526802/about">Svyatoslav Sydorenko</a> | <a href="https://github.com/GDG-Ukraine/gdg.org.ua/issues">Report an issue</a><br />
+            Hosted by <a href="https://plus.google.com/116109046236945545073/about">Oleh Bozhenko</a>
+        </small>
+    </div>
+    <script>
+    angular.module('gdgorgua')
+            .value('GoogleUser', null)
+            .value('GoogleEvent', null);
+
+    </script>
+</body>
+</html>

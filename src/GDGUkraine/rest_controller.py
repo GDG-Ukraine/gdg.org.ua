@@ -12,19 +12,63 @@ from blueberrypy.util import from_collection, to_collection
 from GDGUkraine import api
 from GDGUkraine.model import User, Event, EventParticipant, Place
 
+from datetime import date, datetime
 
-class Participants:
+import logging
 
+
+logger = logging.getLogger(__name__)
+
+class REST_API_Base:
     _cp_config = {"tools.json_in.on": True}
+
+    def create(self, **kwargs):
+        raise NotImplementedError()
+
+    def show(self, **kwargs):
+        raise NotImplementedError()
+
+    def list_all(self, **kwargs):
+        raise NotImplementedError()
+
+    def update(self, **kwargs):
+        raise NotImplementedError()
+
+    def delete(self, **kwargs):
+        raise NotImplementedError()
+
+class Participants(REST_API_Base):
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
         #return 'creating someone'
         req = cherrypy.request
         orm_session = req.orm_session
-        user = from_collection(req.json, User())
-        orm_session.add(user)
+        u = req.json['user']
+        logger.debug(req.json)
+        logger.debug(u)
+        #user = from_collection(u, User())
+        user = User(**u)
+        logger.debug(user.email)
+        eu = api.find_user_by_email(orm_session, user.email)
+        if eu:
+            user.id = eu.id
+        #logger.debug([u for u in dir(user)])
+        orm_session.merge(user)
         orm_session.commit()
+        if req.json.get('event'):
+            eid = int(req.json['event'])
+            logger.debug(type(req.json.get('fields')))
+            logger.debug(req.json.get('fields'))
+            ep = EventParticipant(event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
+            eep = api.get_event_registration(orm_session, user.id, eid)
+            if eep:
+                ep.id = eep.id
+            logger.debug(ep.fields)
+            orm_session.merge(ep)
+            orm_session.commit()
+            logger.debug(ep.fields)
+            logger.debug(type(ep.fields))
         return to_collection(user, sort_keys=True)
 
     @cherrypy.tools.json_out()
@@ -33,14 +77,23 @@ class Participants:
         id = int(id)
         user = api.find_user_by_id(cherrypy.request.orm_session, id)
         if user:
-            return to_collection(user, excludes=("password", "salt"),
+            events = api.find_events_by_user(cherrypy.request.orm_session, user)
+            logger.debug(events)
+            #logger.debug(events[0])
+            #logger.debug(events[0].title)
+            u = to_collection(user, excludes=("password", "salt"),
                               sort_keys=True)
+            u.update({'events': [to_collection(e,
+                              sort_keys=True) for e in events]})
+            logger.debug(u)
+            return u
         #else:
         #    return {}
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
     def list_all(self, **kwargs):
+        logger.debug('listing users')
         users = api.get_all_users(cherrypy.request.orm_session)
         #return [to_collection(user.serialize) for user in users]
         #x = [u for u in users]
@@ -71,9 +124,7 @@ class Participants:
         else:
             orm_session.commit()
 
-class Events:
-
-    _cp_config = {"tools.json_in.on": True}
+class Events(REST_API_Base):
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
@@ -90,8 +141,16 @@ class Events:
         id = int(id)
         event = api.find_event_by_id(cherrypy.request.orm_session, id)
         if event:
-            return to_collection(event,
-                              sort_keys=True)
+            participants = api.find_participants_by_event(cherrypy.request.orm_session, event)
+            logger.debug(participants)
+            logger.debug(participants[0])
+            logger.debug(participants[0].name)
+            e = to_collection(event,
+                    sort_keys=True)
+            e.update({'participants': [to_collection(p, excludes=("password", "salt"),
+                              sort_keys=True) for p in participants]})
+            logger.debug(e)
+            return e 
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
@@ -108,6 +167,7 @@ class Events:
         req = cherrypy.request
         orm_session = req.orm_session
         event = api.find_event_by_id(orm_session, id)
+        logger.debug(event)
         if event:
             event = from_collection(req.json, event)
             orm_session.commit()
@@ -124,30 +184,28 @@ class Events:
         else:
             orm_session.commit()
 
-participants_api = cherrypy.dispatch.RoutesDispatcher()
-participants_api.mapper.explicit = False
-participants_api.connect("add", "/", Participants, action="create",
+rest_api = cherrypy.dispatch.RoutesDispatcher()
+rest_api.mapper.explicit = False
+rest_api.connect("add_participant", "/participants", Participants, action="create",
                         conditions={"method":["POST"]})
-participants_api.connect("list", "/", Participants, action="list_all",
+rest_api.connect("list_participants", "/participants", Participants, action="list_all",
                         conditions={"method":["GET"]})
-participants_api.connect("get", "/{id}", Participants, action="show",
+rest_api.connect("get_participant", "/participants/{id}", Participants, action="show",
                         conditions={"method":["GET"]})
-participants_api.connect("edit", "/{id}", Participants, action="update",
+rest_api.connect("edit_participant", "/participants/{id}", Participants, action="update",
                         conditions={"method":["PUT"]})
-participants_api.connect("remove", "/{id}", Participants, action="delete",
+rest_api.connect("remove_participant", "/participants/{id}", Participants, action="delete",
                         conditions={"method":["DELETE"]})
 
-events_api = cherrypy.dispatch.RoutesDispatcher()
-events_api.mapper.explicit = False
-events_api.connect("add", "/", Events, action="create",
+rest_api.connect("add_event", "/events", Events, action="create",
                         conditions={"method":["POST"]})
-events_api.connect("list", "/", Events, action="list_all",
+rest_api.connect("list_events", "/events", Events, action="list_all",
                         conditions={"method":["GET"]})
-events_api.connect("get", "/{id}", Events, action="show",
+rest_api.connect("get_event", "/events/{id}", Events, action="show",
                         conditions={"method":["GET"]})
-events_api.connect("edit", "/{id}", Events, action="update",
+rest_api.connect("edit_event", "/events/{id}", Events, action="update",
                         conditions={"method":["PUT"]})
-events_api.connect("remove", "/{id}", Events, action="delete",
+rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
                         conditions={"method":["DELETE"]})
 
 # Error handlers

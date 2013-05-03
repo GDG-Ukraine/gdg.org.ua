@@ -1,0 +1,22 @@
+<input type="text" ng-model="search" class="search-query" placeholder="Search">
+<a href="#/events/new" class="btn btn-success btn-small"><i class="icon-plus-sign"></i> New Event</a>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th style="width: 6em">Date</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th><a href="#/events/new"><i class="icon-plus-sign"></i></a></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="e in events | filter:search | orderBy:'date':true" ng-class='{past:isPast(e)}' ng-click='edit(e.id)' class='clickable'>
+        <td>{{e.date}}</td>
+        <td>{{e.title}}</td>
+        <td>{{e.desc}}</td>
+        <td>
+            <a href="#/events/{{e.id}}"><i class="icon-pencil"></i></a>
+        </td>
+    </tr>
+    </tbody>
+</table>

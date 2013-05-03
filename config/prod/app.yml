@@ -5,6 +5,7 @@ global:
   environment: production
   engine.logging.on: true
   engine.sqlalchemy.on: true
+  #tools.trailing_slash.on: false
 
 controllers:
   '':
@@ -12,7 +13,8 @@ controllers:
     /:
       tools.proxy.on: true
       tools.orm_session.on: true
-      tools.sessions.on: truetools.sessions.storage_type: memcached
+      tools.sessions.on: true
+      #tools.sessions.storage_type: memcached
       tools.staticdir.root: /home/gtug2/gdg.org.ua/static
       tools.staticfile.root: /home/gtug2/gdg.org.ua/static
     /css:
@@ -27,10 +29,34 @@ controllers:
       tools.sessions.on: false
       tools.staticdir.on: true
       tools.staticdir.dir: img
+    /admin:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: templates/admin/admin.html
+    /templates:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: templates
     /favicon.ico:
       tools.sessions.on: false
       tools.staticfile.on: true
       tools.staticfile.filename: favicon.ico
+    /google55b33f78b4c8d4c6.html:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: google55b33f78b4c8d4c6.html
+  /api:
+    controller: !!python/name:GDGUkraine.rest_controller.rest_api
+    /:
+      request.dispatch: !!python/name:GDGUkraine.rest_controller.rest_api
+      tools.orm_session.on: true
+      tools.sessions.on: true
+  /events:
+    controller: !!python/name:GDGUkraine.controller.events
+    /:
+      request.dispatch: !!python/name:GDGUkraine.controller.events
+      tools.orm_session.on: true
+      tools.sessions.on: true
 
 sqlalchemy_engine:
   url: <connection uri here>

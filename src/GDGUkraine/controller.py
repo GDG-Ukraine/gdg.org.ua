@@ -89,12 +89,7 @@ class Events:
         event = find_event_by_id(orm_session, id)
         events_list = None
         if event:
-            try:
-                logger.debug(event.host_gdg.city)
-                logger.debug(event.host_gdg.logo)
-            except:
-                pass
-            if event.date > date.today() and event.closereg > date.today():
+            if (event.max_regs is None or event.max_regs > len(event.participants)) and event.date > date.today() and event.closereg > date.today():
                 tmpl = get_template("register.html")
             else:
                 tmpl = get_template("regclosed.html")

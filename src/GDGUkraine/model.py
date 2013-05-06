@@ -133,7 +133,8 @@ class Event(Base):
     closereg = Column(Date)
     fields = deferred(Column(JSONEncodedDict(512)))
     # crutch for olostan's code
-    logo = Column(String(255), nullable=True)
+    background = Column(String(255), nullable=True)
+    max_regs = Column(Integer, nullable=True, default=None)
 
     participants = relationship("EventParticipant", backref="event")
     host_gdg = relationship("Place", backref="events")

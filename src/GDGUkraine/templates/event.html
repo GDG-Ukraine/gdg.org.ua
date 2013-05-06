@@ -21,14 +21,19 @@
                 <img id="logo" src="/img/logo.png" alt="logo">
                 <h1>{{ event.title }}</h2>
                 <div id="desc">
-                    <label><span>Опис:</span> {{ event.desc }}</label>
+                    <label><span>Description:</span> {{ event.desc }}</label>
+                    {% if event.url %}
+                    <label><span>Find more detail at</span> <a href="{{ event.url }}">{{ event.url }}</a></label>
+                    {% endif %}
                 </div>
                 <div id="host_gdg">
-                    <label><span>Організатор:</span> {{ host_gdg.name }}</label>
+                    <label><span>Organizer:</span> {{ event.host_gdg.name }}</label>
                 </div>
+                {% if event.gplus_event_id %}
                 <div>
-                    <label><span>Google+:</span> {{ event.gplus_id }}</label>
+                    <label><span>Google+:</span> <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">Go!</a></label>
                 </div>
+                {% endif %}
                 <div>
                     <center><strong><a href="/events/{{ event.id }}/register">Participate!</a></strong></center>
                 </div>

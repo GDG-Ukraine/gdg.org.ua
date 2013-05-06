@@ -76,9 +76,8 @@ class Events:
         from .api import find_event_by_id, find_host_gdg_by_event
         event = find_event_by_id(cherrypy.request.orm_session, id)
         if event:
-            host_gdg = find_host_gdg_by_event(cherrypy.request.orm_session, event)
             tmpl = get_template("event.html")
-            return tmpl.render(event=event, host_gdg=host_gdg)
+            return tmpl.render(event=event)
         raise HTTPError(404)
 
     def register(self, id, **kwargs):

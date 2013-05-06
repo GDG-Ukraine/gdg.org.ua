@@ -126,7 +126,7 @@ class Event(Base):
     url = Column(String(64), nullable=False)
     title = Column(String(64), nullable=False)
     desc = deferred(Column(UnicodeText, nullable=False))
-    gplus_event_id = Column(BigInteger, unique=True, index=True)
+    gplus_event_id = Column(String(27), unique=True, index=True)
     host_gdg_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=False, index=True)
 
     date = Column(Date)

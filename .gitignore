@@ -35,10 +35,10 @@ nosetests.xml
 .pydevproject
 
 # added by webknjaz
-.cache/
+.cache/*.cache
 src/GDGUkraine/__pycache__/
 env/
-log/*
+log/*.log
 config
 config/
 config/dev/app.yml

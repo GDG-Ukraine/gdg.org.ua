@@ -22,7 +22,7 @@
 		<div id="main" role="main" ng-controller="contactForm">
 			<form id="contact-form" name="contactForm">
                 {% if event.host_gdg_id and event.host_gdg %}<a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>{% else %}<img id="logo" src="/img/logo.png" alt="logo">{% endif %}
-                <h1>Register to {{ event.title }}</h2>
+                <h2>Register to {{ event.title }}</h2>
                     <div ng-show="fromGoogle">
                         <img align="right" width="64px" ng-src="{{ '{{picture}}' }}">
                     </div>

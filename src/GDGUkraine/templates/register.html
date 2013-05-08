@@ -22,7 +22,7 @@
 		<div id="main" role="main" ng-controller="contactForm">
 			<form id="contact-form" name="contactForm">
                 {% if event.host_gdg_id and event.host_gdg %}<a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>{% else %}<img id="logo" src="/img/logo.png" alt="logo">{% endif %}
-                <h2>Register to {{ event.title }}</h2>
+                <h1>Register to {{ event.title }}</h1>
                     <div ng-show="fromGoogle">
                         <img align="right" width="64px" ng-src="{{ '{{picture}}' }}">
                     </div>
@@ -40,6 +40,14 @@
                         <a href="/logout">Use another account</a>
                     </div>
                 </div-->
+                {% if event.google_map_iframe %}
+				<div>
+					<label>
+						<span>Please find the location below:</span>
+                        <iframe style="text-align: center;" width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="{{ event.google_map_iframe }}output=embed"></iframe><br /><small><a href="{{ event.google_map_iframe }}source=embed" style="color:#0000FF;text-align:left">Переглянути більшу мапу</a></small>
+					</label>
+				</div>
+                {% endif %}
 				<div>
 					<label>
 						<span>Name*</span>

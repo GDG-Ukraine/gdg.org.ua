@@ -135,6 +135,7 @@ class Event(Base):
     # crutch for olostan's code
     background = Column(String(255), nullable=True)
     max_regs = Column(Integer, nullable=True, default=None)
+    google_map_iframe = deferred(Column(UnicodeText, nullable=True, default=None))
 
     participants = relationship("EventParticipant", backref="event")
     host_gdg = relationship("Place", backref="events")

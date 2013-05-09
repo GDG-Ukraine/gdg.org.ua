@@ -15,7 +15,11 @@ angular.module('gdgorgua')
         //$scope.events = GEvent.query()
         GEvent.query({},function(events) {
             events.forEach(function(e) {
-                e.date = $filter('date')(e.date.date, 'yyyy-MM-dd');
+                try {
+                    e.date = $filter('date')(e.date.date, 'yyyy-MM-dd');
+                } catch(e) {
+                    e.date = $filter('date')(e.date, 'yyyy-MM-dd');
+                }
             })
             $scope.events = events;
             if ($window.sessionStorage) {
@@ -99,8 +103,16 @@ angular.module('gdgorgua')
             GEvent.get({id: $routeParams.eventId}, function (e) {
                 $scope.enable = true;
                 $scope.loading = false;
-                e.date = $filter('date')(e.date.date,'yyyy-MM-dd');
-                e.closereg = $filter('date')(e.closereg.date,'yyyy-MM-dd');
+                try {
+                    e.date = $filter('date')(e.date.date,'yyyy-MM-dd');
+                } catch(e) {
+                    e.date = $filter('date')(e.date,'yyyy-MM-dd');
+                }
+                try {
+                    e.closereg = $filter('date')(e.closereg.date,'yyyy-MM-dd');
+                } catch(e) {
+                    e.closereg = $filter('date')(e.closereg,'yyyy-MM-dd');
+                }
                 self.original = e;
                 $scope.e = new GEvent(self.original);
 

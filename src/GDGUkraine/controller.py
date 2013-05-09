@@ -11,9 +11,23 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# decorator. apply to certain methods after 'exposed'
+def render(template = None, page_id = None, ):
+    def dec(func):
+        @functools.wraps(func)
+        def wrapper(obj):
+            '''
+            obj is an object with context of func
+            '''
+            tmpl = get_template(template)
+            return tmpl.render(webpage = { 'content': func(obj), 'menu': obj.menu if hasattr(obj, 'menu') else menu, 'current_page': page_id })
+        return wrapper
+    return dec
+
 class Root:
 
     @cherrypy.expose
+    #@render(template = 'gdg.org.ua_old.html', page_id = 'about')
     def index(self, **kwargs):
         from .api import get_all_gdg_places
         #tmpl = get_template("index.html")

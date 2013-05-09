@@ -5,11 +5,12 @@
     <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
     <link href="/css/datepicker.css" rel="stylesheet">
+    <link href="/css/admin.css" rel="stylesheet">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular-resource.min.js"></script>
     <!--script src="/js/ui-bootstrap-tpls-0.1.0.min.js"></script-->
     <script src="/js/angular-strap.min.js"></script>
     <script src="/js/bootstrap-datepicker.js"></script>
@@ -37,10 +38,24 @@
     <div class="navbar-inner">
         <a class="brand" href="#">GDG Data</a>
         <ul class="nav">
-            <li ng-class="{active: current == 'events'}"><a href="#/events">Events</a></li>
-            <li ng-class="{active: current == 'participants'}"><a href="#/participants">Participants</a></li>
+            <li ng-class="{active: current == 'events'}"><a href="#/events"><i class="icon-trophy"></i> Events</a></li>
+            <li ng-class="{active: current == 'participants'}"><a href="#/participants"><i class="icon-group"></i> Participants</a></li>
+            <li id="spinner" ng-class='{visible:requests>0}'>
+                <span id="l1">L</span><span id="l2">o</span><span id="l3">a</span><span id="l4">d</span><span id="l5">i</span><span id="l6">n</span><span id="l7">g</span><span id="l8">.</span><span id="l9">.</span><span id="l10">.</span>
+            </li>
         </ul>
+        <span id='user-panel' ng-show='info'>
+                <span ng-show='info.user'>
+                {{info.user.email}} <img ng-src='{{info.user.picture}}' style='height:32px'/>
+                </span>
+                <img ng-show='info.place.logo' ng-src='http://gdg.org.ua{{info.place.logo}}' style='height:32px'/>
+        </span>
     </div>
 </div>
+
+<div id="error" ng-show="error">
+    <h1>Some error happen, please reload the page!</h1>
+</div>
+
 <div ng-view class="content"></div>
 </body>

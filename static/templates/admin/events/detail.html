@@ -1,20 +1,25 @@
+<div ng-hide='enable' class='loading'>
+    <i class='icon-spin icon-spinner'></i>
+    Event information is loading...
+</div>
 
+<div ng-show='enable'>
     <h2 ng-show="editing">Editing event #{{e.id}}
         <button class='btn' ng-disabled='loading'><i ng-class="{'icon-spin':loading}" class='icon-refresh' style='color:blue' ng-click='refresh()'></i></button>
     </h2>
     <h2 ng-hide="editing">Creating event</h2>
     <div ng-show='editing' class="alert alert-success" >
-        Registration form: <a href='/events/{{e.id}}/register' target='_blank'>Link</a>
+        Registration form: <a href='http://gdg.org.ua/events/{{e.id}}/register' target='_blank'>Link</a> (dev: [<a href='http://olostan.org.ua:4242/events/{{e.id}}/register' target='_blank'>olostan</a>] | [<a href='/events/{{e.id}}/register' target='_blank'>wk</a>])
     </div>
 
     <ul class="nav nav-tabs" ng-show="editing">
-        <li ng-class="{active: tab == 'info'}"><a ng-click="tab='info'">Information</a></li>
-        <li ng-class="{active: tab == 'part'}"><a ng-click="tab='part'">Participants ({{ e.participants.length}})</a></li>
-        <li ng-class="{active: tab == 'fields'}"><a ng-click="tab='fields'">Form fields</a></li>
-
+        <li ng-class="{active: tab == 'info'}"><a ng-click="tab='info'"><i class="icon-magic"></i> Information</a></li>
+        <li ng-class="{active: tab == 'part'}"><a ng-click="tab='part'"><i class="icon-group"></i> Participants ({{ e.participants.length}})</a></li>
+        <li ng-class="{active: tab == 'fields'}"><a ng-click="tab='fields'"><i class="icon-tasks"></i> Form fields</a></li>
     </ul>
+</div>
 
-<form name="myForm" class="form-horizontal" >
+<form name="myForm" class="form-horizontal" ng-show="enable">
  <div ng-show="tab == 'info' || !editing">
     <div class="control-group" ng-class="{error: myForm.title.$invalid}">
         <label class="control-label">Title</label>
@@ -59,6 +64,23 @@
             <button type="button" class="btn" data-toggle="datepicker"><i class="icon-calendar"></i></button>
         </div>
     </div>
+
+    <div class="control-group " ng-class="{error: myForm.closereg.$invalid}">
+         <label class="control-label">Registrations limit</label>
+         <div class="controls">
+             <input type="checkbox" ng-checked='max_regs_active' ng-click='switchMaxRegs()'>
+             <input name="max_regs" ng-model="e.max_regs" ng-disabled='e.max_regs==null'>
+         </div>
+    </div>
+
+    <div class="control-group " ng-class="{error: myForm.place.$invalid}">
+         <label class="control-label">Host</label>
+         <div class="controls">
+             <select ng-model="e.host_gdg_id" ng-options="place.id as place.name for place in places"></select>
+             <img ng-src="{{logoForPlace(e.host_gdg_id)}}" style="height: 24px">
+         </div>
+    </div>
+
 </div>
 
     <script type="text/ng-template" id="confirmSend.html">
@@ -80,12 +102,40 @@
 
     </script>
 
+    <script type="text/ng-template" id="confirmDeleteApp.html">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4>Deleting application of {{p.name}} {{p.surname}}</h4>
+        </div>
+        <div class="modal-body">
+            Are you sure you want to delete application of <b>{{p.name}}</b>?
+
+            <div ng-show='accepted[p.id]' class='alert alert-error'>The application is already accepted!</div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="btn cancel" ng-click="dismiss()" ng-disabled='sending'>Cancel</button>
+            <button class="btn btn-primary" ng-click="deleteApp(p.id)" ng-disabled='sending'>
+                <i class="icon-spinner icon-spin" ng-show='deleting'></i> Delete<span ng-show='deleting'>ing...</span></button>
+        </div>
+
+    </script>
+
+
+
 <div class='' ng-show="editing && tab=='part'">
     <input type="text" ng-model="search" class="search-query" placeholder="Search">
     <div class="btn-group" bs-buttons-radio ng-model="eFilter">
-        <button type="button" class="btn" value="all">All</button>
-        <button type="button" class="btn" value="approved" ng-disabled="keys(accepted)==0">Approved ({{keys(accepted)}})</button>
-        <button type="button" class="btn" value="waiting" ng-disabled="e.participants.length - keys(accepted) == 0">Waiting for approval ({{e.participants.length - keys(accepted)}})</button>
+        <button type="button" class="btn" value="all"><i class="icon-asterisk"></i> All</button>
+        <button type="button" class="btn" value="approved" ng-disabled="keys(accepted)==0"><i class="icon-check"></i> Approved ({{keys(accepted)}})</button>
+        <button type="button" class="btn" value="waiting" ng-disabled="e.participants.length - keys(accepted) == 0"><i class="icon-check-empty"></i> Waiting for approval ({{e.participants.length - keys(accepted)}})</button>
+    </div>
+    <div class="btn-group" >
+        <button type="button" class="btn" ng-click="openReportParticipants()" ng-disabled='reporting'>
+            <img src="https://developers.google.com/drive/images/drive_icon.png" style="height:20px" ng-hide="reporting">
+            <i ng-show='reporting' class="icon-spinner icon-spin"></i>
+            Send<span ng-show='reporting'>ing</span> to Google Drive&trade;
+        </button>
     </div>
     <table class='table'>
         <thead>
@@ -108,7 +158,7 @@
             <td>{{p.surname}}</td>
             <td>{{p.email}}</td>
             <td>
-                <button class='btn btn-danger' disabled><i class="icon-trash"></i></button>
+                <button class='btn btn-danger' ng-controller='notificationDeleteAppCtrl' bs-modal="'confirmDeleteApp.html'"><i class="icon-trash"></i></button>
                 <button class='btn' ng-click='show(p.id)'><i class='icon-user'></i></button>
                 <button class='btn'  ng-click='showCard(p.id)'><i class="icon-credit-card"></i></button>
                 <button class='btn' ng-controller='notificationResendCtrl' bs-modal="'confirmSend.html'"><i class="icon-envelope"></i></button>
@@ -175,11 +225,11 @@
     </script>
     <div class="control-group">
         <div class="controls">
-            <a href="#/" class="btn">Cancel</a>
-            <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid"
-                    class="btn btn-primary">Save</button>
+            <a href="#/" class="btn"><i class="icon-reply"></i> Cancel</a>
+            <button ng-click="save()" ng-disabled="isClean() || myForm.$invalid || loading"
+                    class="btn btn-primary"><i class="icon-ok"></i> Save</button>
             <button bs-modal="'eventDelete.html'"
-                    ng-show="e.id" class="btn btn-danger">Delete</button>
+                    ng-show="e.id" class="btn btn-danger"><i class="icon-remove"></i> Delete</button>
         </div>
     </div>
 

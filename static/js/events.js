@@ -26,23 +26,39 @@ angular.module('gdgorgua')
             $location.path('/events/' + id);
         }
     })
-    .factory('EventsFielder', function() {
+    .factory('EventsFielder', function($http) {
         return function($scope) {
            $scope.addField = function() {
                if (!$scope.e.fields) $scope.e.fields = [];
                $scope.e.fields.push({});
-           }
+           };
            $scope.deleteField = function(field) {
               var i = $scope.e.fields.indexOf(field);
               if (i>=0) $scope.e.fields.splice(i,1);
+           };
+           $scope.places = $http.get('/api/places',{cache:true}).then(function(r) { return r.data;});
+           $scope.logoForPlace = function(placeId) {
+               var place;
+               for (var p in $scope.places) if ($scope.places[p] && $scope.places[p].id==placeId) place = $scope.places[p];
+               if (place) return place.logo;
            }
+           $scope.$watch('e.max_regs', function() {
+               if ($scope.e)
+                $scope.max_regs_active = $scope.e.max_regs != undefined;
+           });
+           $scope.switchMaxRegs = function() {
+               $scope.e.max_regs = $scope.e.max_regs==null?0:null;
+           };
+           $scope.$watch('myForm.$invalid', function() {
+               console.log("invalid?",$scope.myForm.$invalid);
+           })
         };
     })
-
 
     .controller('EventsCreateCtrl', function ($scope, $location, GEvent,EventsFielder) {
         EventsFielder($scope);
         $scope.editing = false;
+        $scope.enable = true;
         $scope.save = function () {
             GEvent.save($scope.e, function (e) {
                 $location.path('/edit/' + e.id);
@@ -57,6 +73,7 @@ angular.module('gdgorgua')
 
         $scope.editing = true;
         $scope.tab = 'info';
+        $scope.enable = false;
 
         $scope.keys = function(obj) {
             var r = 0;
@@ -71,6 +88,7 @@ angular.module('gdgorgua')
                 $scope.tab =  $window.sessionStorage.getItem('gdgeventsTab');
                 if (!$scope.tab) $scope.tab = 'info';
                 $scope.e = JSON.parse($window.sessionStorage.getItem('gdgevent'+$routeParams.eventId));
+                if ($scope.e && $scope.e.title) $scope.enable = true;
             } catch(err) {};
         }
         $scope.$watch('tab', function(tab) {
@@ -79,6 +97,7 @@ angular.module('gdgorgua')
         $scope.refresh = function() {
             $scope.loading = true;
             GEvent.get({id: $routeParams.eventId}, function (e) {
+                $scope.enable = true;
                 $scope.loading = false;
                 e.date = $filter('date')(e.date,'yyyy-MM-dd');
                 e.closereg = $filter('date')(e.closereg,'yyyy-MM-dd');
@@ -165,14 +184,27 @@ angular.module('gdgorgua')
         };
         $scope.show = function(id) {
             $location.path('/participants/'+id);
-        }
+        };
 
         $scope.showCard = function(id) {
             var reg;
-            $scope.e.registrations.forEach(function(r) { if (r.googler_id==id) reg = r;})
+            $scope.e.registrations.forEach(function(r) { if (r.googler_id==id) reg = r;});
             if (reg) {
                 $window.open("/card/"+reg.cardUrl);
             }
+        };
+        $scope.openReportParticipants = function() {
+            /*$window.open('events/participants.html');
+            $window.getEventData = function(cb) {
+                cb($scope.e);
+            } */
+            $scope.reporting = true;
+            $http.post('/api/events/'+$routeParams.eventId+'/report').then(function(r) {
+                $scope.reporting = false;
+                if (r.data.url)
+                    $window.open(r.data.url);
+                else alert('Strange response:'+ JSON.stringify(r.data));
+            });
         }
 
 
@@ -181,11 +213,27 @@ angular.module('gdgorgua')
         $scope.resend = function(id) {
             var reg;
             $scope.sending = true;
-            $scope.e.registrations.forEach(function(r) { if (r.googler_id==id) reg = r;})
+            $scope.e.registrations.forEach(function(r) { if (r.googler_id==id) reg = r;});
             if (reg) {
                 $http.post('/api/events/' + $routeParams.eventId+'/resend',{id:id})
                     .then(function(){
                         $scope.sending = false;
+                        $scope.dismiss();
+                    })
+            }
+        }
+    })
+    .controller('notificationDeleteAppCtrl',function($scope,$http,$routeParams){
+        $scope.deleteApp = function(id) {
+            var reg;
+            $scope.deleting = true;
+            $scope.e.registrations.forEach(function(r) { if (r.googler_id==id) reg = r;});
+            if (reg) {
+                $http.post('/api/events/' + $routeParams.eventId+'/delete',{id:id})
+                    .then(function(){
+                        $scope.deleting = false;
+                        $scope.e.registrations.splice($scope.e.registrations.indexOf(reg),1);
+                        $scope.refresh();
                         $scope.dismiss();
                     })
             }
@@ -201,3 +249,4 @@ angular.module('gdgorgua')
         );
         return GEvent;
     });
+

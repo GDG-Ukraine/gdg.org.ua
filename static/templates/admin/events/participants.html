@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Participants for Event</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
+    <script>
+angular.module('report',[]).controller('main',function($scope){
+    var findReg = function findReg(p) {
+        var r = $scope.e.registrations.filter(function(r) {return r.googler_id == p.id});
+        return r[0];
+    };
+    window.opener.getEventData(function(e) {
+        $scope.e = e;
+        //console.log(e);
+        $scope.participants = [];
+        e.participants.forEach(function(p) {
+            p.fullName = p.surname +' '+ p.name;
+            $scope.participants.push(p);
+            p.reg = findReg(p);
+        })
+    });
+    $scope.accepted = function(p) { return p.reg.accepted; };
+
+});
+    </script>
+    <style>
+table {
+            border-spacing:0;
+            border-collapse:collapse;
+}
+
+table td {
+    border:solid 1px black;
+    padding: 5px;
+}
+tr td:first-child {
+    color: #555;
+}
+@media print {
+    button { display: none }
+}
+    </style>
+</head>
+<body ng-app='report' ng-controller="main">
+     <h3>Participants at {{e.title}}</h3>
+     <table ng-init="sort='fullName'">
+         <tr>
+             <th>#</th>
+             <th>Reg# <button ng-click="sort='reg.id'">V</button></th>
+             <th>Name <button ng-click="sort='fullName'">V</button></th>
+             <th>Phone</th>
+             <th>Shirt</th>
+         </tr>
+         <tr ng-repeat="p in participants |filter:accepted|orderBy:sort ">
+             <td>{{$index+1}}</td>
+             <td>{{p.reg.id}}</td>
+             <td>{{p.fullName}}</td>
+             <td>{{p.phone}}</td>
+             <td>{{p.t_shirt_size}}</td>
+         </tr>
+     </table>
+</body>
+</html>

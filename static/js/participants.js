@@ -54,7 +54,7 @@ angular.module('gdgorgua')
 
   $scope.save = function() {
     $scope.p.$update(function() {
-      $location.path('/participants/');
+      $location.path('/participants/'+ $scope.p.id);
     });
   };
   $scope.back = function() {

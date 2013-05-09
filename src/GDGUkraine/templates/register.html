@@ -20,6 +20,11 @@
 
     <div class="wrapper" ng-app="gdgorgua">
         <div id="main" role="main" ng-controller="contactForm">
+            {% if event.max_regs - event.participants | count < 5 %}
+            <span style="background: red; color: white; text-align: center; font-weight: bolder; width: 575px; display: block; border-radius: 8px; padding: 10px; margin: 10px;">
+                Attention! The event registration is closing soon!
+            </span>
+            {% endif %}
             <form id="contact-form" name="contactForm">
                 {% if event.host_gdg_id and event.host_gdg %}<a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>{% else %}<img id="logo" src="/img/logo.png" alt="logo">{% endif %}
                 <h1>Register to {{ event.title }}</h1>

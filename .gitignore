@@ -39,6 +39,7 @@ nosetests.xml
 src/GDGUkraine/__pycache__/
 env/
 log/*.log
+log/*.log.*
 config
 config/
 config/dev/app.yml

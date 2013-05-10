@@ -94,7 +94,7 @@ class User(Base):
     gplus = Column(String(128), default=None, unique=True, index=True)
     hometown = Column(String(30), default=None, index=True)
     company = Column(String(64), default=None, index=True)
-    position = Column(String(25), default=None, index=True)
+    position = Column(String(64), default=None, index=True)
     www = Column(String(100), default=None, unique=True)
         
     experience_level = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)

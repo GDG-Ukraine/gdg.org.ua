@@ -37,9 +37,7 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
     def process_result_value(self, value, dialect):
-        if value is not None:
-            value = json.loads(value)
-        return value
+        return json.loads(value) if value is not None else []
 
 __all__ = ['User', 'Event', 'EventParticipant', 'Place']
 

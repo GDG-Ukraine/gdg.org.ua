@@ -102,7 +102,7 @@ class Events:
         event = find_event_by_id(orm_session, id)
         events_list = None
         if event:
-            if (event.max_regs is None or event.max_regs > len(event.participants)) and event.date > date.today() and event.closereg > date.today():
+            if (event.max_regs is None or event.max_regs > len(event.participants)) and event.date > date.today() and (event.closereg is None or event.closereg > date.today()):
                 tmpl = get_template("register.html")
             else:
                 tmpl = get_template("regclosed.html")

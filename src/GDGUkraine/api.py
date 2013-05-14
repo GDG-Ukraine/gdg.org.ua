@@ -1,6 +1,6 @@
 import logging
 
-from GDGUkraine.model import User, Event, EventParticipant, Place
+from GDGUkraine.model import User, Event, EventParticipant, Place, Invite
 from datetime import date, datetime
 
 
@@ -60,4 +60,9 @@ def find_events_by_user(session, u):
 
 def get_event_registration(session, uid, eid):
     q = session.query(EventParticipant).filter(uid == EventParticipant.googler_id and eid == EventParticipant.event_id)
+    return q.first()
+
+def find_invitation_by_code(session, code):
+    q = session.query(Invite)\
+        .filter(Invite.code == code)
     return q.first()

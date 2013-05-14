@@ -39,7 +39,7 @@ class JSONEncodedDict(TypeDecorator):
     def process_result_value(self, value, dialect):
         return json.loads(value) if value is not None else []
 
-__all__ = ['User', 'Event', 'EventParticipant', 'Place']
+__all__ = ['User', 'Event', 'EventParticipant', 'Place', 'Invite']
 
 
 class EventParticipant(Base):
@@ -137,6 +137,24 @@ class Event(Base):
 
     participants = relationship("EventParticipant", backref="event")
     host_gdg = relationship("Place", backref="events")
+
+
+class Invite(Base):
+    """
+    Class represents an event registration invitation code. 
+    """
+
+    __tablename__ = 'gdg_invites'
+
+
+    def __init__(self, **kwargs):
+        super(Invite, self).__init__(**kwargs)
+
+    code = Column(String(32), autoincrement=True, primary_key=True)
+    email = Column(String(64), nullable=True, default=None)
+    event_id = Column(Integer, ForeignKey('gdg_events.id'), nullable=False)
+
+    event = relationship("Event", backref="invites")
 
 
 class Place(Base):

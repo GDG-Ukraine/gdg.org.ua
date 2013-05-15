@@ -106,7 +106,7 @@ class Events:
             if kwargs.get('code'):
                 from .api import find_invitation_by_code, find_user_by_email
                 i = find_invitation_by_code(orm_session, kwargs['code'])
-                if i is None or i.event != event:
+                if i is None or i.used or i.event != event:
                     raise HTTPError(404)
                 if i.email is not None:
                     u = find_user_by_email(orm_session, i.email)

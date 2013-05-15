@@ -153,6 +153,7 @@ class Invite(Base):
     code = Column(String(32), autoincrement=True, primary_key=True)
     email = Column(String(64), nullable=True, default=None)
     event_id = Column(Integer, ForeignKey('gdg_events.id'), nullable=False)
+    used = Column(Boolean, nullable=False, default=False)
 
     event = relationship("Event", backref="invites")
 

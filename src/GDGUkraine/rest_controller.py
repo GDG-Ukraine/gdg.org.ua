@@ -60,10 +60,8 @@ class Participants(REST_API_Base):
             eid = int(req.json['event'])
             logger.debug(type(req.json.get('fields')))
             logger.debug(req.json.get('fields'))
-            ep = EventParticipant(event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
             eep = api.get_event_registration(orm_session, user.id, eid)
-            if eep:
-                ep.id = eep.id
+            ep = EventParticipant(id = eep.id if eep else None, event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
             logger.debug(ep.fields)
             orm_session.merge(ep)
             orm_session.commit()

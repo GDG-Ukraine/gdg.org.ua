@@ -44,17 +44,17 @@
                                 user.surname = r.name.familyName;
                                 user.email = '';
                                 user.gplus = r.id;
-                                if (r.placesLived.length > 0) {
+                                if (typeof r.placesLived !== 'undefined' && r.placesLived.length > 0) {
                                     user.hometown = r.placesLived[0].value;
                                 }
                                 user.nickname = r.nickname;
                                 user.phone = '';
-                                if (r.url) {
-                                    user.www = r.url;
-                                } else if (r.urls.length > 0) {
+                                if (typeof r.urls !== 'undefined' && r.urls.length > 0) {
                                     user.www = r.urls[0].value;
-                                }
-                                if (r.organizations.length > 0) {
+                                } else if (typeof r.url !== 'undefined') {
+                                    user.www = r.url;
+                                } 
+                                if (typeof r.organizations !== 'undefined' && r.organizations.length > 0) {
                                     for (var c in r.organizations) {
                                         c = r.organizations[c];
                                         if (c.type === 'work') {
@@ -68,17 +68,22 @@
                                 }
                                 user.events_visited = '';
                                 user.interests = '';
-                                var do_reload = false; console.log(window.localStorage.user);
+                                var do_reload = false; //console.log(window.localStorage.user);
                                 var ls_user = window.localStorage.user;
                                 if (typeof ls_user !== 'undefined') {
                                     ls_user = JSON.parse(ls_user);
-                                    if (ls_user.gplus == user.gplus) {
+                                    if (typeof ls_user.gplus !== 'undefined'
+                                            && ls_user.gplus === user.gplus) {
                                         var tmp = user;
                                         angular.extend(user, ls_user);
                                         ls_user = user;
                                         user = tmp;
                                     } else {
-                                        ls_user = user;
+                                        if (typeof ls_user.gplus
+                                                ==='undefined') {
+                                            ls_user = {};
+                                        }
+                                        angular.extend(ls_user, user);
                                         do_reload = true;
                                     }
                                 } else {

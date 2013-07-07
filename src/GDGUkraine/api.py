@@ -59,7 +59,9 @@ def find_events_by_user(session, u):
     return session.query(Event).join(EventParticipant.events).join(EventParticipant.users).filter(u.id == EventParticipant.googler_id).all()
 
 def get_event_registration(session, uid, eid):
-    q = session.query(EventParticipant).filter(uid == EventParticipant.googler_id and eid == EventParticipant.event_id)
+    q = session.query(EventParticipant)
+        .filter(uid == EventParticipant.googler_id)
+        .filter(eid == EventParticipant.event_id)
     return q.first()
 
 def find_invitation_by_code(session, code):

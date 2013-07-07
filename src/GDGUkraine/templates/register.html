@@ -13,7 +13,111 @@
     <link href="/css/style.css" rel="stylesheet">
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
     <script src="/js/contact_form.js"></script>
+    <script src="https://apis.google.com/js/plusone.js"></script>
+    <!-- Place this asynchronous JavaScript just before your </body> tag -->
+    <script type="text/javascript">
+        (function() {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/client:plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
+        function signinCallback(authResult) {
+            if (authResult['access_token']) {
+                // Successfully authorized
+                // Hide the sign-in button now that the user is authorized, for example:
+                document.getElementById('signinButton').setAttribute('style', 'display: none');
+                console.log(authResult);
+                gapi.client.request({
+                    path: '/oauth2/v2/userinfo',
+                    callback: function(r) {
+                        gapi.client.request({
+                            path: '/plus/v1/people/' + r.id,
+                            callback: function(r) {
+                                console.log(r);
+                                window.localStorage.gplus_api_user = JSON.stringify(r);
+                                var user = {};
+                                user.gender = r.gender;
+                                user.t_shirt_size = 'm';
+                                user.english_knowledge = 'intermediate';
+                                user.experience_level = 'intermediate';
+                                user.name = r.name.givenName;
+                                user.surname = r.name.familyName;
+                                user.email = '';
+                                user.gplus = r.id;
+                                if (r.placesLived.length > 0) {
+                                    user.hometown = r.placesLived[0].value;
+                                }
+                                user.nickname = r.nickname;
+                                user.phone = '';
+                                if (r.url) {
+                                    user.www = r.url;
+                                } else if (r.urls.length > 0) {
+                                    user.www = r.urls[0].value;
+                                }
+                                if (r.organizations.length > 0) {
+                                    for (var c in r.organizations) {
+                                        c = r.organizations[c];
+                                        if (c.type === 'work') {
+                                            user.company = c.name;
+                                            user.position = c.title;
+                                            if (c.primary) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                user.events_visited = '';
+                                user.interests = '';
+                                var do_reload = false; console.log(window.localStorage.user);
+                                var ls_user = window.localStorage.user;
+                                if (typeof ls_user !== 'undefined') {
+                                    ls_user = JSON.parse(ls_user);
+                                    if (ls_user.gplus == user.gplus) {
+                                        var tmp = user;
+                                        angular.extend(user, ls_user);
+                                        ls_user = user;
+                                        user = tmp;
+                                    } else {
+                                        ls_user = user;
+                                        do_reload = true;
+                                    }
+                                } else {
+                                    ls_user = user;
+                                    do_reload = true;
+                                }
+                                console.log('user and ls_user:');
+                                console.log(user, ls_user);
+                                //$route.reload();
+                                window.localStorage.user = JSON.stringify(ls_user);
+                                angular.module('gdgorgua')
+                                        .value('GoogleUser', ls_user);
 
+                                if (do_reload) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    }
+                });
+                /*
+                gapi.client.plus.people.get({userId: 'me'}).execute(
+                    function(r) {
+                        console.log(r);
+                        angular.module('gdgorgua')
+                                .value('GoogleUser', r);
+                        $route.reload();
+                    }
+                );
+                */
+            } else if (authResult['error']) {
+                // There was an error.
+                // Possible error codes:
+                //   "access_denied" - User denied access to your app
+                //   "immediate_failed" - Could not automatically log in the user
+                // console.log('There was an error: ' + authResult['error']);
+            }
+        }
+    </script>
 </head>    
 
 <body>
@@ -34,6 +138,20 @@
                 <h3>Please fill this form if you want to participate at this event
                     <span> (in English only)</span>
                 </h3>
+                <!--  G+ Sing-In test -->
+                <div id="gplussignin" style="text-align: center;">
+                    <span id="signinButton">
+                        <span
+                            class="g-signin"
+                            data-callback="signinCallback"
+                            data-clientid="1012272991665.apps.googleusercontent.com"
+                            data-cookiepolicy="single_host_origin"
+                            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                            data-scope="https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me">
+                        </span>
+                    </span>
+                </div>
+                <!-- /G+ Sing-In test -->
                 <!--div>
                     <div ng-hide="fromGoogle">
                         If you have Google account, please <a href="/auth">

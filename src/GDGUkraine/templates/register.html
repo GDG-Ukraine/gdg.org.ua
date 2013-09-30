@@ -308,12 +308,26 @@
                    </label>
                 </div>
                 {% for f in event.fields %}
+                    {% if f.type == 'select' %}
+                <div ng-init="options = {{ f.options }}">
+                    <label>
+                        <span>{{ f.title }}</span>
+                    </label>
+                    <selectable custom="{{ f.allow_custom }}" source="options" model="fields.{{ f.name }}" multiple="{{ f.multiple }}"></selectable>
+                </div>
+                    {% else %}
                 <div>
                     <label>
                         <span>{{ f.title }}</span>
-                        <input type="text" ng-model="fields.{{ f.name }}">
+                        <input type="{{ f.type }}" ng-model="fields.{{ f.name }}">
                     </label>
                 </div>
+                    {% endif%}
+                    {# 
+                    <div>
+                        Res: <pre>{{ '{{' }} fields.{{ f.name }} {{ '}}' }}</pre>
+                    </div>
+                    #}
                 {% endfor %}
             <div ng-show="showOk" class="alert alert-success">
                 Your application was saved. See you on event!

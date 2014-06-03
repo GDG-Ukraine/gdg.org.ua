@@ -205,7 +205,7 @@
                 <div>
                     <label>
                         <span>Email*</span>
-                        <input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email"{% if invite is not none %} ng-disabled="'true'" value="{{ invite.email }}"{% else %} ng-disabled="fromGoogle"{% endif %}>
+                        <input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email"{% if invite is not none and invite.email is not none and invite.email != '' %} ng-disabled="'true'" value="{{ invite.email }}"{% else %} ng-disabled="fromGoogle"{% endif %}>
                     </label>
                 </div>
                 {% endif %}

@@ -71,9 +71,9 @@ class Participants(REST_API_Base):
             logger.debug(ep.fields)
             orm_session.merge(ep)
             if i is not None:
+                i.email = user.email
                 i.used = True
-                #orm_session.update(i)
-                #orm_session.merge(i)
+                orm_session.merge(i)
             orm_session.commit()
             logger.debug(ep.fields)
             logger.debug(type(ep.fields))

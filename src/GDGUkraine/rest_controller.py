@@ -58,12 +58,22 @@ class Participants(REST_API_Base):
         orm_session.commit()
         if req.json.get('event'):
             eid = int(req.json['event'])
+            # check if the invitation is valid
+            i = None
+            if req.json.get('invite_code'):
+                i = api.find_invitation_by_code(orm_session, req.json['invite_code'])
+                if i is None or i.used or (i.event is not None and i.event != req.json['event']) or (i.email is not None and i.email != user.email):
+                    raise HTTPError(403, "Invalid invite code.")
             logger.debug(type(req.json.get('fields')))
             logger.debug(req.json.get('fields'))
             eep = api.get_event_registration(orm_session, user.id, eid)
             ep = EventParticipant(id = eep.id if eep else None, event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
             logger.debug(ep.fields)
             orm_session.merge(ep)
+            if i is not None:
+                i.used = True
+                #orm_session.update(i)
+                #orm_session.merge(i)
             orm_session.commit()
             logger.debug(ep.fields)
             logger.debug(type(ep.fields))

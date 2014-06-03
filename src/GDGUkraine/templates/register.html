@@ -141,7 +141,7 @@
                     <div ng-show="fromGoogle">
                         <img align="right" width="64px" ng-src="{{ '{{picture}}' }}">
                     </div>
-                <h3>Please fill this form if you want to participate at this event
+                <h3>Please fill this form if you want to participate the event
                     <span> (in English only)</span>
                 </h3>
                 <!--  G+ Sing-In test -->
@@ -177,66 +177,87 @@
                     </label>
                 </div>
                 {% endif %}
+                {% if 'name' not in event.hidden %}
                 <div>
                     <label>
                         <span>Name*</span>
                         <input placeholder="e.g. Sergey" type="text" tabindex="1" pattern="[A-Za-z]{2,16}" required autofocus ng-model="user.name" ng-disabled="fromGoogle">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'surname' not in event.hidden %}
                 <div>
                     <label>
                         <span>Surname*</span>
                         <input placeholder="e.g. Brin" type="text" tabindex="2" pattern="[A-Za-z]{2,16}" required ng-model="user.surname" ng-disabled="fromGoogle">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'nickname' not in event.hidden %}
                 <div>
                     <label>
                         <span>Nickname</span>
                         <input placeholder="e.g. SuperBrin" type="text" tabindex="3" ng-model="user.nickname">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'email' not in event.hidden %}
                 <div>
                     <label>
                         <span>Email*</span>
-                        <input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email" ng-disabled="fromGoogle">
+                        <input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email"{% if invite is not none %} ng-disabled="'true'" value="{{ invite.email }}"{% else %} ng-disabled="fromGoogle"{% endif %}>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'phone' not in event.hidden %}
                 <div>
                     <label>
                         <span>Telephone</span>
                         <input placeholder="0930000042" type="tel" tabindex="5" ng-model="user.phone">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'gplus' not in event.hidden %}
                 <div>
                     <label>
                         <span>Google+ *</span>
                         <input placeholder="e.g. 1000000000042" type="text" tabindex="6" ng-model="user.gplus" ng-disabled="fromGoogle" required>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'www' not in event.hidden %}
                 <div>
                     <label>
                         <span>Website</span>
                         <input placeholder="Start with http://" type="url" tabindex="7" ng-model="user.www">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'hometown' not in event.hidden %}
                 <div>
                     <label>
                         <span>City*</span>
                         <input placeholder="e.g. Mountain View" type="text" tabindex="8" required ng-model="user.hometown">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'company' not in event.hidden %}
                 <div>
                     <label>
                         <span>Company</span>
                         <input placeholder="e.g. Google" type="text" tabindex="9" ng-model="user.company">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'position' not in event.hidden %}
                 <div>
                     <label>
                         <span>Position</span>
                         <input placeholder="e.g. Cofounder" type="text" tabindex="10" ng-model="user.position">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'experience_level' not in event.hidden %}
                 <div>
                     <label>
                         <span>Experience level</span>
@@ -249,24 +270,32 @@
                         </select>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'experience_desc' not in event.hidden %}
                 <div>
                     <label>
                         <span>Experience description</span>
                         <textarea placeholder="e.g. Software developer particularly interested in Java technologies and Google applications. Worked in various countries: Ukraine, USA, Poland. Have great ability to work remotely, high mobility, sense of humor." tabindex="12" ng-model="user.experience_desc"></textarea>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'interests' not in event.hidden %}
                 <div>
                     <label>
                         <span>Interests</span>
                         <textarea placeholder="e.g. Google, Android, Chrome" tabindex="13" ng-model="user.interests"></textarea>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'events_visited' not in event.hidden %}
                 <div>
                     <label>
                         <span>Events visited</span>
                         <input placeholder="e.g. IO Extended 2012, GDG DevFest, MapMaker" type="text" tabindex="14" ng-model="user.events_visited">
                     </label>
                 </div>
+                {% endif %}
+                {% if 'english_knowledge' not in event.hidden %}
                 <div>
                     <label>
                         <span>English knowledge</span>
@@ -279,6 +308,8 @@
                         </select>
                     </label>
                 </div>
+                {% endif %}
+                {% if 't_shirt_size' not in event.hidden %}
                 <div>
                     <label>
                         <span>T-Shirt size</span>
@@ -292,6 +323,8 @@
                         </select>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'gender' not in event.hidden %}
                 <div>
                     <label>
                         <span>Gender</span>
@@ -301,12 +334,15 @@
                         <label for="female">Female</label>
                     </label>
                 </div>
+                {% endif %}
+                {% if 'additional_info' not in event.hidden %}
                 <div>
                    <label>
                        <span>Comments</span>
                        <textarea placeholder="Some comments" tabindex="18" ng-model="user.additional_info"></textarea>
                    </label>
                 </div>
+                {% endif %}
                 {% for f in event.fields %}
                     {% if f.type == 'select' %}
                 <div ng-init="options = {{ f.options }}">
@@ -322,24 +358,22 @@
                         <input type="{{ f.type }}" ng-model="fields.{{ f.name }}">
                     </label>
                 </div>
-                    {% endif%}
-                    {# 
-                    <div>
-                        Res: <pre>{{ '{{' }} fields.{{ f.name }} {{ '}}' }}</pre>
-                    </div>
-                    #}
+                    {% endif %}
                 {% endfor %}
-            <div ng-show="showOk" class="alert alert-success">
-                Your application was saved. See you on event!
-            </div>
-            <div ng-show="showError" class="alert alert-error">
-                There is an error while saving your application. Please check details of your application.
-            </div>
+                <div ng-show="showOk" class="alert alert-success">
+                    Your application was saved. See you on event!
+                </div>
+                <div ng-show="showError" class="alert alert-error">
+                    There is an error while saving your application. Please check details of your application.
+                </div>
 
                 <div>
                     <button name="submit" type="submit" id="contact-submit" class="action red" tabindex="19"  ng-class="{disabled: !contactForm.$valid}" ng-click="submit()"><span class="label red">Submit</span></button>
                 </div>
                 <p>*denotes a required field</p>
+                {% if invite is not none %}
+                <input type="hidden" ng-model="user.invite_code" value="{{ invite.code }}">
+                {% endif %}
             </form>
         </div>
     </div>

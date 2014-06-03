@@ -102,6 +102,7 @@ class Events:
         event = find_event_by_id(orm_session, id)
         events_list = None
         u = None
+        i = None
         if event:
             if kwargs.get('code'):
                 from .api import find_invitation_by_code, find_user_by_email
@@ -115,7 +116,7 @@ class Events:
             else:
                 tmpl = get_template("regclosed.html")
                 events_list = get_all_events(orm_session, 5, hide_closed = True)
-            return tmpl.render(event=event, events=events_list, user=u)
+            return tmpl.render(event=event, events=events_list, user=u, invite=i)
         #return tmpl.render(event=event, user=cherrypy.session.get('user'))
         raise HTTPError(404)
 

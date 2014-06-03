@@ -108,7 +108,7 @@ class Events:
                 from .api import find_invitation_by_code, find_user_by_email
                 i = find_invitation_by_code(orm_session, kwargs['code'])
                 if i is None or i.used or i.event != event:
-                    raise HTTPError(404)
+                    raise HTTPError(403, "Invalid invite code.")
                 if i.email is not None:
                     u = find_user_by_email(orm_session, i.email)
             if kwargs.get('code') or (event.max_regs is None or event.max_regs > len(event.participants)) and event.date > date.today() and (event.closereg is None or event.closereg > date.today()):

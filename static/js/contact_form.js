@@ -59,6 +59,10 @@ angular.module('gdgorgua',[])
        }
     } 
 
-    $http.post('api/participants', {user: $scope.user, event: event, fields: $scope.fields}).then(savedCb, savedCb);
-  }
+    var formData = {user: $scope.user, event: parseInt(event), fields: $scope.fields};
+    if ($scope.invite_code) {
+      formData.invite_code = $scope.invite_code;
+    }
+    $http.post('api/participants', formData).then(savedCb, savedCb);
+
 });

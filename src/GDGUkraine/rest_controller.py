@@ -61,7 +61,7 @@ class Participants(REST_API_Base):
             i = None
             if req.json.get('invite_code'):
                 i = api.find_invitation_by_code(orm_session, req.json['invite_code'])
-                if i is None or i.used or (i.event is not None and i.event != req.json['event']) or (i.email is not None and i.email != user.email):
+                if i is None or i.used or (i.event is not None and i.event != api.find_event_by_id(orm_session, req.json['event'])) or (i.email is not None and i.email != user.email):
                     raise HTTPError(403, "Invalid invite code.")
             logger.debug(type(req.json.get('fields')))
             logger.debug(req.json.get('fields'))

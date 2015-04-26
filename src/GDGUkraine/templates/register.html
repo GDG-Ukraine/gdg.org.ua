@@ -372,7 +372,7 @@
                 </div>
                 <p>*denotes a required field</p>
                 {% if invite is not none %}
-                <input type="hidden" ng-model="user.invite_code" value="{{ invite.code }}">
+                <input type="hidden" ng-model="invite_code" ng-init="invite_code = '{{ invite.code }}'" value="{{ invite.code }}">
                 {% endif %}
             </form>
         </div>

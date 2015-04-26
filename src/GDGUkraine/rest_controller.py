@@ -41,7 +41,6 @@ class Participants(REST_API_Base):
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
-        #return 'creating someone'
         req = cherrypy.request
         orm_session = req.orm_session
         u = req.json['user']
@@ -49,12 +48,12 @@ class Participants(REST_API_Base):
         logger.debug(u)
         #user = from_collection(u, User())
         user = User(**u)
-        logger.debug(user.email)
         eu = api.find_user_by_email(orm_session, user.email)
         if eu:
             user.id = eu.id
-        #logger.debug([u for u in dir(user)])
-        orm_session.merge(user)
+            orm_session.merge(user)
+        else:
+            orm_session.add(user)
         orm_session.commit()
         if req.json.get('event'):
             eid = int(req.json['event'])
@@ -69,7 +68,10 @@ class Participants(REST_API_Base):
             eep = api.get_event_registration(orm_session, user.id, eid)
             ep = EventParticipant(id = eep.id if eep else None, event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
             logger.debug(ep.fields)
-            orm_session.merge(ep)
+            if eep:
+                orm_session.merge(ep)
+            else:
+                orm_session.add(ep)
             if i is not None:
                 i.email = user.email
                 i.used = True

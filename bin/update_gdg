@@ -8,6 +8,7 @@ cd "${APP_PATH}"
 . "${APP_PATH}/env/bin/activate"
 
 git pull --rebase origin master
+pip install -r "${APP_PATH}/requirements.txt"
 pip install -e .
 
 sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml

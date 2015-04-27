@@ -1,6 +1,6 @@
-angular.module('gdgorgua',[])
+angular.module('gdgorgua', [])
 .controller('contactForm', function($scope,$http, $window, $location,GoogleUser, GoogleEvent) {
-  $scope.user = { gender:'male',t_shirt_size:'m','english_knowledge':'elementary','experience_level':'newbie' }
+  $scope.user = { gender:'male', t_shirt_size:'m', 'english_knowledge':'elementary', 'experience_level':'newbie' };
 
         if ($window.localStorage) {
             var user = $window.localStorage.getItem('user');
@@ -64,5 +64,5 @@ angular.module('gdgorgua',[])
       formData.invite_code = $scope.invite_code;
     }
     $http.post('api/participants', formData).then(savedCb, savedCb);
-
+  }
 });

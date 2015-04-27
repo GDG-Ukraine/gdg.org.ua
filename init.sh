@@ -14,6 +14,7 @@ APP_PATH=/home/gtug2/gdg.org.ua
 PID_PATH=/var/tmp/run
 PID=$PID_PATH/gdg.org.ua.development.pid
 IF=0.0.0.0
+IF=127.0.0.1
 PORT=11010
 cd $APP_PATH
 mkdir -p $PID_PATH

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "~/.exports"
+. ~/.exports
 
 APP_PATH=${APP_PATH:-/home/gtug2/gdg.org.ua}
 PORT=${PORT:-10110}
@@ -15,5 +15,5 @@ pip install -e .
 
 sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml
 
-"${APP_PATH}/init.sh restart" || "${APP_PATH}/init.sh start"
-"${APP_PATH}/init_production.sh restart" || "${APP_PATH}/init_production.sh start"
+"${APP_PATH}/init.sh" restart || "${APP_PATH}/init.sh" start
+"${APP_PATH}/init_production.sh" restart || "${APP_PATH}/init_production.sh" start

@@ -1,0 +1,16 @@
+#!/bin/bash
+
+APP_PATH=${APP_PATH:-/home/gtug2/gdg.org.ua}
+PORT=${PORT:-10110}
+DB_URI=${DATABASE_URL:-mysql+mysqlconnector://gdg_kyiv:gdg_kyiv@/gdg_kyiv?unix_socket=/var/run/mysqld/mysqld.sock}
+
+cd "${APP_PATH}"
+. "${APP_PATH}/env/bin/activate"
+
+git pull --rebase origin master
+pip install -e .
+
+sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml
+
+"${APP_PATH}/init.sh restart" || "${APP_PATH}/init.sh start"
+"${APP_PATH}/init_production.sh restart" || "${APP_PATH}/init_production.sh start"

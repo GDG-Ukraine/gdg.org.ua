@@ -14,7 +14,6 @@ controllers:
       tools.proxy.on: true
       tools.orm_session.on: true
       tools.sessions.on: true
-      #tools.sessions.storage_type: memcached
       tools.staticdir.root: /home/gtug2/gdg.org.ua/static
       tools.staticfile.root: /home/gtug2/gdg.org.ua/static
     /css:

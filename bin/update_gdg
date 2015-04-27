@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. "~/.exports"
+
 APP_PATH=${APP_PATH:-/home/gtug2/gdg.org.ua}
 PORT=${PORT:-10110}
 DB_URI=${DATABASE_URL:-mysql+mysqlconnector://gdg_kyiv:gdg_kyiv@/gdg_kyiv?unix_socket=/var/run/mysqld/mysqld.sock}

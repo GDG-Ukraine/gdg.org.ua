@@ -5,7 +5,7 @@ loggers:
     level: WARNING
     handlers: [trfile]
   GDGUkraine:
-    level: WARNING
+    level: DEBUG
     handlers: [trfile]
     propagate: false
 handlers:

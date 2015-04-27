@@ -12,7 +12,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 APP_PATH=/home/gtug2/gdg.org.ua
 PID_PATH=/var/tmp/run
-PID=$PID_PATH/gdg.org.ua.pid
+PID=$PID_PATH/gdg.org.ua.development.pid
 IF=0.0.0.0
 PORT=11010
 cd $APP_PATH

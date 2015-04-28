@@ -9,6 +9,7 @@ DB_URI=${DATABASE_URL:-mysql+mysqlconnector://gdg_kyiv:gdg_kyiv@/gdg_kyiv?unix_s
 cd "${APP_PATH}"
 . "${APP_PATH}/env/bin/activate"
 
+git checkout -f */app.yml
 git pull --rebase origin master
 pip install -r "${APP_PATH}/requirements.txt"
 pip install -e .

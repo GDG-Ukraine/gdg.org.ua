@@ -9,17 +9,17 @@ DB_URI=${DATABASE_URL:-mysql+mysqlconnector://gdg_kyiv:gdg_kyiv@/gdg_kyiv?unix_s
 cd "${APP_PATH}"
 . "${APP_PATH}/env/bin/activate"
 
-git checkout -f */app.yml
-git checkout -f */alembic.ini
+git checkout -f config/{prod,dev}/app.yml
+git checkout -f config/dev/alembic.ini
 git pull --rebase origin master
 
-sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml
-sed -i "s#^\(sqlalchemy\.url =\) \(.*\)#\1 $DB_URI#g" config/dev/alembic.ini
+sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/{prod,dev}/app.yml"
+sed -i "s#^\(sqlalchemy\.url =\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/dev/alembic.ini"
 
 pip install -r "${APP_PATH}/requirements.txt"
 pip install -e .
 
-alembic -c "${APP_PATH}/config/alembic.ini" upgrade head
+alembic -c "${APP_PATH}/config/dev/alembic.ini" upgrade head
 
 "${APP_PATH}/init.sh" restart || "${APP_PATH}/init.sh" start
 "${APP_PATH}/init_production.sh" restart || "${APP_PATH}/init_production.sh" start

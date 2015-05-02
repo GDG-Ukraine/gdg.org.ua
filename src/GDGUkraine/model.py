@@ -101,7 +101,7 @@ class User(Base):
     
     events_visited = Column(UnicodeText) # TODO: make normal previous/upcoming events DB\nnow it is JSON field.
     english_knowledge = Column(Enum('elementary', 'intermediate', 'upper intermediate', 'advanced', 'native', name="english_knowledge"), default=None)
-    t_shirt_size = Column(Enum('S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"), default=None)
+    t_shirt_size = Column(Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"), default=None)
     gender = Column(Enum('male', 'female', name="gender"), nullable=False)
     
     additional_info = deferred(Column(UnicodeText))

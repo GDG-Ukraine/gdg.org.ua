@@ -10,11 +10,16 @@ cd "${APP_PATH}"
 . "${APP_PATH}/env/bin/activate"
 
 git checkout -f */app.yml
+git checkout -f */alembic.ini
 git pull --rebase origin master
+
+sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml
+sed -i "s#^\(sqlalchemy\.url =\) \(.*\)#\1 $DB_URI#g" config/dev/alembic.ini
+
 pip install -r "${APP_PATH}/requirements.txt"
 pip install -e .
 
-sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" config/{prod,dev}/app.yml
+alembic -c "${APP_PATH}/config/alembic.ini" upgrade head
 
 "${APP_PATH}/init.sh" restart || "${APP_PATH}/init.sh" start
 "${APP_PATH}/init_production.sh" restart || "${APP_PATH}/init_production.sh" start

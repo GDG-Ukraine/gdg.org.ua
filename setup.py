@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-install_requires = ['SQLAlchemy', 'yuicompressor', 'webassets', 'Routes', 'mysql-connector-python', 'python-social-auth']
+install_requires = ['SQLAlchemy', 'yuicompressor', 'webassets', 'Routes', 'mysql-connector-python', 'python-social-auth', 'alembic']
 
 setup(name='GDGUkraine',
       version='1.0',

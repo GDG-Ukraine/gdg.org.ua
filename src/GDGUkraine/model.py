@@ -7,6 +7,9 @@ from hashlib import sha256
 from sqlalchemy import Column, Integer, UnicodeText, Date, DateTime, String, \
     BigInteger, Enum, SmallInteger, func, text, \
     Boolean, ForeignKey
+
+from sqlalchemy.dialects.mysql import BIGINT as BigInteger, TINYINT as TinyInt, INTEGER as Integer
+
 from sqlalchemy.orm import deferred, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -42,9 +45,27 @@ class JSONEncodedDict(TypeDecorator):
 __all__ = ['User', 'Event', 'EventParticipant', 'Place', 'Invite']
 
 
+class Admin(Base):
+    """
+    This is an admin representation
+    """
+
+    __tablename__ = 'gdg_admins'
+
+
+    def __init__(self, **kwargs):
+        super(Admin, self).__init__(**kwargs)
+
+    id = Column(Integer, autoincrement=True, primary_key=True)
+    email = Column(String(128), unique=True, nullable=False, index=True)
+    filter_place = Column(Integer, ForeignKey('gdg_places.id'), nullable=True, index=True)
+    googler_id = Column(Integer, ForeignKey('gdg_participants.id'), nullable=True, index=True)
+    godmode = Column(Boolean, default = 0, nullable=False)
+
+
 class EventParticipant(Base):
     """
-    Class represents a G+ event participant. 
+    Class represents a G+ event participant.
     """
 
     __tablename__ = 'gdg_events_participation'
@@ -87,23 +108,23 @@ class User(Base):
     surname = Column(String(35), nullable=False)
     nickname = Column(String(45), unique=True, index=True) # Should we accept handles without Full Name?
     email = Column(String(64), unique=True, nullable=False, index=True)
-    
+
     phone = Column(String(20), default=None, unique=True, index=True)
     gplus = Column(String(128), default=None, unique=True, index=True)
     hometown = Column(String(30), default=None, index=True)
     company = Column(String(64), default=None, index=True)
     position = Column(String(64), default=None, index=True)
     www = Column(String(100), default=None, unique=True)
-        
+
     experience_level = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)
     experience_desc = Column(UnicodeText)
     interests = Column(UnicodeText)
-    
+
     events_visited = Column(UnicodeText) # TODO: make normal previous/upcoming events DB\nnow it is JSON field.
     english_knowledge = Column(Enum('elementary', 'intermediate', 'upper intermediate', 'advanced', 'native', name="english_knowledge"), default=None)
     t_shirt_size = Column(Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"), default=None)
     gender = Column(Enum('male', 'female', name="gender"), nullable=False)
-    
+
     additional_info = deferred(Column(UnicodeText))
     local_gdg_id = Column(Integer, index=True)
     uid = Column(BigInteger)
@@ -111,7 +132,7 @@ class User(Base):
 
 class Event(Base):
     """
-    Class represents a G+ event. 
+    Class represents a G+ event.
     """
 
     __tablename__ = 'gdg_events'
@@ -141,7 +162,7 @@ class Event(Base):
 
 class Invite(Base):
     """
-    Class represents an event registration invitation code. 
+    Class represents an event registration invitation code.
     """
 
     __tablename__ = 'gdg_invites'
@@ -176,5 +197,5 @@ class Place(Base):
     url = Column(String(50), nullable=False, default='')
     geo = Column(String(30), nullable=False, default='')
     logo = Column(String(255), nullable=True, default=None)
-    
+
     show = Column(Enum('1', '0', name="show"), nullable=False, default='0')

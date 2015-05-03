@@ -13,7 +13,8 @@ git checkout -f config/{prod,dev}/app.yml
 git checkout -f config/dev/alembic.ini
 git pull --rebase origin master
 
-sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/{prod,dev}/app.yml"
+sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/dev/app.yml"
+sed -i "s#^\(  url:\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/prod/app.yml"
 sed -i "s#^\(sqlalchemy\.url =\) \(.*\)#\1 $DB_URI#g" "${APP_PATH}/config/dev/alembic.ini"
 
 pip install -r "${APP_PATH}/requirements.txt"

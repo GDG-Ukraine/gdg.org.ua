@@ -194,6 +194,14 @@ class Events(REST_API_Base):
         else:
             orm_session.commit()
 
+class Places(REST_API_Base):
+    @cherrypy.tools.json_out()
+    def list_all(self, **kwargs):
+        places = api.get_all_gdg_places(cherrypy.request.orm_session)
+        if places:
+            return [to_collection(p, sort_keys=True) for p in places]
+        raise HTTPError(404) 
+
 rest_api = cherrypy.dispatch.RoutesDispatcher()
 rest_api.mapper.explicit = False
 rest_api.connect("add_participant", "/participants", Participants, action="create",
@@ -217,6 +225,10 @@ rest_api.connect("edit_event", "/events/{id}", Events, action="update",
                         conditions={"method":["PUT"]})
 rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
                         conditions={"method":["DELETE"]})
+
+rest_api.connect("list_places", "/places", Places, action="list_all",
+                        conditions={"method":["GET"]})
+
 
 # Error handlers
 

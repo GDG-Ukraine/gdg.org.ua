@@ -140,6 +140,16 @@ class Events(REST_API_Base):
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
+        if ('fields' in req.json):
+            if (len(req.json['fields'])>0):
+                req.json['fields'] = json.dumps(req.json['fields'])
+            else:
+                req.json.pop('fields')
+        if ('hidden' in req.json):
+            if (len(req.json['hidden'])>0):
+                req.json['hidden'] = json.dumps(req.json['hidden'])
+            else:
+                req.json.pop('hidden')
         event = from_collection(req.json, Event())
         orm_session.add(event)
         orm_session.commit()
@@ -153,8 +163,8 @@ class Events(REST_API_Base):
         if event:
             participants = api.find_participants_by_event(cherrypy.request.orm_session, event)
             logger.debug(participants)
-            logger.debug(participants[0])
-            logger.debug(participants[0].name)
+            #logger.debug(participants[0]) # causes errors on events w/o participants if uncommented
+            #logger.debug(participants[0].name) # causes errors on events w/o participants if uncommented
             e = to_collection(event,
                     sort_keys=True)
             e.update({'participants': [to_collection(p, excludes=("password", "salt"),
@@ -179,6 +189,16 @@ class Events(REST_API_Base):
         event = api.find_event_by_id(orm_session, id)
         logger.debug(event)
         if event:
+            if ('fields' in req.json):
+                if (len(req.json['fields'])>0):
+                    req.json['fields'] = json.dumps(req.json['fields'])
+                else:
+                    req.json.pop('fields')
+            if ('hidden' in req.json):
+                if (len(req.json['hidden'])>0):
+                    req.json['hidden'] = json.dumps(req.json['hidden'])
+                else:
+                    req.json.pop('hidden')
             event = from_collection(req.json, event)
             orm_session.commit()
             return to_collection(event,

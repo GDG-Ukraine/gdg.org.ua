@@ -10,17 +10,16 @@ Database of GDG members' contacts, events and some 'kostyl's
 
 # How to run it on localhost
 
-* First, prepair environment:
+* First, prepare environment:
 
         $ cd gdg.org.ua
-        $ virtualenv --clear --prompt="[gdg.org.ua] (py3k)
-        " -p python3.2 env
+        $ virtualenv --clear --prompt="[gdg.org.ua] (py3k)" -p python3.2 env
         $ source env/bin/activate
-        $ vim config/dev/app.yml
-            // enter db uri here. i.e. mysql+mysqlconnector://<username>:<userpassword>@<dbhost>[:<dbport>]/<dbname>
-        $ pip install https://bitbucket.org/webknjaz/blueberrypy-wk
-        $ pip install -e .
-        $ blueberrypy -b 0.0.0.0:8080
+        [gdg.org.ua] (py3k) $ vim config/dev/app.yml
+            # enter db uri here. i.e. mysql+mysqlconnector://<username>:<userpassword>@<dbhost>[:<dbport>]/<dbname>
+        [gdg.org.ua] (py3k) $ pip install hg+https://bitbucket.org/webknjaz/blueberrypy-wk
+        [gdg.org.ua] (py3k) $ pip install -e .
+        [gdg.org.ua] (py3k) $ blueberrypy serve -b 0.0.0.0:8080
 
 * Open ```http://localhost:8080/``` in your favourite browser and have fun :)
 

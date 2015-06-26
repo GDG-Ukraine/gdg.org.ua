@@ -140,16 +140,6 @@ class Events(REST_API_Base):
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
-        if ('fields' in req.json):
-            if (len(req.json['fields'])>0):
-                req.json['fields'] = json.dumps(req.json['fields'])
-            else:
-                req.json.pop('fields')
-        if ('hidden' in req.json):
-            if (len(req.json['hidden'])>0):
-                req.json['hidden'] = json.dumps(req.json['hidden'])
-            else:
-                req.json.pop('hidden')
         event = from_collection(req.json, Event())
         orm_session.add(event)
         orm_session.commit()
@@ -189,17 +179,10 @@ class Events(REST_API_Base):
         event = api.find_event_by_id(orm_session, id)
         logger.debug(event)
         if event:
-            if ('fields' in req.json):
-                if (len(req.json['fields'])>0):
-                    req.json['fields'] = json.dumps(req.json['fields'])
-                else:
-                    req.json.pop('fields')
-            if ('hidden' in req.json):
-                if (len(req.json['hidden'])>0):
-                    req.json['hidden'] = json.dumps(req.json['hidden'])
-                else:
-                    req.json.pop('hidden')
-            event = from_collection(req.json, event)
+            # Caution! crunches ahead
+            event = from_collection(req.json, event, excludes=['fields']) # skip jsonencoded dicts
+            # since 'hidden' is not implemented in the model, skip it for now
+            event.fields = req.json['fields'] # and set them manually
             orm_session.commit()
             return to_collection(event,
                               sort_keys=True)

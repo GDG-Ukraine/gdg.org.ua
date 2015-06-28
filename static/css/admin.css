@@ -14,6 +14,7 @@
     margin: 4px;
     width: 320px;
     opacity: 0;
+    display:none;
     -webkit-transition: all 0.5s ease-in-out;
     -webkit-transform: scale(0.5) skew(50deg,0deg);
 }
@@ -28,6 +29,7 @@
 }
 #spinner.visible {
     opacity: 1;
+    display: visible;
     -webkit-transform: scale(1) skew(0deg,0deg);
 }
 #spinner span#l2 { animation-delay: 0.2s;-webkit-animation-delay: 0.2s;}
@@ -77,14 +79,29 @@
     50%  {-webkit-transform: scale(1.5);}
     100% {-webkit-transform: scale(1);}
 }
-#user-panel  {
- float:right;
- padding: 5px;
+
+#user-panel {
+    float: right;
+    padding-right: 5px;
 }
+
+.navbar .brand {
+    margin-left: -10px;
+}
+
 .loading {
     text-align: center;
     background-color: rgba(250,250,100,0.2);
     color: brown;
     padding: 10px;
 
+}
+input.ng-invalid {
+    border: solid 1px red;
+    box-shadow: 0 0 12px 1px red;
+}
+
+span.clickable {
+    border-bottom: dashed 1px blue;
+    cursor: text;
 }

@@ -64,6 +64,9 @@ def get_event_registration(session, uid, eid):
         .filter(eid == EventParticipant.event_id)
     return q.first()
 
+def get_event_registrations(session, event_id):
+    return session.query(EventParticipant).filter(event_id == EventParticipant.event_id).all()
+
 def find_invitation_by_code(session, code):
     q = session.query(Invite)\
         .filter(Invite.code == code)

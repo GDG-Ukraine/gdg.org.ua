@@ -151,14 +151,19 @@ class Events(REST_API_Base):
         id = int(id)
         event = api.find_event_by_id(cherrypy.request.orm_session, id)
         if event:
-            participants = api.find_participants_by_event(cherrypy.request.orm_session, event)
-            logger.debug(participants)
+            registrations = api.get_event_registrations(cherrypy.request.orm_session, event.id) 
+            logger.debug(registrations)
             #logger.debug(participants[0]) # causes errors on events w/o participants if uncommented
             #logger.debug(participants[0].name) # causes errors on events w/o participants if uncommented
             e = to_collection(event,
                     sort_keys=True)
-            e.update({'participants': [to_collection(p, excludes=("password", "salt"),
-                              sort_keys=True) for p in participants]})
+            e.update({'registrations': [to_collection(r, sort_keys=True) 
+                for r in registrations]})
+            for r in e['registrations']:
+                r.update({'participant': to_collection(
+                    api.find_user_by_id(cherrypy.request.orm_session, r['googler_id']),
+                    excludes=("password", "salt")
+                    )})
             logger.debug(e)
             return e 
         raise HTTPError(404)

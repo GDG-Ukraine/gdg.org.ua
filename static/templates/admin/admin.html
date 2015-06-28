@@ -2,60 +2,52 @@
 <html ng-app="gdgorgua">
 <head>
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet">
     <link href="/css/datepicker.css" rel="stylesheet">
     <link href="/css/admin.css" rel="stylesheet">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.4/angular-resource.min.js"></script>
-    <!--script src="/js/ui-bootstrap-tpls-0.1.0.min.js"></script-->
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js"></script>
     <script src="/js/angular-strap.min.js"></script>
     <script src="/js/bootstrap-datepicker.js"></script>
     <script src="/js/admin.js"></script>
     <script src="/js/events.js"></script>
     <script src="/js/participants.js"></script>
-    <style>
-        .clickable td {
-            cursor: pointer;
-            -webkit-transition: all 0.2s ease-in-out;
-        }
-
-        .clickable:hover td {
-            background-color: #FFA !important;
-        }
-
-        .content {
-            padding-top: 50px;
-        }
-    </style>
 </head>
 <body ng-controller="MainCtrl">
-
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <a class="brand" href="#">GDG Data</a>
         <ul class="nav">
             <li ng-class="{active: current == 'events'}"><a href="#/events"><i class="icon-trophy"></i> Events</a></li>
-            <li ng-class="{active: current == 'participants'}"><a href="#/participants"><i class="icon-group"></i> Participants</a></li>
+            <li ng-class="{active: current == 'participants'}" ng-show="info.user.godmode"><a href="#/participants"><i class="icon-group"></i> Participants</a></li>
             <li id="spinner" ng-class='{visible:requests>0}'>
                 <span id="l1">L</span><span id="l2">o</span><span id="l3">a</span><span id="l4">d</span><span id="l5">i</span><span id="l6">n</span><span id="l7">g</span><span id="l8">.</span><span id="l9">.</span><span id="l10">.</span>
             </li>
+
         </ul>
         <span id='user-panel' ng-show='info'>
                 <span ng-show='info.user'>
-                {{info.user.email}} <img ng-src='{{info.user.picture}}' style='height:32px'/>
+                     <div class="btn-group">
+                <button class='btn dropdown-toggle' data-toggle="dropdown">
+                {{info.user.email}} <img ng-src='{{info.user.picture}}' style='height:20px'/>
+                    <span class="caret"></span>
+                </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="../logout"><i class="icon-off"></i> Logout from admin panel</a></li>
+                    </ul>
+                         </div>
                 </span>
                 <img ng-show='info.place.logo' ng-src='http://gdg.org.ua{{info.place.logo}}' style='height:32px'/>
         </span>
     </div>
 </div>
-
 <div id="error" ng-show="error">
     <h1>Some error happen, please reload the page!</h1>
 </div>
 
-<div ng-view class="content"></div>
+<div ng-view class='content'></div>
 </body>

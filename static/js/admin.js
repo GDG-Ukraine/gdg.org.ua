@@ -1,5 +1,5 @@
 angular.module('gdgorgua', ['ngResource','$strap'])
-    .config(function($routeProvider, $httpProvider) {
+    .config(function($routeProvider,$httpProvider) {
         $routeProvider.
             when('/events/', {controller:'EventsListCtrl', templateUrl:'/templates/admin/events/list.html'}).
             when('/events/new', {controller:'EventsCreateCtrl', templateUrl:'/templates/admin/events/detail.html'}).
@@ -30,7 +30,7 @@ angular.module('gdgorgua', ['ngResource','$strap'])
             }
          });
     })
-.controller('MainCtrl', function($scope, $location, $http) {
+.controller('MainCtrl', function($scope, $location,$http) {
    $scope.info = $http.get('/api/info').then(function(r) { return r.data;});
    $scope.$watch(function() { return $location.path()}, function(nv) {
        var parts = nv.split('/');

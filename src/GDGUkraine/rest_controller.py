@@ -179,7 +179,14 @@ class Events(REST_API_Base):
         event = api.find_event_by_id(orm_session, id)
         logger.debug(event)
         if event:
-            event = from_collection(req.json, event)
+            # Workaround ahead!
+            # 1. Skip JSONEncodedDicts
+            event = from_collection(req.json, event, 
+                                    excludes=['fields', 'hidden'])
+            # 2. Set fields manually:
+            event.fields = req.json['fields']
+            event.hidden = req.json['hidden']
+            # Workaround end.
             orm_session.commit()
             return to_collection(event,
                               sort_keys=True)

@@ -1,12 +1,16 @@
 import cherrypy
-from cherrypy import HTTPError, HTTPRedirect
-from blueberrypy.template_engine import get_template
 import social
-from datetime import date, datetime
 import json
+import logging
+
+from datetime import date, datetime
+
+from blueberrypy.template_engine import get_template
 from blueberrypy.util import from_collection, to_collection
 
-import logging
+from cherrypy import HTTPError, HTTPRedirect
+
+from .auth_controller import AuthController
 
 
 logger = logging.getLogger(__name__)
@@ -54,21 +58,7 @@ class Root:
         logger.debug('<<<<<<global test stop')
         return 'global test'
 
-class OAuth2:
-    """docstring for OAuth2"""
-    def __init__(self, arg = None):
-        super(OAuth2, self).__init__()
-        self.arg = arg
-    
-    @cherrypy.expose
-    def google(self):
-        req = cherrypy.request
-        forward_url = req.headers.get("Referer", "/")
-        raise HTTPRedirect('http://google.com/{0}'.format(forward_url))
-
-    index = google
-
-Root.auth = OAuth2()
+Root.auth = AuthController()
 
     #@cherrypy.expose
     #def default(self, *unparsed):
@@ -148,7 +138,7 @@ class Events:
             raise HTTPError(404)
         else:
             orm_session.commit()
-    
+
     def test(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
@@ -192,12 +182,12 @@ events.connect("register", "/{id}/register/{code}", Events, action="register",
 #    @cherrypy.expose
 #    def default(self, *unparsed):
 #        return self.index()
-#        
+#
 #class Participants:
 #    """docstring for Participants"""
-#    
+#
 #    _KEY = 'fb6a10f172177dca7fb4de9d59c46a1e'
-#    
+#
 #    @cherrypy.expose
 #    def index(self, **kwargs):
 #        return "API is privates"
@@ -213,11 +203,11 @@ events.connect("register", "/{id}/register/{code}", Events, action="register",
 #    @cherrypy.expose
 #    def remove(self, *unparsed):
 #        return 'removing' # self.index()
-#        
+#
 #    @cherrypy.expose
 #    def edit(self, *unparsed):
 #        return 'changing' # self.index()
-# 
+#
     #@cherrypy.expose
     #def get(self, *unparsed):
     #    return 'changing' # self.index()
@@ -230,7 +220,7 @@ events.connect("register", "/{id}/register/{code}", Events, action="register",
     #        #super(ClassName, self).__init__()
     #        #self.arg = arg
     #    #    pass
-    #     
+    #
     #    @cherrypy.expose
     #    def index(self, **uid):
     #        return 'get index' # self.index()

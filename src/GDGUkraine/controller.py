@@ -41,16 +41,6 @@ class Root:
         tmpl = get_template("admin/admin.html")
         return tmpl.render(p = {})
 
-    @cherrypy.expose
-    def test(self):
-        if not cherrypy.session.get('test_counter'):
-            cherrypy.session['test_counter'] = 0
-        cherrypy.session['test_counter'] += 1
-        logger.debug('>>>>>>global test start')
-        logger.debug('session' in dir(cherrypy))
-        logger.debug(cherrypy.session.get('test_counter'))
-        logger.debug('<<<<<<global test stop')
-        return 'global test'
 
 Root.auth = AuthController()
 

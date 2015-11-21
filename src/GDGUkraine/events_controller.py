@@ -88,24 +88,8 @@ class Events:
     #     else:
     #         orm_session.commit()
 
-    def test(self, **kwargs):
-        # req = cherrypy.request
-        # orm_session = req.orm_session
-        # logger.debug(req)
-        # logger.debug(dir(req))
-        # logger.debug(dir(req.app))
-        logger.debug('>>>>>>REST test start')
-        # cherrypy.tools.sessions.callable()
-        logger.debug('session' in dir(cherrypy))
-        logger.debug(cherrypy.session)
-        logger.debug(cherrypy.session.get('test_counter'))
-        logger.debug('<<<<<<REST test stop')
-        return 'counter is {0}'.format(cherrypy.session.get('test_counter'))
-
 events = cherrypy.dispatch.RoutesDispatcher()
 events.mapper.explicit = False
-events.connect("test", "/test", Events, action="test",
-               conditions={"method": ["GET"]})
 # events.connect("add", "/", Events, action="create",
 #                conditions={"method": ["POST"]})
 events.connect("list", "", Events, action="list_all",

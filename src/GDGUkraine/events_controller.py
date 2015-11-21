@@ -25,13 +25,19 @@ class Events:
     #    return to_collection(event, sort_keys=True)
 
     def show(self, id, **kwargs):
-        id = int(id)
-        event = find_event_by_id(cherrypy.request.orm_session, id)
-        if event:
-            tmpl = get_template("event.html")
-            return tmpl.render(event=event,
-                               host_gdg=find_host_gdg_by_event(event))
-        raise HTTPError(404)
+        try:
+            id = int(id)
+            req = cherrypy.request
+            orm_session = req.orm_session
+            event = find_event_by_id(cherrypy.request.orm_session, id)
+            if event:
+                tmpl = get_template("event.html")
+                return tmpl.render(event=event,
+                                   host_gdg=find_host_gdg_by_event(orm_session,
+                                                                   event))
+            raise HTTPError(404)
+        except ValueError:
+            raise HTTPError(400, 'Invalid URL')
 
     def register(self, id, **kwargs):
         id = int(id)
@@ -57,7 +63,8 @@ class Events:
             else:
                 tmpl = get_template("regclosed.html")
                 events_list = get_all_events(orm_session, 5, hide_closed=True)
-            return tmpl.render(host_gdg=find_host_gdg_by_event(event=event),
+            return tmpl.render(host_gdg=find_host_gdg_by_event(orm_session,
+                                                               event),
                                event=event, events=events_list,
                                user=u, invite=i)
         raise HTTPError(404)

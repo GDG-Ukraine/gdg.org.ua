@@ -42,7 +42,7 @@ class JSONEncodedDict(TypeDecorator):
     def process_result_value(self, value, dialect):
         return json.loads(value) if value is not None else []
 
-__all__ = ['User', 'Event', 'EventParticipant', 'Place', 'Invite']
+__all__ = ['Admin', 'User', 'Event', 'EventParticipant', 'Place', 'Invite']
 
 
 class Admin(Base):
@@ -151,6 +151,7 @@ class Event(Base):
     date = Column(Date)
     closereg = Column(Date)
     fields = deferred(Column(JSONEncodedDict(512)))
+    hidden = deferred(Column(JSONEncodedDict(512)))
     # crutch for olostan's code
     background = Column(String(255), nullable=True)
     max_regs = Column(Integer, nullable=True, default=None)

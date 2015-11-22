@@ -1,6 +1,8 @@
 import logging
 
-from GDGUkraine.model import User, Event, EventParticipant, Place, Invite
+from GDGUkraine.model import (Admin, User,
+                              Event, EventParticipant,
+                              Place, Invite)
 from datetime import date, datetime
 
 
@@ -14,6 +16,11 @@ def find_user_by_id(session, id):
 def find_user_by_email(session, email):
     q = session.query(User)\
         .filter(User.email == email)
+    return q.first()
+
+def find_admin_by_email(session, email):
+    q = session.query(Admin)\
+        .filter(Admin.email == email)
     return q.first()
 
 def delete_user_by_id(session, id):

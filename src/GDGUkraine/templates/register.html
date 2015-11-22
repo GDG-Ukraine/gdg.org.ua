@@ -54,7 +54,7 @@
                                     user.www = r.urls[0].value;
                                 } else if (typeof r.url !== 'undefined') {
                                     user.www = r.url;
-                                } 
+                                }
                                 if (typeof r.organizations !== 'undefined' && r.organizations.length > 0) {
                                     for (var c in r.organizations) {
                                         c = r.organizations[c];
@@ -124,7 +124,7 @@
             }
         }
     </script>
-</head>    
+</head>
 
 <body>
 
@@ -349,7 +349,7 @@
                     <label>
                         <span>{{ f.title }}</span>
                     </label>
-                    <selectable custom="{{ f.allow_custom }}" source="options" model="fields.{{ f.name }}" multiple="{{ f.multiple }}"></selectable>
+                    <selectable custom="{{ f.allow_custom | lower }}" source="options" model="fields.{{ f.name }}" multiple="{{ f.multiple | lower }}"></selectable>
                 </div>
                     {% else %}
                 <div>
@@ -391,6 +391,6 @@
     </script>
 </body>
 </html>
-<!-- 
+<!--
     vim: softtabstop=4 shiftwidth=4 expandtab
 -->

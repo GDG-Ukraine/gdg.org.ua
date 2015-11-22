@@ -51,9 +51,9 @@ controllers:
       tools.orm_session.on: true
       tools.sessions.on: true
   /events:
-    controller: !!python/name:GDGUkraine.controller.events
+    controller: !!python/name:GDGUkraine.events_controller.events
     /:
-      request.dispatch: !!python/name:GDGUkraine.controller.events
+      request.dispatch: !!python/name:GDGUkraine.events_controller.events
       tools.orm_session.on: true
       tools.sessions.on: true
 

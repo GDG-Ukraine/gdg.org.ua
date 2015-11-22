@@ -41,20 +41,24 @@ class REST_API_Base:
 class Admin(REST_API_Base):
     @cherrypy.tools.json_out()
     def info(self):
-        cp_session = cherrypy.session
-        user = {'admin': True}
-        user.update(cp_session.get('admin_user'))
-        user.update(cp_session.get('google_user'))
-        user.update(cp_session.get('google_oauth_token'))
+        try:
+            cp_session = cherrypy.session
+            user = {'admin': True}
+            user.update(cp_session.get('admin_user'))
+            user.update(cp_session.get('google_user'))
+            user.update(cp_session.get('google_oauth_token'))
 
-        res = {'user': user}
-        if user.get('filter_place'):
-            res['place'] = to_collection(
-                api.
-                get_place_by_id(cherrypy.request.orm_session,
-                                cp_session.get('admin_user')['filter_place']))
+            res = {'user': user}
+            if user.get('filter_place'):
+                res['place'] = to_collection(
+                    api.
+                    get_place_by_id(
+                        cherrypy.request.orm_session,
+                        cp_session.get('admin_user')['filter_place']))
 
-        return res
+            return res
+        except TypeError:
+            raise HTTPError(401, 'Please authorize')
 
 
 class Participants(REST_API_Base):

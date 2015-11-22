@@ -10,16 +10,17 @@ from cherrypy.lib import httputil as cphttputil
 from blueberrypy.util import from_collection, to_collection
 
 from GDGUkraine import api
-from GDGUkraine.model import User, Event, EventParticipant, Place
+from GDGUkraine.model import User, Event, EventParticipant
 
-from datetime import date, datetime
+from datetime import date
 
 import logging
 
 
 logger = logging.getLogger(__name__)
 
-class REST_API_Base:
+
+class APIBase:
     _cp_config = {"tools.json_in.on": True}
 
     def create(self, **kwargs):
@@ -38,7 +39,7 @@ class REST_API_Base:
         raise NotImplementedError()
 
 
-class Admin(REST_API_Base):
+class Admin(APIBase):
     @cherrypy.tools.json_out()
     def info(self):
         try:
@@ -61,7 +62,7 @@ class Admin(REST_API_Base):
             raise HTTPError(401, 'Please authorize')
 
 
-class Participants(REST_API_Base):
+class Participants(APIBase):
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
@@ -70,7 +71,6 @@ class Participants(REST_API_Base):
         u = req.json['user']
         logger.debug(req.json)
         logger.debug(u)
-        #user = from_collection(u, User())
         user = User(**u)
         eu = api.find_user_by_email(orm_session, user.email)
         if eu:
@@ -84,13 +84,22 @@ class Participants(REST_API_Base):
             # check if the invitation is valid
             i = None
             if req.json.get('invite_code'):
-                i = api.find_invitation_by_code(orm_session, req.json['invite_code'])
-                if i is None or i.used or (i.event is not None and i.event != api.find_event_by_id(orm_session, req.json['event'])) or (i.email is not None and i.email != user.email):
+                i = api.find_invitation_by_code(orm_session,
+                                                req.json['invite_code'])
+                if i is None or i.used or \
+                        (i.event is not None and
+                            i.event != api.find_event_by_id(
+                                orm_session,
+                                req.json['event'])) or \
+                        (i.email is not None and i.email != user.email):
                     raise HTTPError(403, "Invalid invite code.")
             logger.debug(type(req.json.get('fields')))
             logger.debug(req.json.get('fields'))
             eep = api.get_event_registration(orm_session, user.id, eid)
-            ep = EventParticipant(id = eep.id if eep else None, event_id = eid, googler_id = user.id, register_date = date.today(), fields = req.json['fields'] if req.json.get('fields') else None)
+            ep = EventParticipant(
+                id=eep.id if eep else None, event_id=eid, googler_id=user.id,
+                register_date=date.today(),
+                fields=req.json['fields'] if req.json.get('fields') else None)
             logger.debug(ep.fields)
             if eep:
                 orm_session.merge(ep)
@@ -107,33 +116,28 @@ class Participants(REST_API_Base):
 
     @cherrypy.tools.json_out()
     def show(self, id, **kwargs):
-        #return 'getting someone'
         id = int(id)
         user = api.find_user_by_id(cherrypy.request.orm_session, id)
         if user:
-            events = api.find_events_by_user(cherrypy.request.orm_session, user)
+            events = api.find_events_by_user(cherrypy.request.orm_session,
+                                             user)
             logger.debug(events)
-            #logger.debug(events[0])
-            #logger.debug(events[0].title)
             u = to_collection(user, excludes=("password", "salt"),
                               sort_keys=True)
-            u.update({'events': [to_collection(e,
-                              sort_keys=True) for e in events]})
+            u.update({'events': [
+                to_collection(e, sort_keys=True) for e in events]})
             logger.debug(u)
             return u
-        #else:
-        #    return {}
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
     def list_all(self, **kwargs):
         logger.debug('listing users')
         users = api.get_all_users(cherrypy.request.orm_session)
-        #return [to_collection(user.serialize) for user in users]
-        #x = [u for u in users]
         if users:
-            return [to_collection(u, excludes=("password", "salt"),
-                              sort_keys=True) for u in users]
+            return [to_collection(
+                u, excludes=("password", "salt"), sort_keys=True)
+                for u in users]
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
@@ -146,7 +150,7 @@ class Participants(REST_API_Base):
             user = from_collection(req.json, user)
             orm_session.commit()
             return to_collection(user, excludes=("password", "salt"),
-                              sort_keys=True)
+                                 sort_keys=True)
         raise HTTPError(404)
 
     def delete(self, id, **kwargs):
@@ -158,7 +162,8 @@ class Participants(REST_API_Base):
         else:
             orm_session.commit()
 
-class Events(REST_API_Base):
+
+class Events(APIBase):
 
     @cherrypy.tools.json_out()
     def create(self, **kwargs):
@@ -171,23 +176,20 @@ class Events(REST_API_Base):
 
     @cherrypy.tools.json_out()
     def show(self, id, **kwargs):
-        #return 'getting someone'
         id = int(id)
         event = api.find_event_by_id(cherrypy.request.orm_session, id)
         if event:
-            registrations = api.get_event_registrations(cherrypy.request.orm_session, event.id)
+            registrations = api.get_event_registrations(
+                cherrypy.request.orm_session, event.id)
             logger.debug(registrations)
-            #logger.debug(participants[0]) # causes errors on events w/o participants if uncommented
-            #logger.debug(participants[0].name) # causes errors on events w/o participants if uncommented
-            e = to_collection(event,
-                    sort_keys=True)
+            e = to_collection(event, sort_keys=True)
             e.update({'registrations': [to_collection(r, sort_keys=True)
-                for r in registrations]})
+                     for r in registrations]})
             for r in e['registrations']:
                 r.update({'participant': to_collection(
-                    api.find_user_by_id(cherrypy.request.orm_session, r['googler_id']),
-                    excludes=("password", "salt")
-                    )})
+                    api.find_user_by_id(cherrypy.request.orm_session,
+                                        r['googler_id']),
+                    excludes=("password", "salt"))})
             logger.debug(e)
             return e
         raise HTTPError(404)
@@ -196,8 +198,8 @@ class Events(REST_API_Base):
     def list_all(self, **kwargs):
         events = api.get_all_events(cherrypy.request.orm_session)
         if events:
-            return [to_collection(e,
-                              sort_keys=True) for e in events]
+            return [to_collection(e, sort_keys=True)
+                    for e in events]
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
@@ -209,12 +211,12 @@ class Events(REST_API_Base):
         logger.debug(event)
         if event:
             # Caution! crunches ahead
-            event = from_collection(req.json, event, excludes=['fields']) # skip jsonencoded dicts
+            event = from_collection(req.json, event,
+                                    excludes=['fields'])  # skip jsonencoded
             # since 'hidden' is not implemented in the model, skip it for now
-            event.fields = req.json['fields'] # and set them manually
+            event.fields = req.json['fields']  # and set them manually
             orm_session.commit()
-            return to_collection(event,
-                              sort_keys=True)
+            return to_collection(event, sort_keys=True)
         raise HTTPError(404)
 
     def delete(self, id, **kwargs):
@@ -226,7 +228,8 @@ class Events(REST_API_Base):
         else:
             orm_session.commit()
 
-class Places(REST_API_Base):
+
+class Places(APIBase):
     @cherrypy.tools.json_out()
     def list_all(self, **kwargs):
         places = api.get_all_gdg_places(cherrypy.request.orm_session)
@@ -236,33 +239,33 @@ class Places(REST_API_Base):
 
 rest_api = cherrypy.dispatch.RoutesDispatcher()
 rest_api.mapper.explicit = False
-rest_api.connect("add_participant", "/participants", Participants, action="create",
-                        conditions={"method":["POST"]})
-rest_api.connect("list_participants", "/participants", Participants, action="list_all",
-                        conditions={"method":["GET"]})
-rest_api.connect("get_participant", "/participants/{id}", Participants, action="show",
-                        conditions={"method":["GET"]})
-rest_api.connect("edit_participant", "/participants/{id}", Participants, action="update",
-                        conditions={"method":["PUT"]})
-rest_api.connect("remove_participant", "/participants/{id}", Participants, action="delete",
-                        conditions={"method":["DELETE"]})
+rest_api.connect("add_participant", "/participants", Participants,
+                 action="create", conditions={"method": ["POST"]})
+rest_api.connect("list_participants", "/participants", Participants,
+                 action="list_all", conditions={"method": ["GET"]})
+rest_api.connect("get_participant", "/participants/{id}", Participants,
+                 action="show", conditions={"method": ["GET"]})
+rest_api.connect("edit_participant", "/participants/{id}", Participants,
+                 action="update", conditions={"method": ["PUT"]})
+rest_api.connect("remove_participant", "/participants/{id}", Participants,
+                 action="delete", conditions={"method": ["DELETE"]})
 
 rest_api.connect("add_event", "/events", Events, action="create",
-                        conditions={"method":["POST"]})
+                 conditions={"method": ["POST"]})
 rest_api.connect("list_events", "/events", Events, action="list_all",
-                        conditions={"method":["GET"]})
+                 conditions={"method": ["GET"]})
 rest_api.connect("get_event", "/events/{id}", Events, action="show",
-                        conditions={"method":["GET"]})
+                 conditions={"method": ["GET"]})
 rest_api.connect("edit_event", "/events/{id}", Events, action="update",
-                        conditions={"method":["PUT"]})
+                 conditions={"method": ["PUT"]})
 rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
-                        conditions={"method":["DELETE"]})
+                 conditions={"method": ["DELETE"]})
 
 rest_api.connect("list_places", "/places", Places, action="list_all",
-                        conditions={"method":["GET"]})
+                 conditions={"method": ["GET"]})
 
 rest_api.connect("api_info", "/info", Admin, action="info",
-                        conditions={"method":["GET"]})
+                 conditions={"method": ["GET"]})
 
 
 # Error handlers
@@ -282,6 +285,7 @@ def generic_error_handler(status, message, traceback, version):
             result["traceback"] = traceback
     return json.dumps(result)
 
+
 def unexpected_error_handler():
     """request.error_response"""
 
@@ -300,12 +304,14 @@ def unexpected_error_handler():
         if isinstance(typ, HTTPError):
             cherrypy._cperror.clean_headers(value.code)
             response.status = value.status
-            content = {"code": value.code, "reason": value.reason, "message": value._message}
+            content = {"code": value.code, "reason": value.reason,
+                       "message": value._message}
         elif isinstance(typ, (TypeError, ValueError, KeyError)):
             cherrypy._cperror.clean_headers(400)
             response.status = 400
             reason, default_message = cphttputil.response_codes[400]
-            content = {"code": 400, "reason": reason, "message": value.message or default_message}
+            content = {"code": 400, "reason": reason,
+                       "message": value.message or default_message}
 
         if cherrypy.serving.request.show_tracebacks or debug:
             tb = traceback.format_exc()

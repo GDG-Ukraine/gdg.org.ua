@@ -27,15 +27,6 @@ scope = [
     "https://www.googleapis.com/auth/userinfo.profile"
 ]
 
-google = OAuth2Session(client_id, scope=scope, redirect_uri=redirect_uri)
-
-# Redirect user to Google for authorization
-authorization_url, state = google.authorization_url(
-    authorization_base_url,
-    # offline for refresh token
-    # force to always make user click authorize
-    access_type="offline", approval_prompt="force")
-
 
 class AuthController:
     """AuthController implements authentication via Google's OAuth2"""
@@ -43,20 +34,22 @@ class AuthController:
         super(AuthController, self).__init__()
         self.arg = arg
 
-    get_user_info = lambda self: google.\
-        get('https://www.googleapis.com/oauth2/v1/userinfo').json()
-
     @cherrypy.expose
     def google(self, *args, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
+            google = OAuth2Session(client_id, redirect_uri=redirect_uri,
+                                   state=cherrypy.session['oauth_state'])
+
             redirect_response = '{}?{}'.format(cherrypy.url(),
                                                req.query_string)
-            google.fetch_token(token_url, client_secret=client_secret,
-                               authorization_response=redirect_response)
+            cherrypy.session['google_oauth_token'] = google.fetch_token(
+                token_url, client_secret=client_secret,
+                authorization_response=redirect_response)
 
-            cherrypy.session['google_user'] = self.get_user_info()
+            cherrypy.session['google_user'] = google.\
+                get('https://www.googleapis.com/oauth2/v1/userinfo').json()
             cherrypy.session['admin_user'] = to_collection(find_admin_by_email(
                 orm_session,
                 cherrypy.session['google_user']['email']))
@@ -86,6 +79,16 @@ class AuthController:
            return_url.stratswith(['/', 'https://', 'http://']) \
            and not return_url.startswith('/auth'):
             cherrypy.session['auth_redirect'] = return_url
+
+        google = OAuth2Session(client_id, scope=scope,
+                               redirect_uri=redirect_uri)
+
+        # Redirect user to Google for authorization
+        authorization_url, cherrypy.session['oauth_state'] = google.\
+            authorization_url(authorization_base_url,
+                              # offline for refresh token
+                              # force to always make user click authorize
+                              access_type="offline", approval_prompt="force")
 
         raise HTTPRedirect(authorization_url)
 

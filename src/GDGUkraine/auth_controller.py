@@ -64,7 +64,7 @@ class AuthController:
             return json.dumps(cherrypy.session['admin_user'])
         except MissingCodeError:
             raise HTTPError(401, 'Error: {}'.format(kwargs.get('error')))
-        except MismatchingStateError:
+        except (MismatchingStateError, KeyError):
             raise HTTPRedirect('/auth')
 
     # index = google

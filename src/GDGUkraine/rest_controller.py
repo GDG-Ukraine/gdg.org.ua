@@ -37,6 +37,26 @@ class REST_API_Base:
     def delete(self, **kwargs):
         raise NotImplementedError()
 
+
+class Admin(REST_API_Base):
+    @cherrypy.tools.json_out()
+    def info(self):
+        cp_session = cherrypy.session
+        user = {'admin': True}
+        user.update(cp_session.get('admin_user'))
+        user.update(cp_session.get('google_user'))
+        user.update(cp_session.get('google_oauth_token'))
+
+        res = {'user': user}
+        if user.get('filter_place'):
+            res['place'] = to_collection(
+                api.
+                get_place_by_id(cherrypy.request.orm_session,
+                                cp_session.get('admin_user')['filter_place']))
+
+        return res
+
+
 class Participants(REST_API_Base):
 
     @cherrypy.tools.json_out()
@@ -151,13 +171,13 @@ class Events(REST_API_Base):
         id = int(id)
         event = api.find_event_by_id(cherrypy.request.orm_session, id)
         if event:
-            registrations = api.get_event_registrations(cherrypy.request.orm_session, event.id) 
+            registrations = api.get_event_registrations(cherrypy.request.orm_session, event.id)
             logger.debug(registrations)
             #logger.debug(participants[0]) # causes errors on events w/o participants if uncommented
             #logger.debug(participants[0].name) # causes errors on events w/o participants if uncommented
             e = to_collection(event,
                     sort_keys=True)
-            e.update({'registrations': [to_collection(r, sort_keys=True) 
+            e.update({'registrations': [to_collection(r, sort_keys=True)
                 for r in registrations]})
             for r in e['registrations']:
                 r.update({'participant': to_collection(
@@ -165,7 +185,7 @@ class Events(REST_API_Base):
                     excludes=("password", "salt")
                     )})
             logger.debug(e)
-            return e 
+            return e
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
@@ -208,7 +228,7 @@ class Places(REST_API_Base):
         places = api.get_all_gdg_places(cherrypy.request.orm_session)
         if places:
             return [to_collection(p, sort_keys=True) for p in places]
-        raise HTTPError(404) 
+        raise HTTPError(404)
 
 rest_api = cherrypy.dispatch.RoutesDispatcher()
 rest_api.mapper.explicit = False
@@ -237,12 +257,15 @@ rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
 rest_api.connect("list_places", "/places", Places, action="list_all",
                         conditions={"method":["GET"]})
 
+rest_api.connect("api_info", "/info", Admin, action="info",
+                        conditions={"method":["GET"]})
+
 
 # Error handlers
 
 def generic_error_handler(status, message, traceback, version):
     """error_page.default"""
-    
+
     response = cherrypy.response
     response.headers['Content-Type'] = "application/json"
     response.headers.pop('Content-Length', None)

@@ -9,6 +9,10 @@ from datetime import date, datetime
 logger = logging.getLogger(__name__)
 
 
+def get_place_by_id(session, id):
+    id = int(id)
+    return session.query(Place).get(id)
+
 def find_user_by_id(session, id):
     id = int(id)
     return session.query(User).get(id)

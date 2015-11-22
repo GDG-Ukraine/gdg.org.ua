@@ -62,6 +62,8 @@ class Admin(Base):
     googler_id = Column(Integer, ForeignKey('gdg_participants.id'), nullable=True, index=True)
     godmode = Column(Boolean, default = 0, nullable=False)
 
+    place = relationship("Place", backref="admins")
+
 
 class EventParticipant(Base):
     """

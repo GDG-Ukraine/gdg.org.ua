@@ -148,6 +148,7 @@ class Participants(APIBase):
         user = api.find_user_by_id(orm_session, id)
         if user:
             user = from_collection(req.json, user)
+            orm_session.merge(user)
             orm_session.commit()
             return to_collection(user, excludes=("password", "salt"),
                                  sort_keys=True)
@@ -215,6 +216,7 @@ class Events(APIBase):
                                     excludes=['fields'])  # skip jsonencoded
             # since 'hidden' is not implemented in the model, skip it for now
             event.fields = req.json['fields']  # and set them manually
+            orm_session.merge(event)
             orm_session.commit()
             return to_collection(event, sort_keys=True)
         raise HTTPError(404)

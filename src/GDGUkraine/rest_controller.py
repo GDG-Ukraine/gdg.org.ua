@@ -249,8 +249,8 @@ rest_api.connect("get_participant", "/participants/{id}", Participants,
                  action="show", conditions={"method": ["GET"]})
 rest_api.connect("edit_participant", "/participants/{id}", Participants,
                  action="update", conditions={"method": ["PUT"]})
-rest_api.connect("remove_participant", "/participants/{id}", Participants,
-                 action="delete", conditions={"method": ["DELETE"]})
+# rest_api.connect("remove_participant", "/participants/{id}", Participants,
+#                  action="delete", conditions={"method": ["DELETE"]})
 
 rest_api.connect("add_event", "/events", Events, action="create",
                  conditions={"method": ["POST"]})
@@ -260,8 +260,8 @@ rest_api.connect("get_event", "/events/{id}", Events, action="show",
                  conditions={"method": ["GET"]})
 rest_api.connect("edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
-rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
-                 conditions={"method": ["DELETE"]})
+# rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
+#                  conditions={"method": ["DELETE"]})
 
 rest_api.connect("list_places", "/places", Places, action="list_all",
                  conditions={"method": ["GET"]})

@@ -82,12 +82,15 @@ class EventParticipant(Base):
                       index=True)
 
     register_date = Column(Date)
+
     accepted = Column(Boolean, default=None)
     visited = Column(Boolean, default=None)
+    confirmed = Column(Boolean, nullable=False, default=False)
+
     fields = deferred(Column(JSONEncodedDict(512)))
 
-    users = relationship("User", backref="event_assocs")
-    events = relationship("Event", backref="event_assocs")
+    user = relationship("User", backref="event_assocs")
+    event = relationship("Event", backref="event_assocs")
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -139,6 +142,9 @@ class User(Base):
     additional_info = deferred(Column(UnicodeText))
     local_gdg_id = Column(Integer, index=True)
     uid = Column(BigInteger)
+
+    # events = relationship("Event", secondary=EventParticipant,
+    #                       backref="event_participants")
 
 
 class Event(Base):

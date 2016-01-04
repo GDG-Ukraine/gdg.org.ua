@@ -90,7 +90,6 @@ class EventParticipant(Base):
     fields = deferred(Column(JSONEncodedDict(512)))
 
     user = relationship("User", backref="event_assocs")
-    event = relationship("Event", backref="event_assocs")
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -145,6 +144,18 @@ class User(Base):
 
     # events = relationship("Event", secondary=EventParticipant,
     #                       backref="event_participants")
+
+    @property
+    def full_name(self):
+        if all([self.name, self.surname]):
+            return '{name} {surname}'.format(name=self.name,
+                                             surname=self.surname)
+
+        for n in ['name', 'nickname', 'surname']:
+            if self.__getattribute__(n):
+                return self.__getattribute__(n)
+
+        return ''
 
 
 class Event(Base):

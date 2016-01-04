@@ -24,7 +24,11 @@ token_url = "https://accounts.google.com/o/oauth2/token"
 
 scope = [
     "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile"
+    "https://www.googleapis.com/auth/userinfo.profile",
+    # Send an email message
+    "https://www.googleapis.com/auth/gmail.compose",
+    # Create a new file on Google Drive
+    "https://www.googleapis.com/auth/drive.file",
 ]
 
 

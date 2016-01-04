@@ -9,8 +9,10 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil
 from blueberrypy.util import from_collection, to_collection
 
-from GDGUkraine import api
-from GDGUkraine.model import User, Event, EventParticipant
+from . import api
+from .model import User, Event, EventParticipant
+from .auth_controller import client_id as google_client_id, OAuth2Session
+from .utils import gmail_send_html
 
 from datetime import date
 
@@ -230,6 +232,50 @@ class Events(APIBase):
         else:
             orm_session.commit()
 
+    @cherrypy.tools.json_out()
+    def approve_participants(self, id, **kwargs):
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        try:
+            oauth2session = OAuth2Session(
+                google_client_id,
+                token=cherrypy.session['google_oauth_token'])
+            regs = req.json.get('registrations')
+            from_email = (req.json.get('fromEmail') or
+                          'GDG Registration Robot <kyiv@gdg.org.ua>')
+            send_email = req.json.get('sendEmail')
+
+            subject = '✔ Registration confirmation to {event_title}'
+            to_email = '{full_name} <{email}>'
+
+            event = api.find_event_by_id(orm_session, id)
+
+            for u in api.get_users_by_ids([int(_) for _ in regs]):
+                # user_reg = u.event_assocs.filter(
+                #     EventParticipant.event_id == id).first()
+
+                user_reg = api.get_event_registration(orm_session, u.id, id)
+                user_reg.confirmed = True
+
+                orm_session.merge(user_reg)
+                orm_session.commit()
+
+                if send_email:  # Do send email here
+                    gmail_send_html(
+                        oauth2session,
+                        template='email/card.html',
+                        payload={'event': event, 'user': u,
+                                 'registration': user_reg},
+                        sbj=subject.format(event_title=event.title),
+                        to_email=to_email.format(full_name=u.full_name,
+                                                 email=u.email),
+                        from_email=from_email)
+        except KeyError:
+            raise HTTPError(400, {'ok': False})
+        else:
+            return {'ok': True}
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -262,6 +308,9 @@ rest_api.connect("edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
 # rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
 #                  conditions={"method": ["DELETE"]})
+rest_api.connect("approve_event_participants", r"/events/{id:\d+}/approve",
+                 Events, action="approve_participants",
+                 conditions={"method": ["POST"]})
 
 rest_api.connect("list_places", "/places", Places, action="list_all",
                  conditions={"method": ["GET"]})

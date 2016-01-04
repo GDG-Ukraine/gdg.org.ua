@@ -40,6 +40,10 @@ def get_all_users(session):
     return session.query(User).all()
 
 
+def get_users_by_ids(session, ids):
+    return session.query(User).filter(User.id in ids).all()
+
+
 def get_all_gdg_places(session, filtered=False):
     q = session.query(Place)
     if filtered:

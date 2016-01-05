@@ -12,7 +12,7 @@ from blueberrypy.util import from_collection, to_collection
 from . import api
 from .model import User, Event, EventParticipant
 from .auth_controller import client_id as google_client_id, OAuth2Session
-from .utils import gmail_send_html
+from .utils import gmail_send_html, aes_encrypt
 
 from datetime import date
 
@@ -234,6 +234,7 @@ class Events(APIBase):
 
     @cherrypy.tools.json_out()
     def approve_participants(self, id, **kwargs):
+        '''POST /api/events/:id/approve'''
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
@@ -248,6 +249,7 @@ class Events(APIBase):
 
             subject = '✔ Registration confirmation to {event_title}'
             to_email = '{full_name} <{email}>'
+            email_template = 'email/card.html'
 
             event = api.find_event_by_id(orm_session, id)
 
@@ -264,13 +266,97 @@ class Events(APIBase):
                 if send_email:  # Do send email here
                     gmail_send_html(
                         oauth2session,
-                        template='email/card.html',
+                        template=email_template,
                         payload={'event': event, 'user': u,
                                  'registration': user_reg},
                         sbj=subject.format(event_title=event.title),
                         to_email=to_email.format(full_name=u.full_name,
                                                  email=u.email),
                         from_email=from_email)
+        except KeyError:
+            raise HTTPError(400, {'ok': False})
+        else:
+            return {'ok': True}
+
+    @cherrypy.tools.json_out()
+    def send_confirm_participants(self, id, **kwargs):
+        '''POST /api/events/:id/send-confirm'''
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        try:
+            oauth2session = OAuth2Session(
+                google_client_id,
+                token=cherrypy.session['google_oauth_token'])
+            regs = req.json.get('registrations')
+            from_email = (req.json.get('fromEmail') or
+                          'GDG Registration Robot <kyiv@gdg.org.ua>')
+
+            subject = 'Please confirm your visit to {event_title}'
+            to_email = '{full_name} <{email}>'
+            email_template = 'email/confirmation.html'
+
+            event = api.find_event_by_id(orm_session, id)
+
+            for u in api.get_users_by_ids([int(_) for _ in regs]):
+                # user_reg = u.event_assocs.filter(
+                #     EventParticipant.event_id == id).first()
+
+                user_reg = api.get_event_registration(orm_session, u.id, id)
+
+                secure_id = aes_encrypt(str(user_reg.id))
+
+                confirm_data = {
+                    'url': cherrypy.url('/confirm/{id}'.format(id=secure_id))
+                }
+
+                # Do send email here
+                gmail_send_html(
+                    oauth2session,
+                    template=email_template,
+                    payload={'event': event, 'user': u,
+                             'registration': user_reg,
+                             'confirm': confirm_data},
+                    sbj=subject.format(event_title=event.title),
+                    to_email=to_email.format(full_name=u.full_name,
+                                             email=u.email),
+                    from_email=from_email)
+        except KeyError:
+            raise HTTPError(400, {'ok': False})
+        else:
+            return {'ok': True}
+
+    @cherrypy.tools.json_out()
+    def resend_approve_participants(self, id, **kwargs):
+        '''POST /api/events/:id/resend'''
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        try:
+            oauth2session = OAuth2Session(
+                google_client_id,
+                token=cherrypy.session['google_oauth_token'])
+            user_id = int(req.json.get('id'))
+            from_email = (req.json.get('fromEmail') or
+                          'GDG Registration Robot <kyiv@gdg.org.ua>')
+
+            subject = '✔ Registration confirmation to {event_title}'
+            to_email = '{full_name} <{email}>'
+            email_template = 'email/card.html'
+
+            user_reg = api.get_event_registration(orm_session, user_id, id)
+            event = user_reg.event
+            user = user_reg.user
+
+            gmail_send_html(
+                oauth2session,
+                template=email_template,
+                payload={'event': event, 'user': user,
+                         'registration': user_reg},
+                sbj=subject.format(event_title=event.title),
+                to_email=to_email.format(full_name=user.full_name,
+                                         email=user.email),
+                from_email=from_email)
         except KeyError:
             raise HTTPError(400, {'ok': False})
         else:
@@ -308,8 +394,18 @@ rest_api.connect("edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
 # rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
 #                  conditions={"method": ["DELETE"]})
-rest_api.connect("approve_event_participants", r"/events/{id:\d+}/approve",
-                 Events, action="approve_participants",
+
+rest_api.connect("approve_event_participants",
+                 r"/events/{id:\d+}/approve", Events,
+                 action="approve_participants",
+                 conditions={"method": ["POST"]})
+rest_api.connect("send_confirm_event_participants",
+                 r"/events/{id:\d+}/send-confirm", Events,
+                 action="send_confirm_participants",
+                 conditions={"method": ["POST"]})
+rest_api.connect("resend_approve_event_participants",
+                 r"/events/{id:\d+}/resend", Events,
+                 action="resend_approve_participants",
                  conditions={"method": ["POST"]})
 
 rest_api.connect("list_places", "/places", Places, action="list_all",

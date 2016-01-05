@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import os
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -11,8 +12,14 @@ from blueberrypy.template_engine import get_template
 
 import html2text
 
+from Crypto.Cipher import AES
+
 
 logger = logging.getLogger(__name__)
+
+# TODO: make this stuff normal
+card_secret_key = os.getenv('CARD_SECRET_KEY', 's33sagsabss3szd0s6')
+card_cipher = AES.new(card_secret_key)
 
 
 def is_admin():
@@ -61,3 +68,11 @@ def gmail_send_text(oauth2session, payload, **kwargs):
     msg = MIMEText(payload)
 
     return gmail_send(oauth2session, message=msg, **kwargs)
+
+
+def aes_encrypt(text):
+    return card_cipher.encrypt(text).encode('utf8')
+
+
+def aes_decrypt(text):
+    return card_cipher.decrypt(text).encode('utf8')

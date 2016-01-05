@@ -18,7 +18,8 @@ from Crypto.Cipher import AES
 logger = logging.getLogger(__name__)
 
 # TODO: make this stuff normal
-card_secret_key = os.getenv('CARD_SECRET_KEY', 's33sagsabss3szd0s6')
+card_secret_key = os.getenv('CARD_SECRET_KEY',
+                            'sHsagghsSBackFbscoEhTdBtpQtsszds')
 card_cipher = AES.new(card_secret_key)
 
 

@@ -12,8 +12,8 @@ controllers:
     /:
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.staticdir.root: /home/gtug2/gdg.org.ua/static
-      tools.staticfile.root: /home/gtug2/gdg.org.ua/static
+      tools.staticdir.root: static
+      tools.staticfile.root: static
     /css:
       tools.sessions.on: false
       tools.staticdir.on: true
@@ -63,8 +63,8 @@ sqlalchemy_engine:
 jinja2:
   loader: !!python/object:jinja2.loaders.FileSystemLoader
           encoding: utf-8
-          searchpath: [/home/gtug2/gdg.org.ua/src/GDGUkraine/templates]
-  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: /home/gtug2/gdg.org.ua/.cache,
+          searchpath: [src/GDGUkraine/templates]
+  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: .cache,
                                                                           pattern: __jinja2_%s.cache}
   auto_reload: true
   use_webassets: true

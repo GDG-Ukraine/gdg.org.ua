@@ -1,6 +1,7 @@
 # gdg.org.ua
-
 This is the event registration system for GDG Ukraine events.
+
+Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=ready&title=Ready)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
 
 ## Requirements:
 
@@ -20,7 +21,7 @@ This is the event registration system for GDG Ukraine events.
         [gdg.org.ua]$ pip install -e .
 
 * Create database tables (skip this step if you already have a database with all project tables):
-        
+
         [gdg.org.ua]$ echo "locals() ['create_all']()" | blueberrypy console
 
 * Start application:

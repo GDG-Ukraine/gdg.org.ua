@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import os
+import binascii
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -12,6 +13,7 @@ from blueberrypy.template_engine import get_template
 
 import html2text
 
+from Crypto import Random
 from Crypto.Cipher import AES
 
 
@@ -19,8 +21,7 @@ logger = logging.getLogger(__name__)
 
 # TODO: make this stuff normal
 card_secret_key = os.getenv('CARD_SECRET_KEY',
-                            'sHsagghsSBackFbscoEhTdBtpQtsszds')
-card_cipher = AES.new(card_secret_key)
+                            'sHsagghsSBackFbscoEhTdBtpQtsszds').encode('utf8')
 
 
 def is_admin():
@@ -45,6 +46,7 @@ def gmail_send(oauth2session, message, sbj, to_email,
         headers={"content-type": "application/json"})
 
     logger.debug(st.json())
+    logger.debug('Sent message to {}'.format(to_email))
     return st.json()
 
 
@@ -71,9 +73,23 @@ def gmail_send_text(oauth2session, payload, **kwargs):
     return gmail_send(oauth2session, message=msg, **kwargs)
 
 
-def aes_encrypt(text):
-    return card_cipher.encrypt(text).encode('utf8')
+def pad(s):
+    return s + b'\0' * (AES.block_size - len(s) % AES.block_size)
 
 
-def aes_decrypt(text):
-    return card_cipher.decrypt(text).encode('utf8')
+def aes_encrypt(message):
+    if isinstance(message, str):
+        message = message.encode('utf8')
+    message = pad(message)
+    iv = Random.new().read(AES.block_size)
+    cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
+    return binascii.hexlify(iv + cipher.encrypt(message)).decode('ascii')
+
+
+def aes_decrypt(ciphertext):
+    if isinstance(ciphertext, str):
+        ciphertext = binascii.unhexlify(ciphertext.encode('ascii'))
+    iv = ciphertext[:AES.block_size]
+    cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
+    plaintext = cipher.decrypt(ciphertext[AES.block_size:])
+    return plaintext.rstrip(b'\0').decode('utf8')

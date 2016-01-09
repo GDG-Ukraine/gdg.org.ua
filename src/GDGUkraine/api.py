@@ -41,7 +41,12 @@ def get_all_users(session):
 
 
 def get_users_by_ids(session, ids):
-    return session.query(User).filter(User.id in ids).all()
+    return session.query(User).filter(User.id.in_(ids)).all()
+
+
+def get_event_registrations_by_ids(session, reg_ids):
+    return session.query(EventParticipant)\
+        .filter(EventParticipant.id.in_(reg_ids)).all()
 
 
 def get_all_gdg_places(session, filtered=False):

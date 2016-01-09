@@ -253,11 +253,10 @@ class Events(APIBase):
 
             event = api.find_event_by_id(orm_session, id)
 
-            for u in api.get_users_by_ids([int(_) for _ in regs]):
-                # user_reg = u.event_assocs.filter(
-                #     EventParticipant.event_id == id).first()
+            for user_reg in api.get_event_registrations_by_ids(
+                    orm_session, [int(_) for _ in regs]):
 
-                user_reg = api.get_event_registration(orm_session, u.id, id)
+                u = user_reg.user
                 user_reg.confirmed = True
 
                 orm_session.merge(user_reg)
@@ -274,6 +273,7 @@ class Events(APIBase):
                                                  email=u.email),
                         from_email=from_email)
         except KeyError:
+            logger.exception('Could not send confirmation request')
             raise HTTPError(400, {'ok': False})
         else:
             return {'ok': True}
@@ -298,17 +298,17 @@ class Events(APIBase):
 
             event = api.find_event_by_id(orm_session, id)
 
-            for u in api.get_users_by_ids([int(_) for _ in regs]):
-                # user_reg = u.event_assocs.filter(
-                #     EventParticipant.event_id == id).first()
-
-                user_reg = api.get_event_registration(orm_session, u.id, id)
+            for user_reg in api.get_event_registrations_by_ids(
+                    orm_session, [int(_) for _ in regs]):
+                logger.debug(user_reg)
+                u = user_reg.user
 
                 secure_id = aes_encrypt(str(user_reg.id))
 
                 confirm_data = {
-                    'url': cherrypy.url('/confirm/{id}'.format(id=secure_id))
+                    'url': '/confirm/{id}'.format(id=secure_id)
                 }
+                logger.debug(confirm_data)
 
                 # Do send email here
                 gmail_send_html(
@@ -322,7 +322,8 @@ class Events(APIBase):
                                              email=u.email),
                     from_email=from_email)
         except KeyError:
-            raise HTTPError(400, {'ok': False})
+            logger.exception('Could not send confirmation request')
+            raise HTTPError(400, "{'ok': False}")
         else:
             return {'ok': True}
 

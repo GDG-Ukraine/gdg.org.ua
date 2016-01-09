@@ -11,12 +11,12 @@
 
     <!-- Start opengraph meta -->
     <!-- Override author, cause opengraph picks last author meta -->
-    <meta name="author" content="{{ event.host_gdg.name or 'GDG Ukraine' if event.host_gdg_id else 'GDG Ukraine' }}">
+    <meta name="author" content="{{ event.host_gdg.name|e or 'GDG Ukraine' if event.host_gdg_id else 'GDG Ukraine' }}">
     <!-- Actually opengraph meta -->
-    <meta property="og:title" content="Registration: {{ event.title }}">
-    <meta property="og:description" content="{{ event.desc }}">
+    <meta property="og:title" content="Registration: {{ event.title|e }}">
+    <meta property="og:description" content="{{ event.desc|e }}">
     <meta property="og:site_name" content="GDG Ukraine Events">
-    <meta property="og:image" content="{{event.host_gdg.logo or '/img/gdg.png' if event.host_gdg_id else '/img/gdg.png' }}">
+    <meta property="og:image" content="{{event.host_gdg.logo|e or '/img/gdg.png' if event.host_gdg_id else '/img/gdg.png' }}">
 
     <!-- End opengraph meta-->
     <link href="/favicon.ico" rel="icon" type="image/x-icon">

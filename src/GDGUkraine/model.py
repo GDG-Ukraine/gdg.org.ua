@@ -186,6 +186,9 @@ class Event(Base):
     google_map_iframe = deferred(Column(UnicodeText, nullable=True,
                                         default=None))
 
+    testing = Column(Boolean, nullable=False, default=False)
+    require_confirmation = Column(Boolean, nullable=False, default=False)
+
     participants = relationship("EventParticipant", backref="event")
     host_gdg = relationship("Place", backref="events")
 

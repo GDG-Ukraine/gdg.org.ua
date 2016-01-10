@@ -34,9 +34,6 @@ scope = [
 
 class AuthController:
     """AuthController implements authentication via Google's OAuth2"""
-    def __init__(self, arg=None):
-        super(AuthController, self).__init__()
-        self.arg = arg
 
     @cherrypy.expose
     def google(self, *args, **kwargs):

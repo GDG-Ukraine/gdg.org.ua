@@ -41,9 +41,15 @@
             <h3>Registration to "{{ event.title }}"</h3>
             <div>{{ event.desc }}</div>
         </td>
-            <td class="img" rowspan="{{ registration.fields | length }}"><img src="http://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" /></td>
+            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}"><img src="http://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" /></td>
         </tr>
-        {% for field_name, field_value in registration.fields.iteritems() %}
+        {% for field_name in ['name', 'surname', 'nickname', 'phone', 'gplus', 'www', 'experience_level', 'experienc_desc', 'interests', 'events_visited', 'english_knowledge', 't_shirt_size', 'gender', 'additional_info'] %}
+            <tr>
+                <td><b>{{ field_name }}</b></td>
+                <td>{{ registration.user[field_name] }}</td>
+            </tr>
+        {% endfor %}
+        {% for field_name, field_value in registration.fields.items() %}
             <tr>
                 <td><b>{{ field_name }}</b></td>
                 <td>{{ field_value }}</td>

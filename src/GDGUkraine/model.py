@@ -233,4 +233,5 @@ class Place(Base):
 
     master_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=True,
                        default=None)
-    master = relationship("Place", backref="subdivisions")
+    master = relationship("Place", remote_side='Place.id',
+                          backref='subdivisions')

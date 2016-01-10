@@ -12,7 +12,7 @@ from blueberrypy.util import from_collection, to_collection
 from . import api
 from .model import User, Event, EventParticipant
 from .auth_controller import client_id as google_client_id, OAuth2Session
-from .utils import gmail_send_html, aes_encrypt
+from .utils import gmail_send_html, aes_encrypt, make_vcard
 
 from datetime import date
 
@@ -267,7 +267,8 @@ class Events(APIBase):
                         oauth2session,
                         template=email_template,
                         payload={'event': event, 'user': u,
-                                 'registration': user_reg},
+                                 'registration': user_reg,
+                                 'qrdata': make_vcard(user_reg)},
                         sbj=subject.format(event_title=event.title),
                         to_email=to_email.format(full_name=u.full_name,
                                                  email=u.email),

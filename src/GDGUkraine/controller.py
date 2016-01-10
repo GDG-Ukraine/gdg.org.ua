@@ -5,7 +5,7 @@ import functools
 from blueberrypy.template_engine import get_template
 
 from .auth_controller import AuthController
-from .utils import aes_decrypt
+from .utils import aes_decrypt, make_vcard
 from . import api
 
 
@@ -63,6 +63,23 @@ class Root:
         else:
             tmpl = get_template("confirmed.html")
             return tmpl.render(event=user_reg.event, user=user_reg.user)
+
+    @cherrypy.expose
+    def card(self, aes_hash):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        try:
+            registration_id = aes_decrypt(aes_hash)
+            user_reg = api.get_event_registration_by_id(orm_session,
+                                                        registration_id)
+        except:
+            logger.exception('Invalid card number')
+            raise cherrypy.HTTPError(400, 'Invalid card number')
+        else:
+            vcard = make_vcard(user_reg, url=req.path_info)
+            tmpl = get_template("card.html")
+            return tmpl.render(event=user_reg.event, user=user_reg.user,
+                               registration=user_reg, qrdata=vcard)
 
 
 Root.auth = AuthController()

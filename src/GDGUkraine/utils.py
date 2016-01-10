@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import binascii
+import urllib
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -93,3 +94,23 @@ def aes_decrypt(ciphertext):
     cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
     plaintext = cipher.decrypt(ciphertext[AES.block_size:])
     return plaintext.rstrip(b'\0').decode('utf8')
+
+
+def make_vcard(user_reg, url=None):
+    if url is None:
+        url = '/card/{}'.format(aes_encrypt(user_reg.user.id))
+
+    if not url.startswith('http'):
+        url = 'https://gdg.org.ua{}'.format(url)
+
+    vcard = '''BEGIN:VCARD
+VERSION:2.1
+N:{user.name};{user.surname}
+EMAIL;TYPE=INTERNET:{user.email}
+NOTE:REG:{reg.id} EV:{event.id}
+URL:{url}
+END:VCARD'''
+    return urllib.parse.quote_plus(
+        vcard.format(
+            user=user_reg.user, reg=user_reg, event=user_reg.event,
+            url=url))

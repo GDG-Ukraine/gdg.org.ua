@@ -230,3 +230,7 @@ class Place(Base):
     logo = Column(String(255), nullable=True, default=None)
 
     show = Column(Enum('1', '0', name="show"), nullable=False, default='0')
+
+    master_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=True,
+                       default=None)
+    master = relationship("Place", backref="subdivisions")

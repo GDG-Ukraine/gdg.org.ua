@@ -257,7 +257,7 @@ class Events(APIBase):
                     orm_session, [int(_) for _ in regs]):
 
                 u = user_reg.user
-                user_reg.confirmed = True
+                user_reg.accepted = True
 
                 orm_session.merge(user_reg)
                 orm_session.commit()

@@ -5,6 +5,8 @@ import functools
 from blueberrypy.template_engine import get_template
 
 from .auth_controller import AuthController
+from .utils import aes_decrypt
+from . import api
 
 
 logger = logging.getLogger(__name__)
@@ -34,16 +36,33 @@ class Root:
     @cherrypy.expose
     # @render(template = 'gdg.org.ua_old.html', page_id = 'about')
     def index(self, **kwargs):
-        from .api import get_all_gdg_places
         tmpl = get_template("gdg.org.ua_old.html")
         return tmpl.render(
-            places=get_all_gdg_places(cherrypy.request.orm_session,
-                                      filtered=True))
+            places=api.get_all_gdg_places(cherrypy.request.orm_session,
+                                          filtered=True))
 
     @cherrypy.expose
     def admin(self, **kwargs):
         tmpl = get_template("admin/admin.html")
         return tmpl.render(p={})
+
+    @cherrypy.expose
+    def confirm(self, aes_hash):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        try:
+            registration_id = aes_decrypt(aes_hash)
+            user_reg = api.get_event_registration_by_id(orm_session,
+                                                        registration_id)
+            user_reg.confirmed = True
+            orm_session.merge(user_reg)
+            orm_session.commit()
+            logger.debug(user_reg)
+        except:
+            raise cherrypy.HTTPError(400, 'Invalid confirmation number')
+        else:
+            tmpl = get_template("confirmed.html")
+            return tmpl.render(event=user_reg.event, user=user_reg.user)
 
 
 Root.auth = AuthController()

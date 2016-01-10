@@ -49,6 +49,10 @@ def get_event_registrations_by_ids(session, reg_ids):
         .filter(EventParticipant.id.in_(reg_ids)).all()
 
 
+def get_event_registration_by_id(session, reg_id):
+    return session.query(EventParticipant).get(reg_id)
+
+
 def get_all_gdg_places(session, filtered=False):
     q = session.query(Place)
     if filtered:

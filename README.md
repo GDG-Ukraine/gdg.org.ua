@@ -22,7 +22,7 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
 
 * Create database tables (skip this step if you already have a database with all project tables):
 
-        [gdg.org.ua]$ echo "locals() ['create_all']()" | blueberrypy console
+        [gdg.org.ua]$ echo "locals()['create_all']()" | blueberrypy console
 
 * Start application:
 

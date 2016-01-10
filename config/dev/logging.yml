@@ -10,7 +10,7 @@ loggers:
     propagate: false
   # The following SQLAlchemy loggers are used for development only to let you
   # understanding what's actually going on inside SQLAlchemy. You can safely
-  # remove them as you wish. 
+  # remove them as you wish.
   sqlalchemy:
     level: WARNING
     handlers: [sa]
@@ -43,21 +43,21 @@ handlers:
   rfile:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8
   trfile:
     class: logging.handlers.TimedRotatingFileHandler
     formatter: warning
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     when: midnight
     backupCount: 60
     encoding: utf8
   sa:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8

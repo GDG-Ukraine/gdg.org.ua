@@ -16,9 +16,9 @@
     <meta property="og:title" content="Registration: {{ event.title|e }}">
     <meta property="og:description" content="{{ event.desc|e }}">
     <meta property="og:site_name" content="GDG Ukraine Events">
-    <meta property="og:image" content="{{ event.host_gdg.logo|e or '/img/gdg.png' if event.host_gdg_id else '/img/gdg.png' }}">
-
+    <meta property="og:image" content="http://gdg.org.ua/img/pattern.png"><!-- TODO: refactor with dynamic url generation -->
     <!-- End opengraph meta-->
+
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="/css/style.css" rel="stylesheet">

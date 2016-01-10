@@ -139,7 +139,7 @@ angular.module('gdgorgua')
             return r;
         }
         $scope.fromEmail = $window.localStorage.getItem('fromEmail');
-        if (!$scope.fromEmail) $scope.fromEmail = "mail@gdg.kiev.ua";
+        if (!$scope.fromEmail) $scope.fromEmail = "kyiv@gdg.org.ua";
         $scope.$watch('fromEmail',function(nv) {
             $window.localStorage.setItem('fromEmail',nv);
         })

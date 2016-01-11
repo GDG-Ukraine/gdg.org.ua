@@ -1,7 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+		<!-- Start opengraph meta -->
+		<!-- Override author, cause opengraph picks last author meta -->
+		<meta name="author" content="GDG Ukraine">
+		<!-- Actually opengraph meta -->
+		<meta property="og:title" content="Google Developer Groups in Ukraine">
+		<meta property="og:description" content="Think global. Hack local. Enjoy.">
+		<meta property="og:site_name" content="GDG Ukraine">
+        <meta property="og:image" content="https://gdg.org.ua/img/pattern.png">
+
+		<!-- Twitter meta tags -->
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
+		<meta name="twitter:title" content="Google Developer Groups in Ukraine">
+		<meta name="twitter:description" content="Think global. Hack local. Enjoy">
+		<meta name="twitter:image" content="https://gdg.org.ua/img/pattern.png">
+		<!-- End opengraph meta-->
+
 		<title>Google Developer Groups in Ukraine</title>
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<style type="text/css">
@@ -44,12 +62,12 @@ div#mapa {width:100%;height:600px;border:1px solid #ccc;}
 	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 	  })();
-	</script>	
+	</script>
 	<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;language=en"> </script>
 	<script type='text/javascript'>
 	//<![CDATA[
 	var ukraine = new google.maps.LatLng(48.4, 30.9);
-	
+
 	var myOptions = {
       zoom:6,
       center: ukraine,
@@ -58,7 +76,7 @@ div#mapa {width:100%;height:600px;border:1px solid #ccc;}
     var map = new google.maps.Map(document.getElementById('mapa'), myOptions);
     {% for place in places %}
         var contentString{{ place.id }} = '<div style="text-align:center;padding:10px;"><a href="{{ place.url }}">GDG {{ place.name }}</a></div>';
-    
+
 	    var infowindow{{ place.id }} = new google.maps.InfoWindow({
 	        content: contentString{{ place.id }}
 	    });
@@ -72,8 +90,8 @@ div#mapa {width:100%;height:600px;border:1px solid #ccc;}
 	    google.maps.event.addListener(marker{{ place.id }}, "click", function() {
 	      infowindow{{ place.id }}.open(map,marker{{ place.id }});
 	    });
-	    google.maps.event.addListener(map, "click", function(){ 
-					infowindow{{ place.id }}.close(); 
+	    google.maps.event.addListener(map, "click", function(){
+					infowindow{{ place.id }}.close();
 		});
     {% endfor %}
 	//]]>

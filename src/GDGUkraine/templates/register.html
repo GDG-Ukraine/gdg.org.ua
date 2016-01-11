@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html prefix="og: http://ogp.me/ns#">
 <head>
     <meta charset="UTF-8">
     <base href="/"></base>
@@ -8,6 +8,24 @@
     <meta name="author" content="Oleh Zasadnyy">
     <meta name="author" content="Svyatoslav Sydorenko">
     <meta name="author" content="Valentyn Shybanov">
+
+    <!-- Start opengraph meta -->
+    <!-- Override author, cause opengraph picks last author meta -->
+    <meta name="author" content="{{ event.host_gdg.name|e or 'GDG Ukraine' if event.host_gdg_id else 'GDG Ukraine' }}">
+    <!-- Actually opengraph meta -->
+    <meta property="og:title" content="Registration: {{ event.title|e }}">
+    <meta property="og:description" content="{{ event.desc|e }}">
+    <meta property="og:site_name" content="GDG Ukraine Events">
+    <meta property="og:image" content="https://gdg.org.ua/img/pattern.png"><!-- TODO: refactor with dynamic url generation -->
+
+    <!-- Twitter meta tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
+    <meta name="twitter:title" content="Registration: {{ event.title|e }}">
+    <meta name="twitter:description" content="{{ event.desc|e }}">
+    <meta name="twitter:image" content="https://gdg.org.ua/img/pattern.png">
+    <!-- End opengraph meta-->
+
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="/css/style.css" rel="stylesheet">

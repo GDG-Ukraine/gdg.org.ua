@@ -9,8 +9,8 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
-from GDGUkraine.api import find_participants_by_event, find_event_by_id
 from GDGUkraine.table_exporter import TableExporter
+
 from . import api
 from .model import User, Event, EventParticipant
 from .auth_controller import client_id as google_client_id, OAuth2Session
@@ -376,8 +376,8 @@ class Events(APIBase):
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
-        event = find_event_by_id(orm_session, id)
-        participations = find_participants_by_event(orm_session, event)
+        event = api.find_event_by_id(orm_session, id)
+        participations = api.find_participants_by_event(orm_session, event)
         exporter = TableExporter(
             data=participations,
             data_getters=[

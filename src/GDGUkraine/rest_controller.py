@@ -378,6 +378,8 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
         participations = api.find_participants_by_event(orm_session, event)
         exporter = TableExporter(
             data=participations,

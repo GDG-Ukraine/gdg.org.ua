@@ -10,7 +10,7 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
-from GDGUkraine.table_exporter import TableExporter
+from .table_exporter import TableExporter
 
 from . import api
 from .model import User, Event, EventParticipant

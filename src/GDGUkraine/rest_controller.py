@@ -240,7 +240,7 @@ class Events(APIBase):
         orm_session = req.orm_session
         try:
             oauth2session = OAuth2Session(
-                google_client_id,
+                google_client_id(),
                 token=cherrypy.session['google_oauth_token'])
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
@@ -287,7 +287,7 @@ class Events(APIBase):
         orm_session = req.orm_session
         try:
             oauth2session = OAuth2Session(
-                google_client_id,
+                google_client_id(),
                 token=cherrypy.session['google_oauth_token'])
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
@@ -336,7 +336,7 @@ class Events(APIBase):
         orm_session = req.orm_session
         try:
             oauth2session = OAuth2Session(
-                google_client_id,
+                google_client_id(),
                 token=cherrypy.session['google_oauth_token'])
             user_id = int(req.json.get('id'))
             from_email = (req.json.get('fromEmail') or

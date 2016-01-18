@@ -15,8 +15,8 @@ from .api import find_admin_by_email
 
 logger = logging.getLogger(__name__)
 
-client_id = '1012272991665.apps.googleusercontent.com'
-client_secret = 'baKsIdO1RgRZVfoEetx1oTjT'
+client_id = lambda: cherrypy.config.get('google_oauth', {}).get('id')
+client_secret = lambda: cherrypy.config.get('google_oauth', {}).get('secret')
 redirect_uri = 'http://localhost:8080/auth/google'
 
 authorization_base_url = "https://accounts.google.com/o/oauth2/auth"
@@ -40,13 +40,13 @@ class AuthController:
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            google = OAuth2Session(client_id, redirect_uri=redirect_uri,
+            google = OAuth2Session(client_id(), redirect_uri=redirect_uri,
                                    state=cherrypy.session['oauth_state'])
 
             redirect_response = '{}?{}'.format(cherrypy.url(),
                                                req.query_string)
             cherrypy.session['google_oauth_token'] = google.fetch_token(
-                token_url, client_secret=client_secret,
+                token_url, client_secret=client_secret(),
                 authorization_response=redirect_response)
 
             cherrypy.session['google_user'] = google.\
@@ -81,7 +81,7 @@ class AuthController:
            and not return_url.startswith('/auth'):
             cherrypy.session['auth_redirect'] = return_url
 
-        google = OAuth2Session(client_id, scope=scope,
+        google = OAuth2Session(client_id(), scope=scope,
                                redirect_uri=redirect_uri)
 
         # Redirect user to Google for authorization

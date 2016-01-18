@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 card_secret_key = os.getenv('CARD_SECRET_KEY',
                             'sHsagghsSBackFbscoEhTdBtpQtsszds').encode('utf8')
 url_resolve_map = None
+base_url = 'https://gdg.org.ua/'
 
 
 def is_admin():
@@ -105,7 +106,7 @@ def make_vcard(user_reg, url=None):
         url = '/card/{}'.format(aes_encrypt(user_reg.user.id))
 
     if not url.startswith('http'):
-        url = 'https://gdg.org.ua{}'.format(url)
+        url = ('' if url.startswith('/') else '/').join([base_url, url])
 
     vcard = '''BEGIN:VCARD
 VERSION:2.1
@@ -120,8 +121,78 @@ END:VCARD'''
             url=url))
 
 
+def uri_builder(rparams, *args, **kwargs):
+    '''
+    (3, 5, 2, x=3, y=2)
+    *args and **kwargs are checked for integrity with corresponding handler
+    '''
+
+    params = rparams['args'].copy()
+    url = rparams['url']
+
+    ikwargs = kwargs.copy()
+    iargs = list(args)
+
+    rkwargs = {}
+    rargs = []
+
+    while len(params):
+        param = params.popitem(last=False)[1]
+        if param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
+            # param goes prior to *args
+            if param.name in ikwargs:
+                rargs.append(ikwargs.pop(param.name))
+            elif len(iargs):
+                rargs.append(iargs.pop(0))
+            elif param.default is inspect.Parameter.empty:
+                raise TypeError
+            else:
+                rargs.append(param.default)
+        elif param.kind == inspect.Parameter.VAR_POSITIONAL:
+            # param is *args
+            rargs.extend(iargs)
+            iargs.clear()  # or maybe it's better to del it?
+        elif param.kind == inspect.Parameter.KEYWORD_ONLY:
+            # param is between (* or *args) and **kwargs
+            if param.name in rkwargs:
+                raise TypeError(
+                    'Got multiple values for argument `{}`'.format(param.name))
+            elif param.name not in ikwargs:
+                if param.default is inspect.Parameter.empty:
+                    raise TypeError(
+                        'Missing required argument `{}`'.format(param.name))
+                else:
+                    rkwargs[param.name] = param.default
+            else:
+                rkwargs[param.name] = ikwargs.pop(param.name)
+        elif param.kind == inspect.Parameter.VAR_KEYWORD:
+            # param is **kwargs
+            rkwargs.update(ikwargs)
+            ikwargs.clear()
+
+    if len(iargs):
+        raise TypeError('Too many positional arguments passed!')
+    elif len(ikwargs):
+        raise TypeError('Too many keyword arguments passed!')
+
+    uargs = '/'.join([urllib.parse.quote_plus(_)
+                      for _ in rargs if _])
+    ukwargs = '&'.join(['='.join([k, str(v)])
+                        for k, v in rkwargs.items() if v])
+
+    if uargs:
+        url = '/'.join([url, uargs])
+
+    if ukwargs:
+        url = '?'.join([url, ukwargs])
+
+    return url
+
+
 def build_url_map(force=False):
-    '''Builds resolve map for class-based routes'''
+    '''Builds resolve map for class-based routes
+        pprint(build_url_map())
+    '''
 
     def retrieve_class_routes(cls, mp, handler_cls=None):
         if handler_cls is None:
@@ -208,8 +279,21 @@ def build_url_map(force=False):
         return urls
 
 
-def url_for(handler, type_='cherrypy', **url_params):
-    '''handler=GDGUkraine.controller.Root'''
+def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
+    '''Builds URL based on params
+        pprint(url_for('Controller.Root', type_='class-based'))
+        pprint(url_for('Controller.Root.auth.google', type_='class-based'))
+        pprint(url_for('Controller.Root.auth.logout', type_='class-based'))
+        pprint(url_for(
+            'Controller.Root.auth.logout', type_='class-based',
+            url_args=['http://test.ua/xx']
+        ))
+        pprint(url_for(
+            'Controller.Root.auth.logout', type_='class-based',
+            url_args=['sdf', 'sdf2'],
+            url_params={'4': 1, 'asdf': '1'}
+        ))
+    '''
 
     if type_ == 'class-based':
         app_name = __name__.split('.')[0].lower()
@@ -220,10 +304,10 @@ def url_for(handler, type_='cherrypy', **url_params):
 
         url_route = url_resolve_map.get(handler)
         print(url_route)
-        return cp.url(url_route['url'],
+        return cp.url(uri_builder(url_route, *url_args, **url_params),
                       script_name='',
                       # script_name=url_resolve_map['script_name'],
-                      base='https://gdg.org.ua')
+                      base=base_url)
 
     elif type_ == 'routes':
         script_name = '/api'  # How do we negotiate this?
@@ -231,7 +315,7 @@ def url_for(handler, type_='cherrypy', **url_params):
         routes.request_config().mapper = dispatcher
         return cp.url(routes.url_for(handler),
                       script_name=url_resolve_map['script_name'],
-                      base='https://gdg.org.ua')
+                      base=base_url)
     else:
         if not handler.startswith('/'):
             handler = '/'.join(['', handler])

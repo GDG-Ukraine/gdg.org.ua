@@ -27,10 +27,6 @@ class Events:
     #    return to_collection(event, sort_keys=True)
 
     def show(self, id, **kwargs):
-        from pprint import pprint
-        pprint(build_url_map())
-        pprint(url_for('Controller.Root', type_='class-based'))
-        # import ipdb; ipdb.set_trace()
         try:
             id = int(id)
             req = cherrypy.request

@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 card_secret_key = os.getenv('CARD_SECRET_KEY',
                             'sHsagghsSBackFbscoEhTdBtpQtsszds').encode('utf8')
 url_resolve_map = None
-base_url = 'https://gdg.org.ua/'
+base_url = lambda: cp.config.get('base_app_url', 'https://gdg.org.ua')
 
 
 def is_admin():
@@ -106,7 +106,7 @@ def make_vcard(user_reg, url=None):
         url = '/card/{}'.format(aes_encrypt(user_reg.user.id))
 
     if not url.startswith('http'):
-        url = ('' if url.startswith('/') else '/').join([base_url, url])
+        url = ('' if url.startswith('/') else '/').join([base_url(), url])
 
     vcard = '''BEGIN:VCARD
 VERSION:2.1
@@ -307,7 +307,7 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         return cp.url(uri_builder(url_route, *url_args, **url_params),
                       script_name='',
                       # script_name=url_resolve_map['script_name'],
-                      base=base_url)
+                      base=base_url())
 
     elif type_ == 'routes':
         script_name = '/api'  # How do we negotiate this?
@@ -315,7 +315,7 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         routes.request_config().mapper = dispatcher
         return cp.url(routes.url_for(handler),
                       script_name=url_resolve_map['script_name'],
-                      base=base_url)
+                      base=base_url())
     else:
         if not handler.startswith('/'):
             handler = '/'.join(['', handler])

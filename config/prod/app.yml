@@ -6,6 +6,7 @@ global:
   engine.logging.on: true
   engine.sqlalchemy.on: true
   #tools.trailing_slash.on: false
+  base_app_url: https://gdg.org.ua
 
 controllers:
   '':

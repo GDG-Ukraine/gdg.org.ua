@@ -7,18 +7,18 @@ class UtilTest(ControllerTestCase):
     """Test for Utils"""
     urls_testset = (
         {'inp': {'handler': 'Controller.Root', 'type_': 'class-based'},
-         'res': '/'.join([base_url(), '/'])},
+         'res': base_url()},
         {'inp': {'handler': 'Controller.Root.auth.google',
                  'type_': 'class-based'},
-         'res': '/'.join([base_url(), '/auth/google'])},
+         'res': '/'.join([base_url(), 'auth/google'])},
         {'inp': {'handler': 'Controller.Root.auth.logout',
                  'type_': 'class-based'},
-         'res': '/'.join([base_url(), '/auth/logout'])},
+         'res': '/'.join([base_url(), 'auth/logout'])},
         {'inp': {'handler': 'Controller.Root.auth.logout',
                  'type_': 'class-based',
                  'url_args': ['http://test.ua/xx']},
          'res': '/'.join([base_url(),
-                          '/auth/logout/http%3A%2F%2Ftest.ua%2Fxx'])},
+                          'auth/logout/http%3A%2F%2Ftest.ua%2Fxx'])},
     )
 
     urls_exc_testset = (

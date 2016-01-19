@@ -215,7 +215,7 @@ span.label {
 	-moz-transition: color .20s;
 	-o-transition: color .20s;
 	transition: color .20s;
-}  
+}
 button:active span.label {
     color: #4D90FE;
 }

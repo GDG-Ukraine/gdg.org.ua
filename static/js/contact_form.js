@@ -57,7 +57,7 @@ angular.module('gdgorgua', [])
                 $window.location.href = GoogleEvent.url;
             }
        }
-    } 
+    }
 
     var formData = {user: $scope.user, event: parseInt(event), fields: $scope.fields};
     if ($scope.invite_code) {

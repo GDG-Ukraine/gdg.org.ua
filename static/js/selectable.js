@@ -18,7 +18,7 @@ app.directive('selectable', function() {
       <input ng-show="multiple" type="checkbox" ng-model="customChecked" ng-disabled="!custom">\
       <input ng-hide="multiple" type="radio" ng-disabled="!custom" ng-checked="custom == current.selected" ng-click="selectCustom()">\
       <input ng-model="custom"></div>\
-    </div>', 
+    </div>',
     link:function(scope, tElem, tAttr, ctrl) {
       scope.checked = {};
       scope.current = {selected:""};

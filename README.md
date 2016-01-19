@@ -20,13 +20,12 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
 
 * Set up config in environment variables:
 
-        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" } }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
+        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
         [gdg.org.ua]$ export OAUTHLIB_INSECURE_TRANSPORT=1
 
 * Create database tables:
 
-        [gdg.org.ua]$ vim config/dev/alembic.ini
-        [gdg.org.ua]$ alembic -c config/dev/alembic.ini upgrade head
+        [gdg.org.ua]$ alembic -c config/alembic.ini upgrade head
 
 * Start application:
 
@@ -50,7 +49,7 @@ Finally, to log out from virtualenv you may simply type:
 
 * Set up config in environment variables:
 
-        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" } }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
+        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
 
 * If you don't have HTTPS enabled you'll need to set this variable as well:
 
@@ -58,8 +57,7 @@ Finally, to log out from virtualenv you may simply type:
 
 * Create database tables:
 
-        [gdg.org.ua]$ vim config/dev/alembic.ini
-        [gdg.org.ua]$ alembic -c config/dev/alembic.ini upgrade head
+        [gdg.org.ua]$ alembic -c config/alembic.ini -x environment=prod upgrade head
 
 * Start application:
 

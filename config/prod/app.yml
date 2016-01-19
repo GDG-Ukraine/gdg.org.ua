@@ -5,7 +5,9 @@ global:
   environment: production
   engine.logging.on: true
   engine.sqlalchemy.on: true
-  #tools.trailing_slash.on: false
+  alembic:
+    script_location: src/db
+    sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
 
 controllers:
   '':
@@ -58,7 +60,7 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: *db_url
   pool_recycle: 60
 
 jinja2:

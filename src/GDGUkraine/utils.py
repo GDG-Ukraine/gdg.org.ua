@@ -123,7 +123,6 @@ END:VCARD'''
 
 def uri_builder(rparams, *args, **kwargs):
     '''
-    (3, 5, 2, x=3, y=2)
     *args and **kwargs are checked for integrity with corresponding handler
     '''
 
@@ -136,6 +135,9 @@ def uri_builder(rparams, *args, **kwargs):
     rkwargs = {}
     rargs = []
 
+    # Match url_for's input params to real handler's signature and put them
+    # into variables holding separate URI path parts along with
+    # GET key-value params
     while len(params):
         param = params.popitem(last=False)[1]
         if param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
@@ -170,13 +172,17 @@ def uri_builder(rparams, *args, **kwargs):
             rkwargs.update(ikwargs)
             ikwargs.clear()
 
+    # Check whether there's any params exceeding ones
+    # declared into original handler
     if len(iargs):
         raise TypeError('Too many positional arguments passed!')
     elif len(ikwargs):
         raise TypeError('Too many keyword arguments passed!')
 
+    # Build URI path string ending for concatenation with base URI
     uargs = '/'.join([urllib.parse.quote_plus(_)
                       for _ in rargs if _])
+    # Build GET params list string
     ukwargs = '&'.join(['='.join([k, str(v)])
                         for k, v in rkwargs.items() if v])
 
@@ -186,6 +192,7 @@ def uri_builder(rparams, *args, **kwargs):
     if ukwargs:
         url = '?'.join([url, ukwargs])
 
+    # Return final URI string
     return url
 
 

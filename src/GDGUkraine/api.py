@@ -88,9 +88,13 @@ def delete_event_by_id(session, id):
 
 
 def find_participants_by_event(session, e):
-    return session.query(User)\
-        .join(EventParticipant.users).join(EventParticipant.events)\
-        .filter(e.id == EventParticipant.event_id).all()
+    return (
+        session.query(User, EventParticipant, Event)
+        .join(EventParticipant, EventParticipant.googler_id == User.id)
+        .join(Event, EventParticipant.event_id == Event.id)
+        .filter(e.id == EventParticipant.event_id)
+        .all()
+    )
 
 
 def find_events_by_user(session, u):

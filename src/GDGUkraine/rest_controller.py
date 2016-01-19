@@ -2,12 +2,15 @@ import json
 
 import sys
 import traceback
+import re
 
 import cherrypy
 
 from cherrypy import HTTPError
-from cherrypy.lib import httputil as cphttputil
+from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
+
+from .table_exporter import TableExporter
 
 from . import api
 from .model import User, Event, EventParticipant
@@ -364,6 +367,88 @@ class Events(APIBase):
         else:
             return {'ok': True}
 
+    def export_participants(self, id):
+        """Exports xlsx file with event participants
+
+        Args:
+            id (int): event id
+        """
+        raise HTTPError(401)  # remove when auth is complete
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+        participations = api.find_participants_by_event(orm_session, event)
+        exporter = TableExporter(
+            data=participations,
+            data_getters=[
+                (lambda x: x.EventParticipant.id),
+                (lambda x: x.EventParticipant.register_date),
+                (lambda x: id),
+                (lambda x: event.title),
+                (lambda x: x.User.full_name),
+                (lambda x: x.User.gender),
+                (lambda x: x.User.nickname or ''),
+                (lambda x: x.User.email),
+                (lambda x: x.User.phone or ''),
+                (lambda x: x.User.gplus),
+                (lambda x: x.User.hometown or ''),
+                (lambda x: x.User.company or ''),
+                (lambda x: x.User.position or ''),
+                (lambda x: x.User.www or ''),
+                (lambda x: x.User.experience_level or ''),
+                (lambda x: x.User.experience_desc or ''),
+                (lambda x: x.User.interests or ''),
+                (lambda x: x.User.events_visited or ''),
+                (lambda x: x.User.english_knowledge or ''),
+                (lambda x: x.User.t_shirt_size or ''),
+                (lambda x: x.User.additional_info or ''),
+                (lambda x: (
+                    json.dumps(x.EventParticipant.fields)
+                    if x.EventParticipant.fields
+                    else ''
+                )),
+                (lambda x: x.EventParticipant.confirmed),
+            ],
+            headers=[
+                'Registration id',
+                'Registration date',
+                'Event id',
+                'Event title',
+                'Name',
+                'Gender',
+                'Nickname',
+                'Email',
+                'Phone',
+                'Google +',
+                'City',
+                'Company',
+                'Position',
+                'Website',
+                'Experience level',
+                'Experience description',
+                'Interests',
+                'Events visited',
+                'English knowledge',
+                'T-Shirt size',
+                'Additional info',
+                'Extra fields',
+                'Confirmed',
+            ],
+        )
+        cherrypy.response.headers['Content-Type'] = (
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
+        cherrypy.response.headers['Content-Disposition'] = (
+            'attachment; filename={}-{}-{}-participants.xlsx'.format(
+                event.id, filename, event.date,
+            )
+        )
+        return file_generator(exporter.get_xlsx_content())
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -409,6 +494,10 @@ rest_api.connect("resend_approve_event_participants",
                  r"/events/{id:\d+}/resend", Events,
                  action="resend_approve_participants",
                  conditions={"method": ["POST"]})
+rest_api.connect("export_event_participants",
+                 r"/events/{id:\d+}/export_participants", Events,
+                 action="export_participants",
+                 conditions={"method": ["GET"]})
 
 rest_api.connect("list_places", "/places", Places, action="list_all",
                  conditions={"method": ["GET"]})

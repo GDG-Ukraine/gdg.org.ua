@@ -183,7 +183,8 @@ def uri_builder(rparams, *args, **kwargs):
     uargs = '/'.join([urllib.parse.quote_plus(_)
                       for _ in rargs if _])
     # Build GET params list string
-    ukwargs = '&'.join(['='.join([k, str(v)])
+    ukwargs = '&'.join(['='.join([urllib.parse.quote_plus(k),
+                                  urllib.parse.quote_plus(str(v))])
                         for k, v in rkwargs.items() if v])
 
     if uargs:

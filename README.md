@@ -32,7 +32,7 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
 
         [gdg.org.ua]$ blueberrypy serve -b 0.0.0.0:8080
 
-* Open ```http://localhost:8080/``` in your favourite browser and have fun :)
+* Open `http://localhost:8080/` in your favourite browser and have fun :)
 
 Finally, to log out from virtualenv you may simply type:
 
@@ -65,6 +65,9 @@ Finally, to log out from virtualenv you may simply type:
 
         [gdg.org.ua]$ ./init_production.sh start
 
+## How to upgrade production
+
+We have `bin/update_gdg` script for this
 
 ## Troubleshooting
 

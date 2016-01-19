@@ -443,7 +443,9 @@ class Events(APIBase):
         )
         filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
         cherrypy.response.headers['Content-Disposition'] = (
-            'attachment; filename={}-participants.xlsx'.format(filename)
+            'attachment; filename={}-{}-{}-participants.xlsx'.format(
+                event.id, filename, event.date,
+            )
         )
         return file_generator(exporter.get_xlsx_content())
 

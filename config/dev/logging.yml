@@ -31,6 +31,10 @@ loggers:
     level: WARNING
     handlers: [sa]
     propagate: false
+  alembic:
+    level: WARNING
+    handlers: [sa]
+    propagate: false
 handlers:
   stdout:
     class: logging.StreamHandler

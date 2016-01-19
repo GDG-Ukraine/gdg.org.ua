@@ -8,6 +8,10 @@ loggers:
     level: DEBUG
     handlers: [trfile]
     propagate: false
+  alembic:
+    level: INFO
+    handlers: [trfile]
+    propagate: false
 handlers:
   stdout:
     class: logging.StreamHandler

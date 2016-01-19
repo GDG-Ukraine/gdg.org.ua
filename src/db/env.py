@@ -1,24 +1,49 @@
 from __future__ import with_statement
 from alembic import context
 from sqlalchemy import engine_from_config, pool
-from logging.config import fileConfig
+from logging.config import dictConfig
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-
-# Interpret the config file for Python logging.
-# This line sets up loggers basically.
-fileConfig(config.config_file_name)
+from blueberrypy.config import BlueberryPyConfiguration
 
 # model's MetaData object
 # for 'autogenerate' support
 from GDGUkraine.model import metadata as target_metadata
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
+environment = 'dev'
+
+# If environment name was passed via command line argument
+# e.g. -x environment=dev, let's use its value:
+try:
+    environment = [x.split('=')[1]
+                   for x in context.config.cmd_opts.x
+                   if x.split('=')[0] == 'environment'][0]
+except:
+    pass
+
+conf = BlueberryPyConfiguration(environment=environment)
+app_config = conf.app_config
+
+sqlalchemy_config = conf.sqlalchemy_config
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
+
+alembic_config = app_config.get('global', {}).get(config.config_ini_section)
+
+# Update alembic's context. Just in case...
+for option, value in alembic_config.items():
+    if isinstance(value, str):
+        config.set_main_option(option, value)
+    else:
+        config.attributes[option] = value
+    config.set_section_option(
+        config.config_ini_section, option, value)
+
+
+# Interpret the config for Python logging.
+# This line sets up loggers basically.
+dictConfig(conf.logging_config)
 
 
 def run_migrations_offline():
@@ -33,8 +58,8 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
-    context.configure(url=url, target_metadata=target_metadata)
+    context.configure(target_metadata=target_metadata,
+                      **sqlalchemy_config['sqlalchemy_engine'])
 
     with context.begin_transaction():
         context.run_migrations()
@@ -48,7 +73,7 @@ def run_migrations_online():
 
     """
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        alembic_config,
         prefix='sqlalchemy.',
         poolclass=pool.NullPool)
 

@@ -259,6 +259,11 @@ def build_url_map(force=False):
     if url_resolve_map is None or force:
         for script in cp.tree.apps:
             app = cp.tree.apps[script]
+            if isinstance(app.root, cp.lib.gctools.GCRoot):
+                print('It is CherryPy garbage collector app')
+                print('There are tests running probably')
+                print('Skipping...')
+                continue
             request_dispatcher = app.config['/'].get('request.dispatch')
             if app.root is not None:
                 print('It is class-based routed app')

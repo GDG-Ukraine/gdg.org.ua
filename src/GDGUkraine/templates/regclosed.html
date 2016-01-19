@@ -6,10 +6,10 @@
     <title>GDG Events | Registration to "{{ event.title }}" is closed</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta name="author" content="Oleh Zasadnyy" />
-	<meta name="author" content="Svyatoslav Sydorenko">
-	<meta name="author" content="Valentyn Shybanov">
+    <meta name="author" content="Svyatoslav Sydorenko">
+    <meta name="author" content="Valentyn Shybanov">
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css" />
     <link href="/css/style.css" rel="stylesheet" />
     <style>
         p, ul {
@@ -24,20 +24,22 @@
 <div class="wrapper">
     <div id="main" role="main">
             <div id="contact-form">
-                {% if event.host_gdg_id and event.host_gdg %}<a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>{% else %}<img id="logo" src="/img/logo.png" alt="logo">{% endif %}
-            <h1>Registration to {{ event.title }} is closed</h1>
+                {% if event.host_gdg_id and event.host_gdg %}
+                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>
+                {% else %}
+                <img id="logo" src="/img/logo.png" alt="logo">
+                {% endif %}
 
-                <h2>Sorry, but registration to this event is already closed. You can <a href="{{ event.url }}">check event details</a>.
-                </h2>
+                <h1>Registration to {{ event.title }} is closed</h1>
+
+                <h2>Sorry, but registration to this event is already closed. You can <a href="{{ event.url }}">check event details</a></h2>
                 <p>
-
-                Please consider visiting our next events:
-                <ul>
-                {% for e in events %}
-                    <li><a href="{{ e.url }}" target="_blank">{{ e.title }}</a> {{ e.date }}</li>
-                {% endfor %}
-                </ul>
-
+                    Please consider visiting our next events:
+                    <ul>
+                    {% for e in events %}
+                        <li><a href="{{ e.url }}" target="_blank">{{ e.title }}</a> {{ e.date }}</li>
+                    {% endfor %}
+                    </ul>
                 </p>
             </div>
      </div>

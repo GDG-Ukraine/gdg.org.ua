@@ -7,18 +7,17 @@ class UtilTest(ControllerTestCase):
     """Test for Utils"""
     urls_testset = (
         {'inp': {'handler': 'Controller.Root', 'type_': 'class-based'},
-         'res': base_url()},
+         'res': ''},
         {'inp': {'handler': 'Controller.Root.auth.google',
                  'type_': 'class-based'},
-         'res': '/'.join([base_url(), 'auth/google'])},
+         'res': 'auth/google'},
         {'inp': {'handler': 'Controller.Root.auth.logout',
                  'type_': 'class-based'},
-         'res': '/'.join([base_url(), 'auth/logout'])},
+         'res': 'auth/logout'},
         {'inp': {'handler': 'Controller.Root.auth.logout',
                  'type_': 'class-based',
                  'url_args': ['http://test.ua/xx']},
-         'res': '/'.join([base_url(),
-                          'auth/logout/http%3A%2F%2Ftest.ua%2Fxx'])},
+         'res': 'auth/logout/http%3A%2F%2Ftest.ua%2Fxx'},
     )
 
     urls_exc_testset = (
@@ -34,7 +33,8 @@ class UtilTest(ControllerTestCase):
 
     def test_url_for(self):
         for test_url in self.urls_testset:
-            self.assertEqual(url_for(**test_url['inp']), test_url['res'])
+            self.assertEqual(url_for(
+                **test_url['inp']), '/'.join([base_url(), test_url['res']]))
 
         for test_url in self.urls_exc_testset:
             with self.assertRaises(test_url['res']):

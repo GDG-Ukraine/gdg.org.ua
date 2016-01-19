@@ -67,6 +67,10 @@ Finally, to log out from virtualenv you may simply type:
 
 We have `bin/update_gdg` script for this
 
+## Running tests
+
+    NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
+
 ## Troubleshooting
 
 ### Converting packages to python3

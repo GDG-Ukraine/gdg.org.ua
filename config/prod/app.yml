@@ -7,6 +7,9 @@ global:
   engine.sqlalchemy.on: true
   #tools.trailing_slash.on: false
   base_app_url: https://gdg.org.ua
+  alembic:
+    script_location: src/db
+    sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
 
 controllers:
   '':
@@ -59,7 +62,7 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: *db_url
   pool_recycle: 60
 
 jinja2:

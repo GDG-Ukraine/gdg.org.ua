@@ -6,6 +6,34 @@ global:
   engine.sqlalchemy.on: true
   #tools.trailing_slash.on: false
   base_app_url: http://localhost:8080
+  alembic:
+    # path to migration scripts
+    script_location: src/db
+    # template used to generate migration files
+    # file_template: %%(rev)s_%%(slug)s
+
+    # max length of characters to apply to the
+    # "slug" field
+    #truncate_slug_length: 40
+
+    # set to 'true' to run the environment during
+    # the 'revision' command, regardless of autogenerate
+    # revision_environment: false
+
+    # set to 'true' to allow .pyc and .pyo files without
+    # a source .py file to be detected as revisions in the
+    # versions/ directory
+    # sourceless: false
+
+    # version location specification; this defaults
+    # to db/versions.  When using multiple version
+    # directories, initial revisions must be specified with --version-path
+    # version_locations: %(here)s/bar %(here)s/bat db/versions
+
+    # the output encoding used when revision files
+    # are written from script.py.mako
+    # output_encoding: utf-8
+    sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
 
 controllers:
   '':
@@ -57,7 +85,7 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: *db_url
   #pool_recycle: 3600
   pool_recycle: 60
 

@@ -27,7 +27,10 @@ logger = logging.getLogger(__name__)
 card_secret_key = os.getenv('CARD_SECRET_KEY',
                             'sHsagghsSBackFbscoEhTdBtpQtsszds').encode('utf8')
 url_resolve_map = None
-base_url = lambda: cp.config.get('base_app_url', 'https://gdg.org.ua')
+
+
+def base_url():
+    return cp.config.get('base_app_url', 'https://gdg.org.ua')
 
 
 def is_admin():

@@ -18,13 +18,15 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
         [gdg.org.ua]$ pip install -r dev.txt
         [gdg.org.ua]$ pip install -e .
 
-* Set up config in environment variable:
+* Set up config in environment variables:
 
         [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" } }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
+        [gdg.org.ua]$ export OAUTHLIB_INSECURE_TRANSPORT=1
 
-* Create database tables (skip this step if you already have a database with all project tables):
+* Create database tables:
 
-        [gdg.org.ua]$ echo "locals()['create_all']()" | blueberrypy console
+        [gdg.org.ua]$ vim config/dev/alembic.ini
+        [gdg.org.ua]$ alembic -c config/dev/alembic.ini upgrade head
 
 * Start application:
 
@@ -46,13 +48,18 @@ Finally, to log out from virtualenv you may simply type:
         [gdg.org.ua]$ pip install -r requirements.txt
         [gdg.org.ua]$ pip install -e .
 
-* Set up config in environment variable:
+* Set up config in environment variables:
 
         [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" } }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
 
-* Create database tables (skip this step if you already have a database with all project tables):
+* If you don't have HTTPS enabled you'll need to set this variable as well:
 
-        [gdg.org.ua]$ echo "locals()['create_all']()" | blueberrypy console
+        [gdg.org.ua]$ export OAUTHLIB_INSECURE_TRANSPORT=1
+
+* Create database tables:
+
+        [gdg.org.ua]$ vim config/dev/alembic.ini
+        [gdg.org.ua]$ alembic -c config/dev/alembic.ini upgrade head
 
 * Start application:
 

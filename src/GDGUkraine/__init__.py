@@ -1,5 +1,5 @@
-from . import plugins
+from .plugins import register_plugins
 
 __version__ = "1.0"
 
-plugins.register_plugins()
+register_plugins()

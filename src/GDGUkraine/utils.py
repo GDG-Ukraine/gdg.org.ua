@@ -326,11 +326,21 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
                       base=base_url())
 
     elif type_ == 'routes':
-        script_name = '/api'  # How do we negotiate this?
-        dispatcher = url_resolve_map['__routes__'].get(script_name)
-        routes.request_config().mapper = dispatcher
-        return cp.url(routes.url_for(handler),
-                      script_name=url_resolve_map['script_name'],
+        # script_name = '/api'  # How do we negotiate this?
+        script_name = url_args
+        routes_map = url_resolve_map.get('__routes__', {})
+        dispatcher = routes_map.get(script_name)
+        old_mapper = None
+        if hasattr(routes.request_config(), 'mapper'):
+            old_mapper = routes.request_config().mapper
+        routes.request_config().mapper = dispatcher.mapper
+        # Idea: use dispatcher.controllers list for
+        # back resolve and negotiation
+        routes_url = routes.url_for(handler, **url_params)
+        if old_mapper:
+            routes.request_config().mapper = old_mapper
+        return cp.url(routes_url,
+                      script_name=script_name,
                       base=base_url())
     else:
         if not handler.startswith('/'):

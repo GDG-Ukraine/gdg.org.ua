@@ -346,6 +346,14 @@ def url_for_cp(handler):
                   base=base_url())
 
 
+def url_for_static(handler):
+    if not handler.startswith('/'):
+        handler = '/'.join(['', handler])
+    return cp.url(handler,
+                  script_name='',  # retrieve /static from config somehow
+                  base=base_url())
+
+
 def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
     '''Builds URL based on params
         pprint(url_for('Controller.Root', type_='class-based'))
@@ -367,5 +375,7 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         return url_for_class(handler, url_args=url_args, url_params=url_params)
     elif type_ == 'routes':
         return url_for_routes(handler, **url_params)
+    elif type_ == 'static':
+        return url_for_static(handler)
     else:
         return url_for_cp(handler)

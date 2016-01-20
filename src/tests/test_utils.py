@@ -36,6 +36,10 @@ class UtilTest(ControllerTestCase):
         {'inp': {'handler': 'authors',
                  'type_': 'cherrypy'},
          'res': 'authors'},
+
+        {'inp': {'handler': 'img/gdg.png',
+                 'type_': 'static'},
+         'res': 'img/gdg.png'},
     )
 
     urls_exc_testset = (

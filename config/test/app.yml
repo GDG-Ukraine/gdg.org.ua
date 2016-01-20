@@ -3,7 +3,7 @@ project_metadata:
 
 global:
   engine.url_for.on: true
-  engine.logging.on: false
+  cherrypy.engine.logging.on: false
   engine.sqlalchemy.on: true
   base_app_url: http://testhost:12345
 

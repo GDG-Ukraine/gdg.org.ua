@@ -303,6 +303,49 @@ def build_url_map(force=False):
         return urls
 
 
+def url_for_class(handler, url_args=[], url_params={}):
+    app_name = __name__.split('.')[0].lower()
+    handler = handler.lower()
+
+    if handler.split('.')[0] != app_name:
+        handler = '.'.join([app_name, handler])
+
+    url_route = url_resolve_map.get(handler)
+    logger.debug(url_route)
+    return cp.url(uri_builder(url_route, *url_args, **url_params),
+                  script_name='',
+                  base=base_url())
+
+
+def url_for_routes(handler, **url_params):
+    routes_map = url_resolve_map.get('__routes__', {})
+    _ = routes_map.get(handler)
+    mapper = _.get('mapper')
+    script_name = _.get('script')
+
+    old_mapper = None
+    if hasattr(routes.request_config(), 'mapper'):
+        old_mapper = routes.request_config().mapper
+
+    routes.request_config().mapper = mapper
+    routes_url = routes.url_for(handler, **url_params)
+
+    if old_mapper:
+        routes.request_config().mapper = old_mapper
+
+    return cp.url(routes_url,
+                  script_name=script_name,
+                  base=base_url())
+
+
+def url_for_cp(handler):
+    if not handler.startswith('/'):
+        handler = '/'.join(['', handler])
+    return cp.url(handler,
+                  script_name='',
+                  base=base_url())
+
+
 def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
     '''Builds URL based on params
         pprint(url_for('Controller.Root', type_='class-based'))
@@ -319,40 +362,10 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         ))
     '''
 
+    # TODO: implement smarter type guessing/auto-negotiation
     if type_ == 'class-based':
-        app_name = __name__.split('.')[0].lower()
-        handler = handler.lower()
-
-        if handler.split('.')[0] != app_name:
-            handler = '.'.join([app_name, handler])
-
-        url_route = url_resolve_map.get(handler)
-        logger.debug(url_route)
-        return cp.url(uri_builder(url_route, *url_args, **url_params),
-                      script_name='',
-                      base=base_url())
-
+        return url_for_class(handler, url_args=url_args, url_params=url_params)
     elif type_ == 'routes':
-        routes_map = url_resolve_map.get('__routes__', {})
-        _ = routes_map.get(handler)
-        mapper = _.get('mapper')
-        script_name = _.get('script')
-
-        old_mapper = None
-        if hasattr(routes.request_config(), 'mapper'):
-            old_mapper = routes.request_config().mapper
-
-        routes.request_config().mapper = mapper
-        routes_url = routes.url_for(handler, **url_params)
-
-        if old_mapper:
-            routes.request_config().mapper = old_mapper
-
-        return cp.url(routes_url,
-                      script_name=script_name,
-                      base=base_url())
+        return url_for_routes(handler, **url_params)
     else:
-        if not handler.startswith('/'):
-            handler = '/'.join(['', handler])
-        return cp.url(handler,
-                      base=base_url())
+        return url_for_cp(handler)

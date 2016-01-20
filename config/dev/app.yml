@@ -98,3 +98,5 @@ jinja2:
                                                                           pattern: __jinja2_%s.cache}
   auto_reload: true
   use_webassets: true
+  globals:
+    url_for: !!python/name:GDGUkraine.utils.url_for

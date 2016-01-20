@@ -279,14 +279,17 @@ def build_url_map(force=False):
             request_dispatcher = app.config['/'].get('request.dispatch')
             if app.root is not None:
                 logger.debug('It is class-based routed app')
-                logger.debug(script, app)
+                logger.debug(script)
+                logger.debug(app)
                 urls.update(retrieve_class_routes(app.root,
                                                   mp=app.script_name))
             elif isinstance(request_dispatcher,
                             cp._cpdispatch.RoutesDispatcher):
                 logger.debug('It is Routes routed app')
                 logger.debug('Skipping...')
-                logger.debug(script, app, request_dispatcher)
+                logger.debug(script)
+                logger.debug(app)
+                logger.debug(request_dispatcher)
                 urls['__routes__'][app.script_name] = request_dispatcher
                 # urls['__routes__'].append({'dispatcher': request_dispatcher,
                 #                            'script_name': app.script_name})

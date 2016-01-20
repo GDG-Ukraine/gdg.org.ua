@@ -345,4 +345,5 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
     else:
         if not handler.startswith('/'):
             handler = '/'.join(['', handler])
-        return cp.url(handler)
+        return cp.url(handler,
+                      base=base_url())

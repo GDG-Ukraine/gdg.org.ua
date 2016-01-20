@@ -29,6 +29,13 @@ class UtilTest(ControllerTestCase):
                  'type_': 'routes', 'url_args': '/api',
                  'url_params': {'id': 5}},
          'res': 'api/events/5/export_participants'},
+
+        {'inp': {'handler': 'abuse',
+                 'type_': 'cherrypy'},
+         'res': 'abuse'},
+        {'inp': {'handler': 'authors',
+                 'type_': 'cherrypy'},
+         'res': 'authors'},
     )
 
     urls_exc_testset = (

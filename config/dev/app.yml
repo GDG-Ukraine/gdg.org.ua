@@ -2,6 +2,7 @@ project_metadata:
   package: GDGUkraine
 
 global:
+  engine.url_for.on: true
   engine.logging.on: true
   engine.sqlalchemy.on: true
   #tools.trailing_slash.on: false

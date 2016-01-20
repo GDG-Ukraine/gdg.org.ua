@@ -270,22 +270,23 @@ def build_url_map(force=False):
     if url_resolve_map is None or force:
         for script in cp.tree.apps:
             app = cp.tree.apps[script]
-            if isinstance(app.root, cp.lib.gctools.GCRoot):
-                print('It is CherryPy garbage collector app')
-                print('There are tests running probably')
-                print('Skipping...')
+            if hasattr(cp.lib, 'gctools') and \
+                    isinstance(app.root, cp.lib.gctools.GCRoot):
+                logger.debug('It is CherryPy garbage collector app')
+                logger.debug('There are tests running probably')
+                logger.debug('Skipping...')
                 continue
             request_dispatcher = app.config['/'].get('request.dispatch')
             if app.root is not None:
-                print('It is class-based routed app')
-                print(script, app)
+                logger.debug('It is class-based routed app')
+                logger.debug(script, app)
                 urls.update(retrieve_class_routes(app.root,
                                                   mp=app.script_name))
             elif isinstance(request_dispatcher,
                             cp._cpdispatch.RoutesDispatcher):
-                print('It is Routes routed app')
-                print('Skipping...')
-                print(script, app, request_dispatcher)
+                logger.debug('It is Routes routed app')
+                logger.debug('Skipping...')
+                logger.debug(script, app, request_dispatcher)
                 urls['__routes__'][app.script_name] = request_dispatcher
                 # urls['__routes__'].append({'dispatcher': request_dispatcher,
                 #                            'script_name': app.script_name})
@@ -319,7 +320,7 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
             handler = '.'.join([app_name, handler])
 
         url_route = url_resolve_map.get(handler)
-        print(url_route)
+        logger.debug(url_route)
         return cp.url(uri_builder(url_route, *url_args, **url_params),
                       script_name='',
                       # script_name=url_resolve_map['script_name'],

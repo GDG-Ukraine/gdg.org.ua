@@ -202,7 +202,7 @@ def uri_builder(rparams, *args, **kwargs):
 
 def build_url_map(force=False):
     '''Builds resolve map for class-based routes
-        pprint(build_url_map())
+        build_url_map(force=True) is called by url map builder cherrypy plugin
     '''
 
     def retrieve_class_routes(cls, mp, handler_cls=None):
@@ -266,7 +266,6 @@ def build_url_map(force=False):
 
     global url_resolve_map
     urls = {'__routes__': {}}
-    # urls = {'__routes__': []}
     if url_resolve_map is None or force:
         for script in cp.tree.apps:
             app = cp.tree.apps[script]
@@ -290,9 +289,14 @@ def build_url_map(force=False):
                 logger.debug(script)
                 logger.debug(app)
                 logger.debug(request_dispatcher)
-                urls['__routes__'][app.script_name] = request_dispatcher
-                # urls['__routes__'].append({'dispatcher': request_dispatcher,
-                #                            'script_name': app.script_name})
+                for handler_name in request_dispatcher.controllers.keys():
+                    if handler_name in urls['__routes__']:
+                        logger.warn('Handler name `{}` already in routes '
+                                    'URL map. Avoid having same identifier '
+                                    'for different paths!')
+                    urls['__routes__'][handler_name] = {
+                        'script': app.script_name,
+                        'mapper': request_dispatcher.mapper}
         url_resolve_map = urls
         return urls
     else:
@@ -326,23 +330,24 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         logger.debug(url_route)
         return cp.url(uri_builder(url_route, *url_args, **url_params),
                       script_name='',
-                      # script_name=url_resolve_map['script_name'],
                       base=base_url())
 
     elif type_ == 'routes':
-        # script_name = '/api'  # How do we negotiate this?
-        script_name = url_args
         routes_map = url_resolve_map.get('__routes__', {})
-        dispatcher = routes_map.get(script_name)
+        _ = routes_map.get(handler)
+        mapper = _.get('mapper')
+        script_name = _.get('script')
+
         old_mapper = None
         if hasattr(routes.request_config(), 'mapper'):
             old_mapper = routes.request_config().mapper
-        routes.request_config().mapper = dispatcher.mapper
-        # Idea: use dispatcher.controllers list for
-        # back resolve and negotiation
+
+        routes.request_config().mapper = mapper
         routes_url = routes.url_for(handler, **url_params)
+
         if old_mapper:
             routes.request_config().mapper = old_mapper
+
         return cp.url(routes_url,
                       script_name=script_name,
                       base=base_url())

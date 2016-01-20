@@ -21,14 +21,13 @@ class UtilTest(ControllerTestCase):
          'res': 'auth/logout/http%3A%2F%2Ftest.ua%2Fxx'},
 
         {'inp': {'handler': 'list_participants',
-                 'type_': 'routes', 'url_args': '/api'},
+                 'type_': 'routes'},
          'res': 'api/participants'},
         {'inp': {'handler': 'add_participant',
-                 'type_': 'routes', 'url_args': '/api'},
+                 'type_': 'routes'},
          'res': 'api/participants'},
         {'inp': {'handler': 'export_event_participants',
-                 'type_': 'routes', 'url_args': '/api',
-                 'url_params': {'id': 5}},
+                 'type_': 'routes', 'url_params': {'id': 5}},
          'res': 'api/events/5/export_participants'},
 
         {'inp': {'handler': 'abuse',

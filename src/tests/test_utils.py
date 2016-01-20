@@ -1,6 +1,7 @@
+import cherrypy
 from blueberrypy.testing import ControllerTestCase
 
-from GDGUkraine.utils import build_url_map, url_for, base_url
+from GDGUkraine.utils import url_for, base_url
 
 
 class UtilTest(ControllerTestCase):
@@ -47,7 +48,7 @@ class UtilTest(ControllerTestCase):
     )
 
     def setUp(self):
-        build_url_map(force=True)
+        cherrypy.config.update({'cherrypy.engine.url_for.on': True})
 
     def test_url_for(self):
         for test_url in self.urls_testset:

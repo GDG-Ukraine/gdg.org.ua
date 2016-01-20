@@ -1,0 +1,10 @@
+directory: static
+url: /
+debug: true
+
+bundles:
+  screen_css:
+    filters: yui_css
+    output: css/screen.css
+    contents:
+      - css/screen.css

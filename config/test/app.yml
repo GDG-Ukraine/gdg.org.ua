@@ -1,157 +1,70 @@
-app_config:
-  project_metadata:
-    package: GDGUkraine
+project_metadata:
+  package: GDGUkraine
 
-  global:
-    engine.url_for.on: true
-    engine.logging.on: true
-    engine.sqlalchemy.on: true
-    #tools.trailing_slash.on: false
-    base_app_url: http://testhost:12345
+global:
+  engine.url_for.on: true
+  engine.logging.on: false
+  engine.sqlalchemy.on: true
+  base_app_url: http://testhost:12345
 
-  controllers:
-    '':
-      controller: !!python/name:GDGUkraine.controller.Root
-      /:
-        tools.orm_session.on: true
-        tools.sessions.on: true
-        tools.staticdir.root: static
-        tools.staticfile.root: static
-      /css:
-        tools.sessions.on: false
-        tools.staticdir.on: true
-        tools.staticdir.dir: css
-      /js:
-        tools.sessions.on: false
-        tools.staticdir.on: true
-        tools.staticdir.dir: js
-      /img:
-        tools.sessions.on: false
-        tools.staticdir.on: true
-        tools.staticdir.dir: img
-      /admin:
-        tools.sessions.on: false
-        tools.staticfile.on: true
-        tools.staticfile.filename: templates/admin/admin.html
-      /templates:
-        tools.sessions.on: false
-        tools.staticdir.on: true
-        tools.staticdir.dir: templates
-      /favicon.ico:
-        tools.sessions.on: false
-        tools.staticfile.on: true
-        tools.staticfile.filename: favicon.ico
-      /google55b33f78b4c8d4c6.html:
-        tools.sessions.on: false
-        tools.staticfile.on: true
-        tools.staticfile.filename: google55b33f78b4c8d4c6.html
-    /api:
-      controller: !!python/name:GDGUkraine.rest_controller.rest_api
-      /:
-        request.dispatch: !!python/name:GDGUkraine.rest_controller.rest_api
-        tools.orm_session.on: true
-        tools.sessions.on: true
-    /events:
-      controller: !!python/name:GDGUkraine.events_controller.events
-      /:
-        request.dispatch: !!python/name:GDGUkraine.events_controller.events
-        tools.orm_session.on: true
-        tools.sessions.on: true
+controllers:
+  '':
+    controller: !!python/name:GDGUkraine.controller.Root
+    /:
+      tools.orm_session.on: true
+      tools.sessions.on: true
+      tools.staticdir.root: static
+      tools.staticfile.root: static
+    /css:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: css
+    /js:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: js
+    /img:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: img
+    /admin:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: templates/admin/admin.html
+    /templates:
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: templates
+    /favicon.ico:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: favicon.ico
+    /google55b33f78b4c8d4c6.html:
+      tools.sessions.on: false
+      tools.staticfile.on: true
+      tools.staticfile.filename: google55b33f78b4c8d4c6.html
+  /api:
+    controller: !!python/name:GDGUkraine.rest_controller.rest_api
+    /:
+      request.dispatch: !!python/name:GDGUkraine.rest_controller.rest_api
+      tools.orm_session.on: true
+      tools.sessions.on: true
+  /events:
+    controller: !!python/name:GDGUkraine.events_controller.events
+    /:
+      request.dispatch: !!python/name:GDGUkraine.events_controller.events
+      tools.orm_session.on: true
+      tools.sessions.on: true
 
-  sqlalchemy_engine:
-    url: <connection uri here>
-    #pool_recycle: 3600
-    pool_recycle: 60
+sqlalchemy_engine:
+  url: <connection uri here>
+  pool_recycle: 60
 
-  jinja2:
-    loader: !!python/object:jinja2.loaders.FileSystemLoader
-            encoding: utf-8
-            searchpath: [src/GDGUkraine/templates]
-    bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: .cache,
-                                                                            pattern: __jinja2_%s.cache}
-    auto_reload: true
-    use_webassets: false
-logging_config:
-  version: 1
-  disable_existing_loggers: false
-  loggers:
-    root:
-      level: WARNING
-      handlers: [rfile]
-    GDGUkraine:
-      level: DEBUG
-      handlers: [rfile]
-      propagate: false
-    # The following SQLAlchemy loggers are used for development only to let you
-    # understanding what's actually going on inside SQLAlchemy. You can safely
-    # remove them as you wish.
-    sqlalchemy:
-      level: WARNING
-      handlers: [sa]
-      propagate: false
-    sqlalchemy.engine:
-      level: WARNING
-      handlers: [sa]
-      propagate: false
-    sqlalchemy.dialects:
-      level: WARNING
-      handlers: [sa]
-      propagate: false
-    sqlalchemy.pool:
-      level: WARNING
-      handlers: [sa]
-      propagate: false
-    sqlalchemy.orm:
-      level: WARNING
-      handlers: [sa]
-      propagate: false
-  handlers:
-    stdout:
-      class: logging.StreamHandler
-      formatter: debug
-      stream: ext://sys.stdout
-    stderr:
-      class: logging.StreamHandler
-      formatter: debug
-      stream: ext://sys.stderr
-    rfile:
-      class: logging.handlers.RotatingFileHandler
-      formatter: debug
-      filename: &logfile ../../log/GDGUkraine.log
-      maxBytes: 1048576
-      backupCount: 5
-      encoding: utf8
-    trfile:
-      class: logging.handlers.TimedRotatingFileHandler
-      formatter: warning
-      filename: *logfile
-      when: midnight
-      backupCount: 60
-      encoding: utf8
-    sa:
-      class: logging.handlers.RotatingFileHandler
-      formatter: debug
-      filename: *logfile
-      maxBytes: 1048576
-      backupCount: 5
-      encoding: utf8
-  formatters:
-    debug:
-      format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(message)s'
-    info:
-      format: '%(asctime)s [%(levelname)s] %(name)s %(message)s'
-    warning:
-      format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(module)s.%(funcName)s: line %(lineno)d %(message)s'
-    error:
-      format: '%(asctime)s [%(levelname)s] %(name)s Thread(id=%(thread)d, name="%(threadName)s") %(module)s.%(funcName)s: line %(lineno)d %(message)s'
-webassets_env:
-  directory: static
-  url: /
-  debug: true
-
-  bundles:
-    screen_css:
-      filters: yui_css
-      output: css/screen.css
-      contents:
-        - css/screen.css
+jinja2:
+  loader: !!python/object:jinja2.loaders.FileSystemLoader
+          encoding: utf-8
+          searchpath: [src/GDGUkraine/templates]
+  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: .cache,
+                                                                          pattern: __jinja2_%s.cache}
+  auto_reload: true
+  use_webassets: false

@@ -11,8 +11,6 @@ from .api import (get_all_events,  # delete_event_by_id,
                   find_invitation_by_code, find_user_by_email,
                   find_event_by_id, find_host_gdg_by_event)
 
-from .utils import build_url_map, url_for
-
 logger = logging.getLogger(__name__)
 
 
@@ -101,15 +99,16 @@ events = cherrypy.dispatch.RoutesDispatcher()
 events.mapper.explicit = False
 # events.connect("add", "/", Events, action="create",
 #                conditions={"method": ["POST"]})
-events.connect("list", "", Events, action="list_all",
+events.connect("list_events", "", Events, action="list_all",
                conditions={"method": ["GET"]})
-events.connect("get", "/{id}", Events, action="show",
+events.connect("get_event", "/{id}", Events, action="show",
                conditions={"method": ["GET"]})
-events.connect("edit", "/{id}", Events, action="update",
+events.connect("edit_event", "/{id}", Events, action="update",
                conditions={"method": ["PUT"]})
 # events.connect("remove", "/{id}", Events, action="delete",
 #                conditions={"method": ["DELETE"]})
-events.connect("register", "/{id}/register", Events, action="register",
+events.connect("event_register", "/{id}/register", Events, action="register",
                conditions={"method": ["GET"]})
-events.connect("register", "/{id}/register/{code}", Events, action="register",
+events.connect("event_invite_register", "/{id}/register/{code}",
+               Events, action="register",
                conditions={"method": ["GET"]})

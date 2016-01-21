@@ -30,6 +30,10 @@ class UtilTest(ControllerTestCase):
                  'type_': 'routes', 'url_params': {'id': 5}},
          'res': 'api/events/5/export_participants'},
 
+        {'inp': {'handler': 'event_register', 'url_params': {'id': 7},
+                 'type_': 'routes'},
+         'res': 'events/7/register'},
+
         {'inp': {'handler': 'abuse',
                  'type_': 'cherrypy'},
          'res': 'abuse'},

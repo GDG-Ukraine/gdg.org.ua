@@ -291,9 +291,9 @@ def build_url_map(force=False):
                 logger.debug(request_dispatcher)
                 for handler_name in request_dispatcher.controllers.keys():
                     if handler_name in urls['__routes__']:
-                        logger.warn('Handler name `{}` already in routes '
-                                    'URL map. Avoid having same identifier '
-                                    'for different paths!')
+                        logger.warn('Handler name `{}` is already in routes '
+                                    'URL map. Avoid having same identifier for'
+                                    ' different paths!'.format(handler_name))
                     urls['__routes__'][handler_name] = {
                         'script': app.script_name,
                         'mapper': request_dispatcher.mapper}
@@ -318,24 +318,47 @@ def url_for_class(handler, url_args=[], url_params={}):
 
 
 def url_for_routes(handler, **url_params):
-    routes_map = url_resolve_map.get('__routes__', {})
-    _ = routes_map.get(handler)
-    mapper = _.get('mapper')
-    script_name = _.get('script')
+    try:
+        routes_map = url_resolve_map['__routes__']
+        _ = routes_map[handler]
+        mapper = _['mapper']
+        script_name = _['script']
 
-    old_mapper = None
-    if hasattr(routes.request_config(), 'mapper'):
-        old_mapper = routes.request_config().mapper
+        old_mapper = None
+        if hasattr(routes.request_config(), 'mapper'):
+            old_mapper = routes.request_config().mapper
 
-    routes.request_config().mapper = mapper
-    routes_url = routes.url_for(handler, **url_params)
+        # When running tests it's empty
+        # But standalone run results in WSGI env stored,
+        # which has 'SCRIPT_NAME'. Hacking routes to avoid prepending it
+        old_environ = None
+        if hasattr(routes.request_config(), 'environ'):
+            old_environ = routes.request_config().environ.copy()
+            routes.request_config().environ.clear()
 
-    if old_mapper:
-        routes.request_config().mapper = old_mapper
+        old_prefix = None
+        if hasattr(routes.request_config(), 'prefix'):
+            old_prefix = routes.request_config().prefix
 
-    return cp.url(routes_url,
-                  script_name=script_name,
-                  base=base_url())
+        routes.request_config().mapper = mapper
+        routes_url = routes.url_for(handler, **url_params)
+
+        # Restore everything
+        if old_mapper:
+            routes.request_config().mapper = old_mapper
+
+        if old_environ:
+            routes.request_config().environ = old_environ
+
+        if old_prefix:
+            routes.request_config().prefix = old_prefix
+    except KeyError:
+        raise TypeError(
+            'url_for could not find handler name {}'.format(handler))
+    else:
+        return cp.url(routes_url,
+                      script_name=script_name,
+                      base=base_url())
 
 
 def url_for_cp(handler):

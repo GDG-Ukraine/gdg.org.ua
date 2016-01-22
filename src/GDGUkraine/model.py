@@ -143,7 +143,9 @@ class User(Base):
     uid = Column(BigInteger)
 
     # events = relationship("Event", secondary=EventParticipant,
-    #                       backref="event_participants")
+    #                       backref="users")
+    events = relationship("EventParticipant",
+                          backref="users")
 
     @property
     def full_name(self):
@@ -189,7 +191,7 @@ class Event(Base):
     testing = Column(Boolean, nullable=False, default=False)
     require_confirmation = Column(Boolean, nullable=False, default=False)
 
-    participants = relationship("EventParticipant", backref="event")
+    participants = relationship("EventParticipant", backref="events")
     host_gdg = relationship("Place", backref="events")
 
 

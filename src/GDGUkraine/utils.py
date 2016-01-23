@@ -125,9 +125,9 @@ END:VCARD'''
 
 
 def uri_builder(rparams, *args, **kwargs):
-    '''
+    """
     *args and **kwargs are checked for integrity with corresponding handler
-    '''
+    """
 
     params = rparams['args'].copy()
     url = rparams['url']
@@ -201,11 +201,19 @@ def uri_builder(rparams, *args, **kwargs):
 
 
 def build_url_map(force=False):
-    '''Builds resolve map for class-based routes
+    """Builds resolve map for class-based routes
         build_url_map(force=True) is called by url map builder cherrypy plugin
-    '''
+    """
 
     def retrieve_class_routes(cls, mp, handler_cls=None):
+        """
+        retrieve_class_routes` builds a dictionary of method paths pointing
+        to corresponding handler information
+
+        `mp` is a mount point (script_name)
+        `cls` is a class being inspected
+        `handler_cls` is a reference to higher-level mount point
+        """
         if handler_cls is None:
             handler_cls = '.'.join([cls.__class__.__module__,
                                     cls.__class__.__name__]).lower()
@@ -246,7 +254,7 @@ def build_url_map(force=False):
                         'args': params,
                         'url': (uri
                                 if uri and uri.endswith('/')
-                                else '/'.join([uri]))}
+                                else '/'.join([uri, '']))}
             elif not inspect.isfunction(hndlr) and \
                     not isinstance(hndlr, property) and \
                     not method.startswith('__'):
@@ -298,9 +306,8 @@ def build_url_map(force=False):
                         'script': app.script_name,
                         'mapper': request_dispatcher.mapper}
         url_resolve_map = urls
-        return urls
-    else:
-        return urls
+
+    return urls
 
 
 def url_for_class(handler, url_args=[], url_params={}):
@@ -310,6 +317,7 @@ def url_for_class(handler, url_args=[], url_params={}):
     if handler.split('.')[0] != app_name:
         handler = '.'.join([app_name, handler])
 
+    # TODO: handle `default` method somehow
     url_route = url_resolve_map.get(handler)
     logger.debug(url_route)
     return cp.url(uri_builder(url_route, *url_args, **url_params),
@@ -352,9 +360,9 @@ def url_for_routes(handler, **url_params):
 
         if old_prefix:
             routes.request_config().prefix = old_prefix
-    except KeyError:
+    except KeyError as ke:
         raise TypeError(
-            'url_for could not find handler name {}'.format(handler))
+            'url_for could not find handler name {}'.format(handler)) from ke
     else:
         return cp.url(routes_url,
                       script_name=script_name,
@@ -379,18 +387,23 @@ def url_for_static(handler):
 
 def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
     '''Builds URL based on params
-        pprint(url_for('Controller.Root', type_='class-based'))
-        pprint(url_for('Controller.Root.auth.google', type_='class-based'))
-        pprint(url_for('Controller.Root.auth.logout', type_='class-based'))
-        pprint(url_for(
+
+    Invocation examples:
+        url_for('Controller.Root', type_='class-based')
+        url_for('Controller.Root.auth.google', type_='class-based')
+        url_for('Controller.Root.auth.logout', type_='class-based')
+        url_for(
             'Controller.Root.auth.logout', type_='class-based',
             url_args=['http://test.ua/xx']
-        ))
-        pprint(url_for(
+        )
+        url_for(
             'Controller.Root.auth.logout', type_='class-based',
             url_args=['sdf', 'sdf2'],
             url_params={'4': 1, 'asdf': '1'}
-        ))
+        )
+
+    See also:
+    `src/tests/test_utils.py:7:UtilTest.test_url_for`
     '''
 
     # TODO: implement smarter type guessing/auto-negotiation

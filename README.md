@@ -15,8 +15,8 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
         $ cd gdg.org.ua
         $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
         $ . env/bin/activate
-        [gdg.org.ua]$ pip install -r dev.txt
-        [gdg.org.ua]$ pip install -e .
+        [gdg.org.ua]$ pip install -U -r requirements/dev.txt
+        [gdg.org.ua]$ pip install -U -e .
 
 * Set up config in environment variables:
 
@@ -44,8 +44,8 @@ Finally, to log out from virtualenv you may simply type:
         $ cd gdg.org.ua
         $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
         $ . env/bin/activate
-        [gdg.org.ua]$ pip install -r requirements.txt
-        [gdg.org.ua]$ pip install -e .
+        [gdg.org.ua]$ pip install -U -r requirements/prod.txt
+        [gdg.org.ua]$ pip install -U -e .
 
 * Set up config in environment variables:
 

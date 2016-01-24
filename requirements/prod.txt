@@ -1,0 +1,2 @@
+hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk#egg=blueberrypy[speedups,all]
+-r common.txt

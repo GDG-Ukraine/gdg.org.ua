@@ -5,7 +5,7 @@ python:
 
 # Scripts to install dependencies
 install:
-    - pip install -U -r requirements/dev.txt --no-use-wheel
+    - pip install -U -r requirements/test.txt --no-use-wheel
     - pip install -U mysql-connector-python --no-use-wheel || pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip\#md5\=3df394d89300db95163f17c843ef49df --no-use-wheel
     - pip install -e . --no-use-wheel
 

@@ -7,10 +7,9 @@ install:
 
 # Environmental variables
 env:
-    # These will be set always
+    # Will be set always
     global:
-        - >
-            BLUEBERRYPY_CONFIG='{ "sqlalchemy_engine": { "url": "sqlite://" } }'
+        - BLUEBERRYPY_CONFIG='{}'
 
     # At least one build per one of the following variable
     matrix:

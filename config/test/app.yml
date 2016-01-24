@@ -57,7 +57,7 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: "sqlite://"
   pool_recycle: 60
 
 jinja2:

@@ -15,8 +15,8 @@ Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?l
         $ cd gdg.org.ua
         $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
         $ . env/bin/activate
-        [gdg.org.ua]$ pip install -r dev.txt
-        [gdg.org.ua]$ pip install -e .
+        [gdg.org.ua]$ pip install -U -r requirements/dev.txt
+        [gdg.org.ua]$ pip install -U -e .
 
 * Set up config in environment variables:
 
@@ -44,8 +44,8 @@ Finally, to log out from virtualenv you may simply type:
         $ cd gdg.org.ua
         $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
         $ . env/bin/activate
-        [gdg.org.ua]$ pip install -r requirements.txt
-        [gdg.org.ua]$ pip install -e .
+        [gdg.org.ua]$ pip install -U -r requirements/prod.txt
+        [gdg.org.ua]$ pip install -U -e .
 
 * Set up config in environment variables:
 
@@ -67,6 +67,13 @@ Finally, to log out from virtualenv you may simply type:
 
 We have `bin/update_gdg` script for this
 
+## Running tests
+
+    $ cd gdg.org.ua
+    $ . env/bin/activate
+    [gdg.org.ua]$ pip install -U -r requirements/test.txt
+    [gdg.org.ua]$ NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
+
 ## Troubleshooting
 
 ### Converting packages to python3
@@ -80,3 +87,8 @@ If you are getting errors about pip cannot find `mysql-connector-python` you can
     [gdg.org.ua]$ pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df
 
 or download the `mysql-connector-python` archive manually and then try to install requirements again.
+
+If you see any wheel-related error output, you may want to avoid it by using
+`--no-use-wheel` option. E.g.:
+
+    [gdg.org.ua]$ pip install coverage --no-use-wheel

@@ -15,7 +15,7 @@ env:
     global:
         - NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml
         - >
-            BLUEBERRYPY_CONFIG="{ 'sqlalchemy_engine': { 'url': 'sqlite://' } }"
+            BLUEBERRYPY_CONFIG='{ "sqlalchemy_engine": { "url": "sqlite://" } }'
 
 # Run tests
 script:

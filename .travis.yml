@@ -1,23 +1,22 @@
 language: python
-python:
-    - 3.4
-    - 3.5
+python: 3.5
 
 # Scripts to install dependencies
 install:
-    - pip install -U -r requirements/test.txt --no-use-wheel
-    - pip install -U mysql-connector-python --no-use-wheel || pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip\#md5\=3df394d89300db95163f17c843ef49df --no-use-wheel
-    - pip install -e . --no-use-wheel
+    - pip install tox
 
 # Environmental variables
 env:
     # These will be set always
     global:
-        - NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml
         - >
             BLUEBERRYPY_CONFIG='{ "sqlalchemy_engine": { "url": "sqlite://" } }'
 
+    # At least one build per one of the following variable
+    matrix:
+        - TOX_ENV=py34-codestyle,py34-nosetests
+        - TOX_ENV=py35-codestyle,py35-nosetests
+
 # Run tests
 script:
-    - pre-commit run --all-files
-    - nosetests -w src/tests --tests=test_utils
+    - tox

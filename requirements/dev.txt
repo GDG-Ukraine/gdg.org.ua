@@ -1,3 +1,4 @@
 pre-commit==0.7.6
 -r common.txt
 hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk#egg=blueberrypy[speedups,dev]
+tox==2.3.1

@@ -1,0 +1,21 @@
+language: python
+version:
+    - 3.4
+    - 3.5
+
+# Scripts to install dependencies
+install:
+    - pip install -U -r requirements/dev.txt
+    - pip install -U mysql-connector-python || pip install http://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip\#md5\=3df394d89300db95163f17c843ef49df
+    - pip install -U -e .
+
+# Environmental variables
+env:
+    # These will be set always
+    global:
+        - NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml
+
+# Run tests
+script:
+    - pre-commit run --all-files
+    - nosetests -w src/tests --tests=test_utils

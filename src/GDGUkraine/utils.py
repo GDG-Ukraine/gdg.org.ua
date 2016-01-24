@@ -252,9 +252,7 @@ def build_url_map(force=False):
 
                     res[key_cls] = {
                         'args': params,
-                        'url': (uri
-                                if uri and uri.endswith('/')
-                                else '/'.join([uri, '']))}
+                        'url': uri}
             elif not inspect.isfunction(hndlr) and \
                     not isinstance(hndlr, property) and \
                     not method.startswith('__'):

@@ -46,30 +46,26 @@ class APIBase:
 
 class Admin(APIBase):
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def info(self):
-        try:
-            cp_session = cherrypy.session
-            user = {'admin': True}
-            user.update(cp_session.get('admin_user'))
-            user.update(cp_session.get('google_user'))
-            user.update(cp_session.get('google_oauth_token'))
-
-            res = {'user': user}
-            if user.get('filter_place'):
-                res['place'] = to_collection(
-                    api.
-                    get_place_by_id(
-                        cherrypy.request.orm_session,
-                        cp_session.get('admin_user')['filter_place']))
-
-            return res
-        except TypeError:
-            raise HTTPError(401, 'Please authorize')
+        req = cherrypy.request
+        user = {'admin': True}
+        user.update(req.admin_user)
+        user.update(req.google_user)
+        user.update(req.google_oauth_token)
+        res = {'user': user}
+        if user.get('filter_place'):
+            res['place'] = to_collection(
+                api.get_place_by_id(
+                    cherrypy.request.orm_session,
+                    req.admin_user['filter_place']))
+        return res
 
 
 class Participants(APIBase):
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
@@ -120,6 +116,7 @@ class Participants(APIBase):
         return to_collection(user, sort_keys=True)
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def show(self, id, **kwargs):
         id = int(id)
         user = api.find_user_by_id(cherrypy.request.orm_session, id)
@@ -135,6 +132,7 @@ class Participants(APIBase):
             return u
         raise HTTPError(404)
 
+    @cherrypy.tools.authorize()
     @cherrypy.tools.json_out()
     def list_all(self, **kwargs):
         logger.debug('listing users')
@@ -146,6 +144,7 @@ class Participants(APIBase):
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def update(self, id, **kwargs):
         id = int(id)
         req = cherrypy.request
@@ -159,6 +158,7 @@ class Participants(APIBase):
                                  sort_keys=True)
         raise HTTPError(404)
 
+    @cherrypy.tools.authorize()
     def delete(self, id, **kwargs):
         id = int(id)
         req = cherrypy.request
@@ -172,6 +172,7 @@ class Participants(APIBase):
 class Events(APIBase):
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
@@ -181,6 +182,7 @@ class Events(APIBase):
         return to_collection(event, sort_keys=True)
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def show(self, id, **kwargs):
         id = int(id)
         event = api.find_event_by_id(cherrypy.request.orm_session, id)
@@ -201,6 +203,7 @@ class Events(APIBase):
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def list_all(self, **kwargs):
         events = api.get_all_events(cherrypy.request.orm_session)
         if events:
@@ -209,6 +212,7 @@ class Events(APIBase):
         raise HTTPError(404)
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def update(self, id, **kwargs):
         id = int(id)
         req = cherrypy.request
@@ -226,6 +230,7 @@ class Events(APIBase):
             return to_collection(event, sort_keys=True)
         raise HTTPError(404)
 
+    @cherrypy.tools.authorize()
     def delete(self, id, **kwargs):
         id = int(id)
         req = cherrypy.request
@@ -236,6 +241,7 @@ class Events(APIBase):
             orm_session.commit()
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def approve_participants(self, id, **kwargs):
         '''POST /api/events/:id/approve'''
         id = int(id)
@@ -283,6 +289,7 @@ class Events(APIBase):
             return {'ok': True}
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def send_confirm_participants(self, id, **kwargs):
         '''POST /api/events/:id/send-confirm'''
         id = int(id)
@@ -332,6 +339,7 @@ class Events(APIBase):
             return {'ok': True}
 
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def resend_approve_participants(self, id, **kwargs):
         '''POST /api/events/:id/resend'''
         id = int(id)
@@ -367,13 +375,13 @@ class Events(APIBase):
         else:
             return {'ok': True}
 
+    @cherrypy.tools.authorize()
     def export_participants(self, id):
         """Exports xlsx file with event participants
 
         Args:
             id (int): event id
         """
-        raise HTTPError(401)  # remove when auth is complete
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session

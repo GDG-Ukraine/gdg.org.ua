@@ -42,6 +42,7 @@ class Root:
                                           filtered=True))
 
     @cherrypy.expose
+    @cherrypy.tools.authorize()
     def admin(self, **kwargs):
         tmpl = get_template("admin/admin.html")
         return tmpl.render(p={})

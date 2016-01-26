@@ -65,7 +65,6 @@ class Admin(APIBase):
 class Participants(APIBase):
 
     @cherrypy.tools.json_out()
-    @cherrypy.tools.authorize()
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session

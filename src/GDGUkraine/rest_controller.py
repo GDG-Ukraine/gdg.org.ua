@@ -131,8 +131,8 @@ class Participants(APIBase):
             return u
         raise HTTPError(404)
 
-    @cherrypy.tools.authorize()
     @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
     def list_all(self, **kwargs):
         logger.debug('listing users')
         users = api.get_all_users(cherrypy.request.orm_session)

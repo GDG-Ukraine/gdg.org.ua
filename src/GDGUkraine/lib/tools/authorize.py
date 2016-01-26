@@ -7,9 +7,7 @@ __all__ = ['AuthorizeTool']
 class AuthorizeTool(cherrypy.Tool):
 
     def __init__(self):
-        cherrypy.Tool.__init__(
-            self, 'before_handler', self._fetch, priority=20
-        )
+        super().__init__('before_handler', self._fetch, priority=20)
 
     def _setup(self):
         cherrypy.Tool._setup(self)
@@ -34,5 +32,6 @@ class AuthorizeTool(cherrypy.Tool):
         cherrypy.request.google_oauth_token = google_oauth_token
 
     def _cleanup(self):
-        cherrypy.request.admin_user = None
-        cherrypy.request.google_user = None
+        del cherrypy.request.admin_user
+        del cherrypy.request.google_user
+        del cherrypy.request.google_oauth_token

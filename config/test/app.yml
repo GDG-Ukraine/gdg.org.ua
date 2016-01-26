@@ -2,10 +2,13 @@ project_metadata:
   package: GDGUkraine
 
 global:
+  environment: test_suite
   engine.url_for.on: true
-  cherrypy.engine.logging.on: false
   engine.sqlalchemy.on: true
   base_app_url: http://testhost:12345
+  alembic:
+    script_location: src/db
+    sqlalchemy.url: &db_url sqlite://gdg.db
 
 controllers:
   '':
@@ -57,7 +60,7 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: *db_url
   pool_recycle: 60
 
 jinja2:

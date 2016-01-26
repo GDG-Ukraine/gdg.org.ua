@@ -17,6 +17,7 @@ class AuthorizeTool(cherrypy.Tool):
 
     def _fetch(self):
         session = cherrypy.session
+        request = cherrypy.request
 
         google_oauth_token = session.get('google_oauth_token')
         google_user = session.get('google_user')
@@ -27,11 +28,15 @@ class AuthorizeTool(cherrypy.Tool):
         if not admin_user:
             raise cherrypy.HTTPError(403, 'Forbidden')
 
-        cherrypy.request.admin_user = admin_user
-        cherrypy.request.google_user = google_user
-        cherrypy.request.google_oauth_token = google_oauth_token
+        request.admin_user = admin_user
+        request.google_user = google_user
+        request.google_oauth_token = google_oauth_token
 
     def _cleanup(self):
-        del cherrypy.request.admin_user
-        del cherrypy.request.google_user
-        del cherrypy.request.google_oauth_token
+        try:
+            del cherrypy.request.admin_user
+            del cherrypy.request.google_user
+            del cherrypy.request.google_oauth_token
+        except AttributeError:
+            # That means we got 401 or 403 and did not set that attributes
+            pass

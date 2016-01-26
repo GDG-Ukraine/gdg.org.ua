@@ -1,0 +1,21 @@
+language: python
+python: 3.5
+
+# Scripts to install dependencies
+install:
+    - pip install tox
+
+# Environmental variables
+env:
+    # Will be set always
+    global:
+        - BLUEBERRYPY_CONFIG='{}'
+
+    # At least one build per one of the following variable
+    matrix:
+        - TOX_ENV=py34-codestyle,py34-nosetests
+        - TOX_ENV=py35-codestyle,py35-nosetests
+
+# Run tests
+script:
+    - tox -e $TOX_ENV

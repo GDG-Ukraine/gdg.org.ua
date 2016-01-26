@@ -74,6 +74,14 @@ We have `bin/update_gdg` script for this
     [gdg.org.ua]$ pip install -U -r requirements/test.txt
     [gdg.org.ua]$ NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
 
+You can use [`tox`](https://tox.readthedocs.org) to run tests as well. Unfortunately, due to some bug in tox itself some special steps are required.
+
+    [gdg.org.ua]$ BLUEBERRYPY_CONFIG='{}' tox
+
+You can also run only specific set of tests. To do that, add `-e toxenv[,toxenv]` to tox comand. For example, to run tests only for python3.5, use the following command:
+
+    [gdg.org.ua]$ BLUEBERRYPY_CONFIG='{}' tox -e py35-codestyle,py35-nosetests
+
 ## Troubleshooting
 
 ### Converting packages to python3

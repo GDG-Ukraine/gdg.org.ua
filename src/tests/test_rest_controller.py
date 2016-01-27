@@ -1,14 +1,12 @@
 from datetime import date
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
-from GDGUkraine.model import *
+from GDGUkraine.model import User
 from GDGUkraine.model import metadata
 
 from tests.helper import orm_session, Session
 from blueberrypy.testing import ControllerTestCase
+
+
 @orm_session
 def populate_db():
     session = Session()
@@ -30,6 +28,7 @@ def populate_db():
     session.add(alice)
     session.add(bob)
     session.commit()
+
 
 class UserRESTAPITest(ControllerTestCase):
     @orm_session

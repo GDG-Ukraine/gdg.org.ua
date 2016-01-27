@@ -5,9 +5,6 @@ except ImportError:
 
 from datetime import date, datetime
 
-from sqlalchemy import *
-from sqlalchemy.exc import *
-
 from GDGUkraine import api
 from GDGUkraine.model import User
 

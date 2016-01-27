@@ -1,11 +1,10 @@
 import functools
 
-from sqlalchemy import *
+from sqlalchemy import engine_from_config
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from testconfig import config as testconfig
 
-from GDGUkraine.model import *
 from GDGUkraine.model import metadata
 
 

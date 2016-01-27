@@ -1,7 +1,7 @@
 # gdg.org.ua
 This is the event registration system for GDG Ukraine events.
 
-Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=ready-for-dev&title=Ready%20for%20dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
+Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=ready-for-dev&title=Ready%20for%20dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)  CI: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=api-for-admin)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua)
 
 ## Requirements:
 

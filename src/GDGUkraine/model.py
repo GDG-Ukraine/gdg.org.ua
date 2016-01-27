@@ -1,7 +1,10 @@
+import json
 from sqlalchemy import (
     Column, UnicodeText, Date, String,
     Enum, Boolean, ForeignKey
 )
+
+from sqlalchemy.types import TypeDecorator, VARCHAR
 
 from sqlalchemy.dialects.mysql import BIGINT as BigInteger, INTEGER as Integer
 
@@ -12,9 +15,6 @@ from sqlalchemy.schema import UniqueConstraint
 
 Base = declarative_base()
 metadata = Base.metadata
-
-from sqlalchemy.types import TypeDecorator, VARCHAR
-import json
 
 
 class JSONEncodedDict(TypeDecorator):

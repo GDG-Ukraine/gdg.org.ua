@@ -1,7 +1,6 @@
-import cherrypy
 from cherrypy.process.plugins import SimplePlugin
 
-from .utils import build_url_map
+from GDGUkraine.utils import build_url_map
 
 
 class UrlMapPlugin(SimplePlugin):
@@ -18,13 +17,3 @@ class UrlMapPlugin(SimplePlugin):
         except:
             self.bus.log('Building of URL map failed!')
             self.bus.log(traceback=True)
-
-
-def register_plugins():
-    # Register the plugin in CherryPy:
-    if not hasattr(cherrypy.engine, 'url_for'):
-        cherrypy.engine.url_for = UrlMapPlugin(cherrypy.engine)
-
-# Enable it as follows:
-# global:
-#   engine.url_for.on: true

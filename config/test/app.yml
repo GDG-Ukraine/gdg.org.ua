@@ -72,8 +72,8 @@ jinja2:
   auto_reload: true
   use_webassets: false
   globals:
-    url_for: !!python/name:GDGUkraine.utils.url_for
-    url_for_class: !!python/name:GDGUkraine.utils.url_for_class
-    url_for_routes: !!python/name:GDGUkraine.utils.url_for_routes
-    url_for_cp: !!python/name:GDGUkraine.utils.url_for_cp
-    url_for_static: !!python/name:GDGUkraine.utils.url_for_static
+    url_for: !!python/name:GDGUkraine.lib.utils.url.url_for
+    url_for_class: !!python/name:GDGUkraine.lib.utils.url.url_for_class
+    url_for_routes: !!python/name:GDGUkraine.lib.utils.url.url_for_routes
+    url_for_cp: !!python/name:GDGUkraine.lib.utils.url.url_for_cp
+    url_for_static: !!python/name:GDGUkraine.lib.utils.url.url_for_static

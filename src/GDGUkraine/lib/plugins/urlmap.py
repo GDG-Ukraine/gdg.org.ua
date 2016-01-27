@@ -1,6 +1,6 @@
 from cherrypy.process.plugins import SimplePlugin
 
-from GDGUkraine.utils import build_url_map
+from ..utils.url import build_url_map
 
 
 class UrlMapPlugin(SimplePlugin):

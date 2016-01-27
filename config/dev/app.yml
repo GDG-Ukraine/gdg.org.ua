@@ -5,6 +5,17 @@ global:
   engine.url_for.on: true
   engine.logging.on: true
   engine.sqlalchemy.on: true
+  engine.oauth.on: true
+  google_oauth:
+    id: <google_app_id>.apps.googleusercontent.com
+    secret: <google_app_secret>
+    scope:
+        - https://www.googleapis.com/auth/userinfo.email
+        - https://www.googleapis.com/auth/userinfo.profile
+        # Send an email message:
+        - https://www.googleapis.com/auth/gmail.compose
+        # Create a new file on Google Drive
+        - https://www.googleapis.com/auth/drive.file
   #tools.trailing_slash.on: false
   base_app_url: http://localhost:8080
   alembic:

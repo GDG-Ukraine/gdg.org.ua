@@ -10,6 +10,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import cherrypy as cp
+from cherrypy.process.wspbus import ChannelFailures
 
 from blueberrypy.template_engine import get_template
 
@@ -413,3 +414,11 @@ def url_for(handler, type_='cherrypy', *, url_args=[], url_params={}):
         return url_for_static(handler)
     else:
         return url_for_cp(handler)
+
+
+def pub(channel, *args, **kwargs):
+    try:
+        return cp.engine.publish(channel, *args, **kwargs).pop()
+    except ChannelFailures as cf:
+        # Unwrap exception, which happened in channel
+        raise cf.get_instances()[0] from cf

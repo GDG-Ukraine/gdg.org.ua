@@ -14,7 +14,8 @@ from .lib.utils.table_exporter import TableExporter
 from . import api
 from .model import User, Event, EventParticipant
 from .auth_controller import client_id as google_client_id, OAuth2Session
-from .utils import gmail_send_html, aes_encrypt, make_vcard
+from .utils import gmail_send_html
+from .lib.utils.vcard import make_vcard, aes_encrypt
 
 from datetime import date
 

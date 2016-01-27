@@ -40,14 +40,14 @@ def is_admin():
         isinstance(cp.session.get('google_user'), dict)
 
 
-def gmail_send(oauth2session, message, sbj, to_email,
+def gmail_send(message, sbj, to_email,
                from_email='GDG Team Robot <kyiv@gdg.org.ua>'):
 
     message['to'] = to_email
     message['from'] = from_email
     message['subject'] = sbj
 
-    st = oauth2session.post(
+    st = pub('google-api').post(
         'https://www.googleapis.com/gmail/v1/users/{userId}/messages/send'
         .format(userId='me'),
         data=json.dumps({'raw': base64.urlsafe_b64encode(message.as_string()
@@ -60,7 +60,7 @@ def gmail_send(oauth2session, message, sbj, to_email,
     return st.json()
 
 
-def gmail_send_html(oauth2session, template, payload, **kwargs):
+def gmail_send_html(template, payload, **kwargs):
 
     assert isinstance(payload, dict), 'gmail_send_html only accepts dict'
 
@@ -73,14 +73,14 @@ def gmail_send_html(oauth2session, template, payload, **kwargs):
     msg.attach(MIMEText(plain_text_payload, 'plain'))
     msg.attach(MIMEText(html_payload, 'html'))
 
-    return gmail_send(oauth2session, message=msg, **kwargs)
+    return gmail_send(message=msg, **kwargs)
 
 
-def gmail_send_text(oauth2session, payload, **kwargs):
+def gmail_send_text(payload, **kwargs):
 
     msg = MIMEText(payload)
 
-    return gmail_send(oauth2session, message=msg, **kwargs)
+    return gmail_send(message=msg, **kwargs)
 
 
 def pad(s):

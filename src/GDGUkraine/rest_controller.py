@@ -10,11 +10,12 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
-from .table_exporter import TableExporter
-
 from . import api
 from .model import User, Event, EventParticipant
-from .utils import gmail_send_html, aes_encrypt, make_vcard, pub
+
+from .lib.utils.table_exporter import TableExporter
+from .lib.utils.mail import gmail_send_html
+from .lib.utils.vcard import make_vcard, aes_encrypt
 
 from datetime import date
 
@@ -246,7 +247,6 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = pub('google-api')
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')
@@ -269,7 +269,6 @@ class Events(APIBase):
 
                 if send_email:  # Do send email here
                     gmail_send_html(
-                        oauth2session,
                         template=email_template,
                         payload={'event': event, 'user': u,
                                  'registration': user_reg,
@@ -292,7 +291,6 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = pub('google-api')
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')
@@ -317,7 +315,6 @@ class Events(APIBase):
 
                 # Do send email here
                 gmail_send_html(
-                    oauth2session,
                     template=email_template,
                     payload={'event': event, 'user': u,
                              'registration': user_reg,
@@ -340,7 +337,6 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = pub('google-api')
             user_id = int(req.json.get('id'))
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')
@@ -354,7 +350,6 @@ class Events(APIBase):
             user = user_reg.user
 
             gmail_send_html(
-                oauth2session,
                 template=email_template,
                 payload={'event': event, 'user': user,
                          'registration': user_reg},

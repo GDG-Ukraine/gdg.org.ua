@@ -8,7 +8,7 @@ from cherrypy.process.plugins import SimplePlugin
 
 from requests_oauthlib import OAuth2Session
 
-from .utils import url_for_class
+from ..utils.url import url_for_class
 
 __all__ = ['OAuthEnginePlugin']
 
@@ -107,12 +107,12 @@ class OAuthEnginePlugin(SimplePlugin):
 
     def get_auth_url(self):
         authorization_url, self.oauth_state = OAuth2Session(
-                self.consumer_key, scope=self.scope,
-                redirect_uri=self.redirect_url).authorization_url(
-                        self.authorization_base_url,
-                        # offline for refresh token
-                        # force to always make user click authorize
-                        access_type="offline", approval_prompt="force")
+            self.consumer_key, scope=self.scope,
+            redirect_uri=self.redirect_url).authorization_url(
+                self.authorization_base_url,
+                # offline for refresh token
+                # force to always make user click authorize
+                access_type="offline", approval_prompt="force")
         return authorization_url
 
     def _get_state_session(self):
@@ -135,10 +135,10 @@ class OAuthEnginePlugin(SimplePlugin):
         return self.token
 
 
-def register_plugins():
+def register():
     # Register the plugin in CherryPy:
     if not hasattr(cherrypy.engine, 'oauth'):
         cherrypy.engine.oauth = OAuthEnginePlugin(
-                cherrypy.engine,
-                cherrypy.config.get('google_oauth', {}).get('id'),
-                cherrypy.config.get('google_oauth', {}).get('secret'))
+            cherrypy.engine,
+            cherrypy.config.get('google_oauth', {}).get('id'),
+            cherrypy.config.get('google_oauth', {}).get('secret'))

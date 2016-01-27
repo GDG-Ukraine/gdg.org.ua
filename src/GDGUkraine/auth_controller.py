@@ -9,7 +9,8 @@ from oauthlib.oauth2.rfc6749.errors import (MissingCodeError,
                                             MismatchingStateError)
 
 from .api import find_admin_by_email
-from .utils import pub, url_for_class
+from .lib.utils.url import url_for_class
+from .lib.utils.signals import pub
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +32,7 @@ class AuthController:
             google_api = pub('google-api')
 
             cherrypy.session['google_user'] = google_api.get(
-                    'https://www.googleapis.com/oauth2/v1/userinfo').json()
+                'https://www.googleapis.com/oauth2/v1/userinfo').json()
 
             cherrypy.session['admin_user'] = to_collection(find_admin_by_email(
                 orm_session,
@@ -51,7 +52,7 @@ class AuthController:
                             'Error: {}'.format(kwargs.get('error'))) from mce
         except (MismatchingStateError, KeyError) as wrong_state:
             raise HTTPRedirect(
-                    url_for_class('controller.Root.auth')) from wrong_state
+                url_for_class('controller.Root.auth')) from wrong_state
 
     # index = google
 

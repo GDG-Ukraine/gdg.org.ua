@@ -5,7 +5,7 @@ import functools
 from blueberrypy.template_engine import get_template
 
 from .auth_controller import AuthController
-from .utils import aes_decrypt, make_vcard
+from .lib.utils.vcard import make_vcard, aes_decrypt
 from . import api
 
 

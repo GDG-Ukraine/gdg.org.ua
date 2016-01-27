@@ -10,8 +10,7 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
-from .table_exporter import TableExporter
-
+from .lib.utils.table_exporter import TableExporter
 from . import api
 from .model import User, Event, EventParticipant
 from .auth_controller import client_id as google_client_id, OAuth2Session

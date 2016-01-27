@@ -1,7 +1,7 @@
 import cherrypy
 from blueberrypy.testing import ControllerTestCase
 
-from GDGUkraine.utils import url_for, base_url
+from GDGUkraine.lib.utils.url import base_url, url_for
 
 
 class UtilTest(ControllerTestCase):

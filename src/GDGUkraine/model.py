@@ -1,4 +1,5 @@
 import json
+
 from sqlalchemy import (
     Column, UnicodeText, Date, String,
     Enum, Boolean, ForeignKey
@@ -7,7 +8,6 @@ from sqlalchemy import (
 from sqlalchemy.types import TypeDecorator, VARCHAR
 
 from sqlalchemy.dialects.mysql import BIGINT as BigInteger, INTEGER as Integer
-
 from sqlalchemy.orm import deferred, relationship
 from sqlalchemy.ext.declarative import declarative_base
 

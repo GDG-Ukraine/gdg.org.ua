@@ -1,3 +1,4 @@
+import cherrypy
 from cherrypy.process.plugins import SimplePlugin
 
 from ..utils.url import build_url_map
@@ -17,3 +18,12 @@ class UrlMapPlugin(SimplePlugin):
         except:
             self.bus.log('Building of URL map failed!')
             self.bus.log(traceback=True)
+
+
+def register():
+    # Register the plugin in CherryPy:
+    if not hasattr(cherrypy.engine, 'url_for'):
+        cherrypy.engine.url_for = UrlMapPlugin(cherrypy.engine)
+# Enable UrlMap plugin as follows:
+# global:
+#   engine.url_for.on: true

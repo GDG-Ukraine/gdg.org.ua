@@ -13,10 +13,10 @@ from blueberrypy.util import from_collection, to_collection
 from .lib.utils.table_exporter import TableExporter
 from . import api
 from .model import User, Event, EventParticipant
-from .auth_controller import client_id as google_client_id, OAuth2Session
 
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.vcard import make_vcard, aes_encrypt
+from .lib.utils.signals import pub
 
 from datetime import date
 
@@ -248,9 +248,7 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = OAuth2Session(
-                google_client_id(),
-                token=cherrypy.session['google_oauth_token'])
+            oauth2session = pub('google-api')
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')
@@ -296,9 +294,7 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = OAuth2Session(
-                google_client_id(),
-                token=cherrypy.session['google_oauth_token'])
+            oauth2session = pub('google-api')
             regs = req.json.get('registrations')
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')
@@ -346,9 +342,7 @@ class Events(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            oauth2session = OAuth2Session(
-                google_client_id(),
-                token=cherrypy.session['google_oauth_token'])
+            oauth2session = pub('google-api')
             user_id = int(req.json.get('id'))
             from_email = (req.json.get('fromEmail') or
                           'GDG Registration Robot <kyiv@gdg.org.ua>')

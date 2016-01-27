@@ -1,13 +1,8 @@
-import cherrypy
-from .urlmap import UrlMapPlugin
+from .urlmap import register as register_urlmap_plugin
+from .oauth import register as register_oauth_plugin
 
 
 def register_plugins():
     # Register the plugin in CherryPy:
-    if not hasattr(cherrypy.engine, 'url_for'):
-        cherrypy.engine.url_for = UrlMapPlugin(cherrypy.engine)
-
-
-# Enable UrlMap plugin as follows:
-# global:
-#   engine.url_for.on: true
+    register_urlmap_plugin()
+    register_oauth_plugin()

@@ -10,10 +10,10 @@ from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
-from .lib.utils.table_exporter import TableExporter
 from . import api
 from .model import User, Event, EventParticipant
 
+from .lib.utils.table_exporter import TableExporter
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.vcard import make_vcard, aes_encrypt
 

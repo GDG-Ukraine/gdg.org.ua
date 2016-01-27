@@ -1,20 +1,17 @@
+import json
+
 from sqlalchemy import (
     Column, UnicodeText, Date, String,
     Enum, Boolean, ForeignKey
 )
-
 from sqlalchemy.dialects.mysql import BIGINT as BigInteger, INTEGER as Integer
-
-from sqlalchemy.orm import deferred, relationship
 from sqlalchemy.ext.declarative import declarative_base
-
+from sqlalchemy.orm import deferred, relationship
 from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.types import TypeDecorator, VARCHAR
 
 Base = declarative_base()
 metadata = Base.metadata
-
-from sqlalchemy.types import TypeDecorator, VARCHAR
-import json
 
 
 class JSONEncodedDict(TypeDecorator):

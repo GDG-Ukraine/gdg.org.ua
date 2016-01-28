@@ -444,6 +444,21 @@ class Events(APIBase):
         )
         return file_generator(exporter.get_xlsx_content())
 
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_invites(self, id):
+        return {}
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_report(self, id, mode=None):
+        """Exports spreadsheet file with event participants to Google Drive
+
+        Args:
+            id (int): event id
+        """
+        return {}
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -474,11 +489,17 @@ rest_api.connect("api_get_event", "/events/{id}", Events, action="show",
                  conditions={"method": ["GET"]})
 rest_api.connect("api_edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
-# rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
+# rest_api.connect("remove_event", "/events/{id:\d+}", Events, action="delete",
 #                  conditions={"method": ["DELETE"]})
-# rest_api.connect("delete_event", "/events/{id}/delete", Events,
+# rest_api.connect("delete_event", "/events/{id:\d+}/delete", Events,
 #                  action="delete",
 #                  conditions={"method": ["POST"]})
+# rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
+#                  action="generate_invites",
+#                  conditions={"method": ["POST"]})
+rest_api.connect("generate_report", "/events/{id:\d+}/report", Events,
+                 action="generate_report",
+                 conditions={"method": ["POST"]})
 
 rest_api.connect("approve_event_participants",
                  r"/events/{id:\d+}/approve", Events,

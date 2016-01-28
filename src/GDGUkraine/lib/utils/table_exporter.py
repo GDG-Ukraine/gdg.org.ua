@@ -5,7 +5,7 @@ from openpyxl import Workbook
 from openpyxl.writer.excel import save_virtual_workbook
 
 
-event_parsers = {
+event_parsers = (
     ('Registration id', (lambda _: _.EventParticipant.id)),
     ('Registration date', (lambda _: _.EventParticipant.register_date)),
     ('Event id', (lambda _: _.Event.id)),
@@ -33,7 +33,7 @@ event_parsers = {
         else ''
     ))),
     ('Confirmed', (lambda _: _.EventParticipant.confirmed)),
-}
+)
 
 
 class TableExporter:

@@ -29,8 +29,6 @@ def gdrive_upload(filename, mime_type, fileobj):
         @param (fileobj):bytes-like object
     Returns: JSON response from Google Drive API
     """
-    # TODO: implement exponential backoff
-    # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
 
     # Alternative way:
     # https://developers.google.com/drive/v2/web/savetodrive
@@ -38,8 +36,8 @@ def gdrive_upload(filename, mime_type, fileobj):
     # Btw, there's another alternative way, this button downloads file
     # to the user's browser and uploads it to Google Drive then:
     # https://developers.google.com/drive/v2/web/savetodrive
-    try:
 
+    try:
         msg = MIMEMultipart('related')
 
         # Add file metadata
@@ -55,18 +53,21 @@ def gdrive_upload(filename, mime_type, fileobj):
             fileobj,
             mime_type))
 
+        google_api = pub('google-api')
+        # TODO: implement exponential backoff
+        # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
+
         # Send it to drive
-        gd_rsrc = pub('google-api').post(
+        gd_rsrc = google_api.post(
             'https://www.googleapis.com/upload/drive/v2/files'
             '?uploadType=multipart&convert=true',
             data=msg.as_string(),
             headers=dict(msg.items()))
 
         return gd_rsrc.json()
-    except KeyError as ae:
-        logger.debug('Error sending to drive: {} {} ({})'.format(
-            gd_rsrc.status, gd_rsrc.reason, msg))
-        raise HTTPError(500,
-                        {'message': gd_rsrc.status, 'data': msg}) from ae
     except Exception as e:
         raise HTTPError(500) from e
+        logger.error('Error sending to drive: {} {} ({})'.format(
+            gd_rsrc.status, gd_rsrc.reason, msg))
+        raise HTTPError(500,
+                        {'message': gd_rsrc.status, 'data': msg}) from e

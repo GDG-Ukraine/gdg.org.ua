@@ -403,11 +403,13 @@ class Events(APIBase):
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()
-    def generate_report(self, id, mode=None):
+    def generate_report(self, id, mode='all'):
         """Exports spreadsheet file with event participants to Google Drive
 
         Args:
             id (int): event id
+            mode (str): tells us to filter out some entries,
+                        valid values: all, approved, waiting
         """
         id = int(id)
         req = cherrypy.request
@@ -425,6 +427,13 @@ class Events(APIBase):
 
         # Retrieve participation data
         participations = api.find_participants_by_event(orm_session, event)
+
+        if mode == 'approved':  # return only accepted guys
+            participations = filter(lambda _: _.EventParticipant.accepted,
+                                    participations)
+        elif mode == 'waiting':  # return ones waiting for approval
+            participations = filter(lambda _: not _.EventParticipant.accepted,
+                                    participations)
 
         # Upload to Google Drive
         gd_resp = gdrive_upload(

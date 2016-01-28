@@ -14,13 +14,14 @@ from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
 from . import api
-
-from .model import User, Event, EventParticipant
+from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.vcard import make_vcard, aes_encrypt
+
+from uuid import uuid4
 
 
 logger = logging.getLogger(__name__)
@@ -191,6 +192,8 @@ class Events(APIBase):
                 cherrypy.request.orm_session, event.id)
             logger.debug(registrations)
             e = to_collection(event, sort_keys=True)
+            e.update({'invites': [to_collection(i, sort_keys=True)
+                     for i in event.invites]})
             e.update({'registrations': [to_collection(r, sort_keys=True)
                      for r in registrations]})
             for r in e['registrations']:
@@ -398,12 +401,7 @@ class Events(APIBase):
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()
-    def generate_invites(self, id):
-        return {}
-
-    @cherrypy.tools.json_out()
-    @cherrypy.tools.authorize()
-    def generate_report(self, id, mode='all'):
+    def generate_report(self, id, mode=None):
         """Exports spreadsheet file with event participants to Google Drive
 
         Args:
@@ -442,6 +440,40 @@ class Events(APIBase):
 
         return {'url': gd_resp['alternateLink']}
 
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_invites(self, id):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        data = req.json
+
+        try:
+            number = data['number']
+            assert number >= 0
+        except (TypeError, KeyError, AssertionError) as e:
+            # Type- or KeyError if data is None or has no 'number'
+            # AssertionError if number of invites is negative
+            logger.exception()
+            raise HTTPError(400, "Malformed request body") from e
+
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+
+        for _ in range(number):
+            code = uuid4().hex
+            invite = Invite(code=code, event=event)
+            orm_session.add(invite)
+        try:
+            orm_session.commit()
+        except Exception as e:
+            # If here, then smth bad happened during
+            # saving invites to db. We need to rollback.
+            orm_session.rollback()
+            logger.exception()
+            raise HTTPError(500, "Cannot save generated invites") from e
+        return {"ok": True}
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -477,9 +509,9 @@ rest_api.connect("api_edit_event", "/events/{id}", Events, action="update",
 # rest_api.connect("delete_event", "/events/{id:\d+}/delete", Events,
 #                  action="delete",
 #                  conditions={"method": ["POST"]})
-# rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
-#                  action="generate_invites",
-#                  conditions={"method": ["POST"]})
+rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
+                 action="generate_invites",
+                 conditions={"method": ["POST"]})
 rest_api.connect("generate_report", "/events/{id:\d+}/report", Events,
                  action="generate_report",
                  conditions={"method": ["POST"]})

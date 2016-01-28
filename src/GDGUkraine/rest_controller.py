@@ -457,7 +457,121 @@ class Events(APIBase):
         Args:
             id (int): event id
         """
-        return {}
+        # Alternative way:
+        # https://developers.google.com/drive/v2/web/savetodrive
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+        participations = api.find_participants_by_event(orm_session, event)
+        exporter = TableExporter(
+            data=participations,
+            data_getters=[
+                (lambda x: x.EventParticipant.id),
+                (lambda x: x.EventParticipant.register_date),
+                (lambda x: id),
+                (lambda x: event.title),
+                (lambda x: x.User.full_name),
+                (lambda x: x.User.gender),
+                (lambda x: x.User.nickname or ''),
+                (lambda x: x.User.email),
+                (lambda x: x.User.phone or ''),
+                (lambda x: x.User.gplus),
+                (lambda x: x.User.hometown or ''),
+                (lambda x: x.User.company or ''),
+                (lambda x: x.User.position or ''),
+                (lambda x: x.User.www or ''),
+                (lambda x: x.User.experience_level or ''),
+                (lambda x: x.User.experience_desc or ''),
+                (lambda x: x.User.interests or ''),
+                (lambda x: x.User.events_visited or ''),
+                (lambda x: x.User.english_knowledge or ''),
+                (lambda x: x.User.t_shirt_size or ''),
+                (lambda x: x.User.additional_info or ''),
+                (lambda x: (
+                    json.dumps(x.EventParticipant.fields)
+                    if x.EventParticipant.fields
+                    else ''
+                )),
+                (lambda x: x.EventParticipant.confirmed),
+            ],
+            headers=[
+                'Registration id',
+                'Registration date',
+                'Event id',
+                'Event title',
+                'Name',
+                'Gender',
+                'Nickname',
+                'Email',
+                'Phone',
+                'Google +',
+                'City',
+                'Company',
+                'Position',
+                'Website',
+                'Experience level',
+                'Experience description',
+                'Interests',
+                'Events visited',
+                'English knowledge',
+                'T-Shirt size',
+                'Additional info',
+                'Extra fields',
+                'Confirmed',
+            ],
+        )
+
+        mime_type = ('application/vnd.openxmlformats-officedocument'
+                     '.spreadsheetml.sheet')
+        filename = 'Participants of [#{}] {} on {}'.format(
+                event.id, event.title, event.date)
+
+        # TODO: implement exponential backoff
+        # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
+
+        # Btw, there's and alternative way, this button downloads file
+        # to the user's browser and uploads it to Google Drive then:
+        # https://developers.google.com/drive/v2/web/savetodrive
+        try:
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.application import MIMEApplication
+            from email.encoders import encode_noop
+
+            from .lib.utils.signals import pub
+
+            msg = MIMEMultipart('related')
+
+            # Add file metadata
+            msg.attach(MIMEApplication(
+                json.dumps({
+                    'title': filename,
+                    'mimeType': mime_type}),
+                'json',
+                _encoder=encode_noop))
+
+            # Add spreadsheet itself
+            msg.attach(MIMEApplication(
+                exporter.get_xlsx_content().getbuffer(),
+                mime_type))
+
+            # send to drive
+            gd_rsrc = pub('google-api').post(
+                'https://www.googleapis.com/upload/drive/v2/files'
+                '?uploadType=multipart&convert=true',
+                data=msg.as_string().split('\n\n', 1)[1],
+                headers=dict(msg.items()))
+            gd_resp = gd_rsrc.json()
+            return {'url': gd_resp['alternateLink']}
+        except KeyError as ae:
+            logger.debug('Error sending to drive: {} {} ({})'.format(
+                gd_rsrc.status, gd_rsrc.reason, msg))
+            raise HTTPError(500,
+                            {'message': gd_rsrc.status, 'data': msg}) from ae
+        except Exception as e:
+            raise HTTPError(500) from e
 
 
 class Places(APIBase):

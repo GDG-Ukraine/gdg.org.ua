@@ -392,9 +392,9 @@ class Events(APIBase):
         )
 
         # Retrieve participation data
-        part_data = api.find_participants_by_event(orm_session, event)
+        participations = api.find_participants_by_event(orm_session, event)
 
-        return file_generator(gen_participants_xlsx(part_data))
+        return file_generator(gen_participants_xlsx(participations))
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()
@@ -424,12 +424,12 @@ class Events(APIBase):
             event.id, event.title, event.date)
 
         # Retrieve participation data
-        part_data = api.find_participants_by_event(orm_session, event)
+        participations = api.find_participants_by_event(orm_session, event)
 
         # Upload to Google Drive
-        gd_resp = gdrive_upload(file_name,
-                                file_mime,
-                                gen_participants_xlsx(part_data).getvalue())
+        gd_resp = gdrive_upload(
+            file_name, file_mime,
+            gen_participants_xlsx(participations).getvalue())
 
         return {'url': gd_resp['alternateLink']}
 

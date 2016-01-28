@@ -70,11 +70,11 @@ def gdrive_upload(filename, mime_type, fileobj):
                     headers=dict(msg.items()))
                 break
             except requests.exceptions.HTTPError as http_error:
-                if gd_rsrc.status < 500 or retries_count > 16:
+                if gd_rsrc.status < 500 or retries_count > 3:
                     raise http_error
 
                 # Wait exponential time and then retry
-                time.sleep(pow(2, retries_count) + random.random())
+                time.sleep(2 ** retries_count + random.random())
                 retries_count += 1
 
         return gd_rsrc.json()

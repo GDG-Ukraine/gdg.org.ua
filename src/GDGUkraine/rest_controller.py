@@ -1,25 +1,26 @@
 import json
-
+import logging
+import re
 import sys
 import traceback
-import re
+
+from datetime import date
 
 import cherrypy
 
 from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
+
 from blueberrypy.util import from_collection, to_collection
 
 from . import api
+
 from .model import User, Event, EventParticipant
 
-from .lib.utils.table_exporter import gen_participants_xlsx
+from .lib.utils.gdrive import gdrive_upload
 from .lib.utils.mail import gmail_send_html
+from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.vcard import make_vcard, aes_encrypt
-
-from datetime import date
-
-import logging
 
 
 logger = logging.getLogger(__name__)
@@ -408,8 +409,6 @@ class Events(APIBase):
         Args:
             id (int): event id
         """
-        # Alternative way:
-        # https://developers.google.com/drive/v2/web/savetodrive
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
@@ -419,57 +418,20 @@ class Events(APIBase):
         if event is None:
             raise HTTPError(404)
 
-        mime_type = ('application/vnd.openxmlformats-officedocument'
+        file_mime = ('application/vnd.openxmlformats-officedocument'
                      '.spreadsheetml.sheet')
-        filename = 'Participants of [#{}] {} on {}'.format(
+        file_name = 'Participants of [#{}] {} on {}'.format(
             event.id, event.title, event.date)
 
-        # TODO: implement exponential backoff
-        # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
+        # Retrieve participation data
+        part_data = api.find_participants_by_event(orm_session, event)
 
-        # Btw, there's and alternative way, this button downloads file
-        # to the user's browser and uploads it to Google Drive then:
-        # https://developers.google.com/drive/v2/web/savetodrive
-        try:
-            from email.mime.multipart import MIMEMultipart
-            from email.mime.application import MIMEApplication
-            from email.encoders import encode_noop
+        # Upload to Google Drive
+        gd_resp = gdrive_upload(file_name,
+                                file_mime,
+                                gen_participants_xlsx(part_data).getvalue())
 
-            from .lib.utils.signals import pub
-
-            msg = MIMEMultipart('related')
-
-            # Add file metadata
-            msg.attach(MIMEApplication(
-                json.dumps({
-                    'title': filename,
-                    'mimeType': mime_type}),
-                'json',
-                _encoder=encode_noop))
-
-            # Retrieve participation data
-            part_data = api.find_participants_by_event(orm_session, event)
-
-            # Add spreadsheet itself
-            msg.attach(MIMEApplication(
-                gen_participants_xlsx(part_data).getvalue(),
-                mime_type))
-
-            # send to drive
-            gd_rsrc = pub('google-api').post(
-                'https://www.googleapis.com/upload/drive/v2/files'
-                '?uploadType=multipart&convert=true',
-                data=msg.as_string().split('\n\n', 1)[1],
-                headers=dict(msg.items()))
-            gd_resp = gd_rsrc.json()
-            return {'url': gd_resp['alternateLink']}
-        except KeyError as ae:
-            logger.debug('Error sending to drive: {} {} ({})'.format(
-                gd_rsrc.status, gd_rsrc.reason, msg))
-            raise HTTPError(500,
-                            {'message': gd_rsrc.status, 'data': msg}) from ae
-        except Exception as e:
-            raise HTTPError(500) from e
+        return {'url': gd_resp['alternateLink']}
 
 
 class Places(APIBase):

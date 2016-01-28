@@ -59,7 +59,7 @@ def gdrive_upload(filename, mime_type, fileobj):
         gd_rsrc = pub('google-api').post(
             'https://www.googleapis.com/upload/drive/v2/files'
             '?uploadType=multipart&convert=true',
-            data=msg.as_string().split('\n\n', 1)[1],
+            data=msg.as_string(),
             headers=dict(msg.items()))
 
         return gd_rsrc.json()

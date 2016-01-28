@@ -191,6 +191,8 @@ class Events(APIBase):
                 cherrypy.request.orm_session, event.id)
             logger.debug(registrations)
             e = to_collection(event, sort_keys=True)
+            e.update({'invites': [to_collection(i, sort_keys=True)
+                     for i in event.invites]})
             e.update({'registrations': [to_collection(r, sort_keys=True)
                      for r in registrations]})
             for r in e['registrations']:
@@ -537,8 +539,8 @@ rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
                  action="generate_invites",
                  conditions={"method": ["POST"]})
 
-# Error handlers
 
+# Error handlers
 
 def generic_error_handler(status, message, traceback, version):
     """error_page.default"""

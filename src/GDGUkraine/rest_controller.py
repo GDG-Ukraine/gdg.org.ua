@@ -11,13 +11,14 @@ from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
 from . import api
-from .model import User, Event, EventParticipant
+from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.table_exporter import TableExporter
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.vcard import make_vcard, aes_encrypt
 
 from datetime import date
+from uuid import uuid4
 
 import logging
 
@@ -444,6 +445,36 @@ class Events(APIBase):
         )
         return file_generator(exporter.get_xlsx_content())
 
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_invites(self, id):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        data = req.json
+
+        try:
+            number = data['number']
+            assert number >= 0
+        except (TypeError, KeyError, AssertionError) as e:
+            logger.error(sys.exc_info())
+            raise HTTPError(400) from e
+
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+
+        for _ in range(number):
+            code = uuid4().hex
+            invite = Invite(code=code, event=event)
+            orm_session.add(invite)
+        try:
+            orm_session.commit()
+        except Exception as e:
+            orm_session.rollback()
+            logger.error(sys.exc_info())
+            raise HTTPError(500) from e
+        return {"ok": True}
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -502,9 +533,12 @@ rest_api.connect("list_places", "/places", Places, action="list_all",
 
 rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
-
+rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
+                 action="generate_invites",
+                 conditions={"method": ["POST"]})
 
 # Error handlers
+
 
 def generic_error_handler(status, message, traceback, version):
     """error_page.default"""

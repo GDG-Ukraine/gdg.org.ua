@@ -451,8 +451,10 @@ class Events(APIBase):
             number = data['number']
             assert number >= 0
         except (TypeError, KeyError, AssertionError) as e:
-            logger.error(sys.exc_info())
-            raise HTTPError(400) from e
+            # Type- or KeyError if data is None or has no 'number'
+            # AssertionError if number of invites is negative
+            logger.exception()
+            raise HTTPError(400, "Malformed request body") from e
 
         event = api.find_event_by_id(orm_session, id)
         if event is None:
@@ -465,9 +467,11 @@ class Events(APIBase):
         try:
             orm_session.commit()
         except Exception as e:
+            # If here, then smth bad happened during
+            # saving invites to db. We need to rollback.
             orm_session.rollback()
-            logger.error(sys.exc_info())
-            raise HTTPError(500) from e
+            logger.exception()
+            raise HTTPError(500, "Cannot save generated invites") from e
         return {"ok": True}
 
 

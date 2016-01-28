@@ -1,4 +1,6 @@
 import logging
+import random
+import time
 
 from json import dumps as json_dumps
 
@@ -7,6 +9,7 @@ from email.mime.application import MIMEApplication
 from email.encoders import encode_noop
 
 from cherrypy import HTTPError
+import requests.exceptions
 
 from .signals import pub
 
@@ -54,15 +57,25 @@ def gdrive_upload(filename, mime_type, fileobj):
             mime_type))
 
         google_api = pub('google-api')
-        # TODO: implement exponential backoff
-        # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
 
-        # Send it to drive
-        gd_rsrc = google_api.post(
-            'https://www.googleapis.com/upload/drive/v2/files'
-            '?uploadType=multipart&convert=true',
-            data=msg.as_string(),
-            headers=dict(msg.items()))
+        # Send file to drive with exponential backoff enabled:
+        # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
+        retries_count = 0
+        while True:
+            try:
+                gd_rsrc = google_api.post(
+                    'https://www.googleapis.com/upload/drive/v2/files'
+                    '?uploadType=multipart&convert=true',
+                    data=msg.as_string(),
+                    headers=dict(msg.items()))
+                break
+            except requests.exceptions.HTTPError as http_error:
+                if gd_rsrc.status < 500 or retries_count > 16:
+                    raise http_error
+
+                # Wait exponential time and then retry
+                time.sleep(pow(2, retries_count) + random.random())
+                retries_count += 1
 
         return gd_rsrc.json()
     except Exception as e:

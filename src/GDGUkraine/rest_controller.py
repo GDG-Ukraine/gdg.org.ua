@@ -476,6 +476,9 @@ rest_api.connect("api_edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
 # rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
 #                  conditions={"method": ["DELETE"]})
+# rest_api.connect("delete_event", "/events/{id}/delete", Events,
+#                  action="delete",
+#                  conditions={"method": ["POST"]})
 
 rest_api.connect("approve_event_participants",
                  r"/events/{id:\d+}/approve", Events,

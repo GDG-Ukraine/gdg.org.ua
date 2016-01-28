@@ -13,7 +13,7 @@ from blueberrypy.util import from_collection, to_collection
 from . import api
 from .model import User, Event, EventParticipant
 
-from .lib.utils.table_exporter import TableExporter
+from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.vcard import make_vcard, aes_encrypt
 
@@ -372,77 +372,28 @@ class Events(APIBase):
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
+
+        # Retrieve event object
         event = api.find_event_by_id(orm_session, id)
         if event is None:
             raise HTTPError(404)
-        participations = api.find_participants_by_event(orm_session, event)
-        exporter = TableExporter(
-            data=participations,
-            data_getters=[
-                (lambda x: x.EventParticipant.id),
-                (lambda x: x.EventParticipant.register_date),
-                (lambda x: id),
-                (lambda x: event.title),
-                (lambda x: x.User.full_name),
-                (lambda x: x.User.gender),
-                (lambda x: x.User.nickname or ''),
-                (lambda x: x.User.email),
-                (lambda x: x.User.phone or ''),
-                (lambda x: x.User.gplus),
-                (lambda x: x.User.hometown or ''),
-                (lambda x: x.User.company or ''),
-                (lambda x: x.User.position or ''),
-                (lambda x: x.User.www or ''),
-                (lambda x: x.User.experience_level or ''),
-                (lambda x: x.User.experience_desc or ''),
-                (lambda x: x.User.interests or ''),
-                (lambda x: x.User.events_visited or ''),
-                (lambda x: x.User.english_knowledge or ''),
-                (lambda x: x.User.t_shirt_size or ''),
-                (lambda x: x.User.additional_info or ''),
-                (lambda x: (
-                    json.dumps(x.EventParticipant.fields)
-                    if x.EventParticipant.fields
-                    else ''
-                )),
-                (lambda x: x.EventParticipant.confirmed),
-            ],
-            headers=[
-                'Registration id',
-                'Registration date',
-                'Event id',
-                'Event title',
-                'Name',
-                'Gender',
-                'Nickname',
-                'Email',
-                'Phone',
-                'Google +',
-                'City',
-                'Company',
-                'Position',
-                'Website',
-                'Experience level',
-                'Experience description',
-                'Interests',
-                'Events visited',
-                'English knowledge',
-                'T-Shirt size',
-                'Additional info',
-                'Extra fields',
-                'Confirmed',
-            ],
-        )
+
+        # Set appropriate headers
+        filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
+
         cherrypy.response.headers['Content-Type'] = (
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-        filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
         cherrypy.response.headers['Content-Disposition'] = (
             'attachment; filename={}-{}-{}-participants.xlsx'.format(
                 event.id, filename, event.date,
             )
         )
-        return file_generator(exporter.get_xlsx_content())
+
+        # Retrieve participation data
+        part_data = api.find_participants_by_event(orm_session, event)
+
+        return file_generator(gen_participants_xlsx(part_data))
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()
@@ -462,72 +413,16 @@ class Events(APIBase):
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
+
+        # Retrieve event object
         event = api.find_event_by_id(orm_session, id)
         if event is None:
             raise HTTPError(404)
-        participations = api.find_participants_by_event(orm_session, event)
-        exporter = TableExporter(
-            data=participations,
-            data_getters=[
-                (lambda x: x.EventParticipant.id),
-                (lambda x: x.EventParticipant.register_date),
-                (lambda x: id),
-                (lambda x: event.title),
-                (lambda x: x.User.full_name),
-                (lambda x: x.User.gender),
-                (lambda x: x.User.nickname or ''),
-                (lambda x: x.User.email),
-                (lambda x: x.User.phone or ''),
-                (lambda x: x.User.gplus),
-                (lambda x: x.User.hometown or ''),
-                (lambda x: x.User.company or ''),
-                (lambda x: x.User.position or ''),
-                (lambda x: x.User.www or ''),
-                (lambda x: x.User.experience_level or ''),
-                (lambda x: x.User.experience_desc or ''),
-                (lambda x: x.User.interests or ''),
-                (lambda x: x.User.events_visited or ''),
-                (lambda x: x.User.english_knowledge or ''),
-                (lambda x: x.User.t_shirt_size or ''),
-                (lambda x: x.User.additional_info or ''),
-                (lambda x: (
-                    json.dumps(x.EventParticipant.fields)
-                    if x.EventParticipant.fields
-                    else ''
-                )),
-                (lambda x: x.EventParticipant.confirmed),
-            ],
-            headers=[
-                'Registration id',
-                'Registration date',
-                'Event id',
-                'Event title',
-                'Name',
-                'Gender',
-                'Nickname',
-                'Email',
-                'Phone',
-                'Google +',
-                'City',
-                'Company',
-                'Position',
-                'Website',
-                'Experience level',
-                'Experience description',
-                'Interests',
-                'Events visited',
-                'English knowledge',
-                'T-Shirt size',
-                'Additional info',
-                'Extra fields',
-                'Confirmed',
-            ],
-        )
 
         mime_type = ('application/vnd.openxmlformats-officedocument'
                      '.spreadsheetml.sheet')
         filename = 'Participants of [#{}] {} on {}'.format(
-                event.id, event.title, event.date)
+            event.id, event.title, event.date)
 
         # TODO: implement exponential backoff
         # https://developers.google.com/drive/v2/web/manage-uploads#exp-backoff
@@ -552,9 +447,12 @@ class Events(APIBase):
                 'json',
                 _encoder=encode_noop))
 
+            # Retrieve participation data
+            part_data = api.find_participants_by_event(orm_session, event)
+
             # Add spreadsheet itself
             msg.attach(MIMEApplication(
-                exporter.get_xlsx_content().getbuffer(),
+                gen_participants_xlsx(part_data).getvalue(),
                 mime_type))
 
             # send to drive

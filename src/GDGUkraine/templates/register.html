@@ -29,6 +29,7 @@
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
     <link href="/css/style.css" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
     <script src="/js/contact_form.js"></script>
     <script src="/js/selectable.js"></script>
@@ -115,6 +116,28 @@
                                 window.localStorage.user = JSON.stringify(ls_user);
                                 angular.module('gdgorgua')
                                         .value('GoogleUser', ls_user);
+
+
+                                $.postJSON = function(url, data, callback) {
+                                    return jQuery.ajax({
+                                        'type': 'POST',
+                                        'url': url,
+                                        'contentType': 'application/json',
+                                        'data': JSON.stringify(data),
+                                        'dataType': 'json',
+                                        'success': callback
+                                    });
+                                };
+
+                                // Ugly jquery until #41 implemented
+                                $.postJSON('/api/sign-in', {
+                                       id_token: authResult.id_token,
+                                       access_code: authResult.code,
+                                   }).then(
+                                    function(result) {
+                                        console.log(result);
+                                        debugger
+                                    });
 
                                 if (do_reload) {
                                     window.location.reload();

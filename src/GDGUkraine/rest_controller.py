@@ -19,6 +19,7 @@ from .model import User, Event, EventParticipant, Invite
 from .lib.utils.gdrive import gdrive_upload
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
+from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
 
 from uuid import uuid4
@@ -62,6 +63,61 @@ class Admin(APIBase):
                     cherrypy.request.orm_session,
                     req.admin_user['filter_place']))
         return res
+
+    @cherrypy.tools.json_out()
+    def sign_in(self):
+        # Doc:
+        # https://developers.google.com/identity/sign-in/web/backend-auth
+        # #using-a-google-api-client-library
+
+        req = cherrypy.request
+
+        try:
+            id_token = req.json['id_token']
+            access_code = req.json['access_code']
+            access_code
+            ##
+            bts = id_token.encode('ascii')
+            header, payload, signature = bts.split(b'.')
+            padded = payload + b'=' * (4 - len(payload) % 4)
+            import base64
+            idinfo = json.loads(
+                base64.urlsafe_b64decode(padded).decode('utf-8'))
+
+            ##
+            client_id = pub('oauth-client-id')
+            # idinfo = client.verify_id_token(id_token, client_id)
+            # If multiple clients access the backend server:
+            if idinfo['aud'] != client_id:
+                raise HTTPError(400, 'Invalid client_id')
+                # raise crypt.AppIdentityError("Unrecognized client.")
+            if idinfo['iss'] not in ['accounts.google.com',
+                                     'https://accounts.google.com']:
+                raise HTTPError(400, 'Invalid issuer')
+                # raise crypt.AppIdentityError("Wrong issuer.")
+            # if idinfo['hd'] != APPS_DOMAIN_NAME:
+            #     raise HTTPError(400, 'Invalid domain')
+            #     # raise crypt.AppIdentityError("Wrong hosted domain.")
+        except KeyError as ke:
+            raise HTTPError(400, 'Missing input parameter') from ke
+        # except Exception as e:
+        #     import ipdb; ipdb.set_trace()
+        # except crypt.AppIdentityError:
+        #     # Invalid token
+        #     pass
+        else:
+            from requests_oauthlib import OAuth2Session
+            sess = OAuth2Session(client_id)
+            # import ipdb; ipdb.set_trace()
+            sess.fetch_token('https://accounts.google.com/o/oauth2/token',
+                             code=access_code, token=id_token)  # Throws 400
+            return idinfo
+        # userid = idinfo['sub']
+        # userid
+
+        # user = {}
+        # res = {'user': user}
+        # return res
 
 
 class Participants(APIBase):
@@ -538,6 +594,8 @@ rest_api.connect("list_places", "/places", Places, action="list_all",
 
 rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
+rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
+                 conditions={"method": ["POST"]})
 
 
 # Error handlers

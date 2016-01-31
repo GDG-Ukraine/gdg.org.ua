@@ -106,11 +106,22 @@ class Admin(APIBase):
         #     # Invalid token
         #     pass
         else:
+            # We need to get our client secret to make this request
+            secret = req.app.config['global']['google_oauth']['secret']
+
+            # TODO: move to the import section
             from requests_oauthlib import OAuth2Session
-            sess = OAuth2Session(client_id)
+
+            # redirect_uri is mandatory. Use 'postmessage' as it is done in
+            # https://github.com/google/oauth2client/blob/master/
+            # oauth2client/client.py#L1874
+            sess = OAuth2Session(client_id, redirect_uri='postmessage')
             # import ipdb; ipdb.set_trace()
+
+            # You do not need token (id_token) here, but need your secret
             sess.fetch_token('https://accounts.google.com/o/oauth2/token',
-                             code=access_code, token=id_token)  # Throws 400
+                             code=access_code, client_secret=secret)
+            # TODO: do whatever you need
             return idinfo
         # userid = idinfo['sub']
         # userid

@@ -114,6 +114,16 @@ class Admin(APIBase):
             # TODO: do whatever we need with google_api
             cherrypy.session['google_user'] = google_api.get(
                 'https://www.googleapis.com/oauth2/v1/userinfo').json()
+
+            try:
+                cherrypy.session['admin_user'] = to_collection(
+                    api.find_admin_by_email(
+                        req.orm_session,
+                        cherrypy.session['google_user']['email']))
+            except:
+                # It seems he's not an admin. Forgive this
+                pass
+
             return {'user': google_api.get(
                 'https://www.googleapis.com/plus/v1/people/{}'.format(
                     cherrypy.session['google_user']['id'])).json()}

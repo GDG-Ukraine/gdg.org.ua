@@ -5,6 +5,7 @@ import sys
 import traceback
 
 from datetime import date
+from uuid import uuid4
 
 import cherrypy
 
@@ -14,6 +15,7 @@ from cherrypy.lib import httputil as cphttputil, file_generator
 from blueberrypy.util import from_collection, to_collection
 
 from requests.exceptions import HTTPError as RequestsHTTPError
+
 from . import api
 from .model import User, Event, EventParticipant, Invite
 
@@ -22,8 +24,6 @@ from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
-
-from uuid import uuid4
 
 
 logger = logging.getLogger(__name__)

@@ -14,6 +14,9 @@ __all__ = ['OAuthEnginePlugin']
 
 
 class OAuthEnginePlugin(SimplePlugin):
+    # https://github.com/google/oauth2client/blob/master/
+    # oauth2client/client.py#L1874
+    code_redirect_uri = 'postmessage'  # Do not touch! Magic!
     authorization_base_url = "https://accounts.google.com/o/oauth2/auth"
     token_url = "https://accounts.google.com/o/oauth2/token"
     refresh_url = token_url  # True for Google but not all providers.
@@ -22,6 +25,7 @@ class OAuthEnginePlugin(SimplePlugin):
         'google-api': 'get_token_session',
         'oauth-url': 'get_auth_url',
         'oauth-token': 'fetch_token',
+        'oauth-code-token': 'fetch_code_token',
         'oauth-client-id': '_get_client_id',
     }
 
@@ -142,6 +146,15 @@ class OAuthEnginePlugin(SimplePlugin):
             token_updater=self.token,
         )
 
+    def _get_session(self):
+        return OAuth2Session(
+            self.consumer_key,
+            redirect_uri=self.code_redirect_uri,
+            auto_refresh_kwargs=self.oauth_extra,
+            auto_refresh_url=self.refresh_url,
+            token_updater=self.token,
+        )
+
     def get_token_session(self):
         return OAuth2Session(
             self.consumer_key,
@@ -158,6 +171,11 @@ class OAuthEnginePlugin(SimplePlugin):
         self.token = self._get_state_session().fetch_token(
             self.token_url, client_secret=self.consumer_secret,
             authorization_response=redirect_response)
+        return self.token
+
+    def fetch_code_token(self, code):
+        self.token = self._get_session().fetch_token(
+            self.token_url, code=code, client_secret=self.consumer_secret)
         return self.token
 
 

@@ -13,6 +13,7 @@ from cherrypy.lib import httputil as cphttputil, file_generator
 
 from blueberrypy.util import from_collection, to_collection
 
+from requests.exceptions import HTTPError as RequestsHTTPError
 from . import api
 from .model import User, Event, EventParticipant, Invite
 
@@ -98,37 +99,25 @@ class Admin(APIBase):
             # if idinfo['hd'] != APPS_DOMAIN_NAME:
             #     raise HTTPError(400, 'Invalid domain')
             #     # raise crypt.AppIdentityError("Wrong hosted domain.")
+
+            pub('oauth-code-token', access_code)
         except KeyError as ke:
             raise HTTPError(400, 'Missing input parameter') from ke
-        # except Exception as e:
-        #     import ipdb; ipdb.set_trace()
         # except crypt.AppIdentityError:
         #     # Invalid token
         #     pass
+        except RequestsHTTPError as httperr:
+            raise HTTPError(400, 'Invalid user data') from httperr
+        except Exception as exc:
+            raise HTTPError(500, 'Some unexpected error happened') from exc
         else:
-            # We need to get our client secret to make this request
-            secret = req.app.config['global']['google_oauth']['secret']
-
-            # TODO: move to the import section
-            from requests_oauthlib import OAuth2Session
-
-            # redirect_uri is mandatory. Use 'postmessage' as it is done in
-            # https://github.com/google/oauth2client/blob/master/
-            # oauth2client/client.py#L1874
-            sess = OAuth2Session(client_id, redirect_uri='postmessage')
-            # import ipdb; ipdb.set_trace()
-
-            # You do not need token (id_token) here, but need your secret
-            sess.fetch_token('https://accounts.google.com/o/oauth2/token',
-                             code=access_code, client_secret=secret)
-            # TODO: do whatever you need
-            return idinfo
-        # userid = idinfo['sub']
-        # userid
-
-        # user = {}
-        # res = {'user': user}
-        # return res
+            google_api = pub('google-api')  # capable of using `with`
+            # TODO: do whatever we need with google_api
+            cherrypy.session['google_user'] = google_api.get(
+                'https://www.googleapis.com/oauth2/v1/userinfo').json()
+            return {'user': google_api.get(
+                'https://www.googleapis.com/plus/v1/people/{}'.format(
+                    cherrypy.session['google_user']['id'])).json()}
 
 
 class Participants(APIBase):

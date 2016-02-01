@@ -82,8 +82,9 @@ class AuthController:
                       if return_url
                       else cherrypy.request.headers.get('Referer', '/'))
 
-        if return_url.startswith(['/', 'https://', 'http://']) \
-           and not return_url.startswith('/auth'):
+        if (any(return_url.startswith(_)
+                for _ in ['/', 'https://', 'http://']) and
+                not return_url.startswith('/auth')):
             raise HTTPRedirect(return_url)
 
         raise HTTPRedirect(url_for_class('controller.Root'))

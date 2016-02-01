@@ -74,31 +74,30 @@ class Admin(APIBase):
         req = cherrypy.request
 
         try:
-            id_token = req.json['id_token']
+            # id_token = req.json['id_token']
             access_code = req.json['access_code']
-            access_code
             ##
-            bts = id_token.encode('ascii')
-            header, payload, signature = bts.split(b'.')
-            padded = payload + b'=' * (4 - len(payload) % 4)
-            import base64
-            idinfo = json.loads(
-                base64.urlsafe_b64decode(padded).decode('utf-8'))
+            # bts = id_token.encode('ascii')
+            # header, payload, signature = bts.split(b'.')
+            # padded = payload + b'=' * (4 - len(payload) % 4)
+            # import base64
+            # idinfo = json.loads(
+            #     base64.urlsafe_b64decode(padded).decode('utf-8'))
 
             ##
-            client_id = pub('oauth-client-id')
-            # idinfo = client.verify_id_token(id_token, client_id)
-            # If multiple clients access the backend server:
-            if idinfo['aud'] != client_id:
-                raise HTTPError(400, 'Invalid client_id')
-                # raise crypt.AppIdentityError("Unrecognized client.")
-            if idinfo['iss'] not in ['accounts.google.com',
-                                     'https://accounts.google.com']:
-                raise HTTPError(400, 'Invalid issuer')
-                # raise crypt.AppIdentityError("Wrong issuer.")
-            # if idinfo['hd'] != APPS_DOMAIN_NAME:
-            #     raise HTTPError(400, 'Invalid domain')
-            #     # raise crypt.AppIdentityError("Wrong hosted domain.")
+            # client_id = pub('oauth-client-id')
+            # # idinfo = client.verify_id_token(id_token, client_id)
+            # # If multiple clients access the backend server:
+            # if idinfo['aud'] != client_id:
+            #     raise HTTPError(400, 'Invalid client_id')
+            #     # raise crypt.AppIdentityError("Unrecognized client.")
+            # if idinfo['iss'] not in ['accounts.google.com',
+            #                          'https://accounts.google.com']:
+            #     raise HTTPError(400, 'Invalid issuer')
+            #     # raise crypt.AppIdentityError("Wrong issuer.")
+            # # if idinfo['hd'] != APPS_DOMAIN_NAME:
+            # #     raise HTTPError(400, 'Invalid domain')
+            # #     # raise crypt.AppIdentityError("Wrong hosted domain.")
 
             pub('oauth-code-token', access_code)
         except KeyError as ke:

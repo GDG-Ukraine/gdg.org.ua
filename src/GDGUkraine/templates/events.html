@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <base href="{{ url_for_class('controller.Root') }}"></base>
+    <title>GDG | Upcoming Events</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="author" content="Oleh Zasadnyy">
+    <meta name="author" content="Olexandr Kovalchuk">
+    <meta name="author" content="Svyatoslav Sydorenko">
+    <meta name="author" content="Valentyn Shybanov">
+
+    <!-- Start opengraph meta -->
+    <!-- Override author, cause opengraph picks last author meta -->
+    <meta name="author" content="GDG Ukraine">
+    <!-- Actually opengraph meta -->
+    <meta property="og:title" content="GDG | Upcoming Events">
+    <meta property="og:description" content="Events set up by GDG Ukraine">
+    <meta property="og:site_name" content="GDG Ukraine Events">
+    <meta property="og:image" content="{{ url_for_static('img/pattern.png') }}"><!-- TODO: refactor with dynamic url generation -->
+
+    <!-- Twitter meta tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
+    <meta name="twitter:title" content="GDG | Upcoming Events">
+    <meta name="twitter:description" content="Events set up by GDG Ukraine">
+    <meta name="twitter:image" content="{{ url_for_static('img/pattern.png') }}">
+    <!-- End opengraph meta-->
+
+    <link href="{{ url_for_static('favicon.ico') }}" rel="icon" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="{{ url_for_static('css/style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div id="main" role="main">
+            {% for event in events[-10:]|reverse if not event.testing %}
+            <div id="contact-form">
+                {% if event.host_gdg_id and event.host_gdg %}
+                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="{{ event.host_gdg.name }}" title="{{ event.host_gdg.name }}"></a>
+                {% else %}
+                <img id="logo" src="{{ url_for_static('img/logo.png') }}" alt="GDG Ukraine" title="GDG Ukraine">
+                {% endif %}
+                <h1>{{ event.title }}</h2>
+                <div id="desc">
+                    <label><span>Description:</span> {{ event.desc }}</label>
+                    {% if event.url %}
+                    <label><span>Find more detail at</span> <a href="{{ event.url }}">{{ event.url }}</a></label>
+                    {% endif %}
+                </div>
+                <div id="host_gdg">
+                    <label><span>Organizer:</span> {{ event.host_gdg.name }}</label>
+                </div>
+                {% if event.gplus_event_id %}
+                <div>
+                    <label><span>Google+:</span> <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">Go!</a></label>
+                </div>
+                {% endif %}
+                <div>
+                    <center><strong><a href="{{ url_for_routes('event_register', id=event.id) }}">Participate!</a></strong></center>
+                </div>
+                {% if event.google_map_iframe %}
+                <div>
+                    <label>
+                        <span>Please find the location below:</span>
+                        <iframe style="text-align: center;" width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="{{ event.google_map_iframe }}output=embed"></iframe><br /><small><a href="{{ event.google_map_iframe }}source=embed" style="color:#0000FF;text-align:left">Переглянути більшу мапу</a></small>
+                    </label>
+                </div>
+                {% endif %}
+            </div>
+            {{ '<hr>' if not loop.last }}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

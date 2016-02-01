@@ -46,6 +46,10 @@ controllers:
       tools.sessions.on: false
       tools.staticdir.on: true
       tools.staticdir.dir: img
+    /libs:  # Path for third-party libs, bower_components etc.
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: libs
     /admin:
       tools.sessions.on: false
       tools.staticfile.on: true

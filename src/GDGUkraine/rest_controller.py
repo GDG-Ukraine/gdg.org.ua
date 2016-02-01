@@ -5,6 +5,7 @@ import sys
 import traceback
 
 from datetime import date
+from uuid import uuid4
 
 import cherrypy
 
@@ -13,15 +14,16 @@ from cherrypy.lib import httputil as cphttputil, file_generator
 
 from blueberrypy.util import from_collection, to_collection
 
+from requests.exceptions import HTTPError as RequestsHTTPError
+
 from . import api
 from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
 from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
+from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
-
-from uuid import uuid4
 
 
 logger = logging.getLogger(__name__)
@@ -62,6 +64,43 @@ class Admin(APIBase):
                     cherrypy.request.orm_session,
                     req.admin_user['filter_place']))
         return res
+
+    @cherrypy.tools.json_out()
+    def sign_in(self):
+        # Doc:
+        # https://developers.google.com/identity/sign-in/web/backend-auth
+        # #using-a-google-api-client-library
+
+        req = cherrypy.request
+
+        try:
+            pub('oauth-code-token', req.json['access_code'])
+
+            with pub('google-api') as google_api:
+                # TODO: do whatever we need with google_api
+                cherrypy.session['google_user'] = google_api.get(
+                    'https://www.googleapis.com/oauth2/v1/userinfo').json()
+
+                try:
+                    cherrypy.session['admin_user'] = to_collection(
+                        api.find_admin_by_email(
+                            req.orm_session,
+                            cherrypy.session['google_user']['email']))
+                except:
+                    # It seems he's not an admin. Forgive this
+                    pass
+
+                user_info = google_api.get(
+                    'https://www.googleapis.com/plus/v1/people/{}'.format(
+                        cherrypy.session['google_user']['id'])).json()
+        except KeyError as ke:
+            raise HTTPError(400, 'Missing input parameter') from ke
+        except RequestsHTTPError as httperr:
+            raise HTTPError(400, 'Invalid user data') from httperr
+        except Exception as exc:
+            raise HTTPError(500, 'Some unexpected error happened') from exc
+        else:
+            return user_info
 
 
 class Participants(APIBase):
@@ -538,6 +577,8 @@ rest_api.connect("list_places", "/places", Places, action="list_all",
 
 rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
+rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
+                 conditions={"method": ["POST"]})
 
 
 # Error handlers

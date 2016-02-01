@@ -36,7 +36,7 @@
                 <p>
                     Please consider visiting our next events:
                     <ul>
-                    {% for e in events %}
+                    {% for e in events if not e.testing %}
                         <li><a href="{{ e.url }}" target="_blank">{{ e.title }}</a> {{ e.date }}</li>
                     {% endfor %}
                     </ul>

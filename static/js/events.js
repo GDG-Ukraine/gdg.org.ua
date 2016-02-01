@@ -294,7 +294,7 @@ angular.module('gdgorgua')
                 cb($scope.e);
             } */
             $scope.reporting = true;
-            $http.post('/api/events/'+$routeParams.eventId+'/report?mode='+$scope.eFilter).then(function(r) {
+            $http.post('/api/events/'+$routeParams.eventId+'/report?mode='+$scope.eFilter, {}).then(function(r) {
                 $scope.reporting = false;
                 if (r.data.url)
                     $window.open(r.data.url);

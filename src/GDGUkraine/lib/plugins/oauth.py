@@ -41,6 +41,8 @@ class GoogleAPI(OAuth2Session):
 class OAuthEnginePlugin(SimplePlugin):
     authorization_base_url = "https://accounts.google.com/o/oauth2/auth"
     token_url = "https://accounts.google.com/o/oauth2/token"
+    refresh_url = token_url  # True for Google but not all providers.
+
     _channels = {
         'google-api': 'get_token_session',
         'oauth-url': 'get_auth_url',
@@ -69,6 +71,13 @@ class OAuthEnginePlugin(SimplePlugin):
         deque(starmap(callback,
                       starmap(lambda c, h: (c, getattr(self, h)),
                               self._channels.items())))
+
+    @property
+    def oauth_extra(self):
+        return {
+            'client_id': self.consumer_key,
+            'client_secret': self.consumer_secret,
+        }
 
     @property
     def redirect_url(self):
@@ -133,11 +142,15 @@ class OAuthEnginePlugin(SimplePlugin):
     def get_auth_url(self):
         authorization_url, self.oauth_state = GoogleAPI(
             self.consumer_key, scope=self.scope,
-            redirect_uri=self.redirect_url).authorization_url(
-                self.authorization_base_url,
-                # offline for refresh token
-                # force to always make user click authorize
-                access_type="offline", approval_prompt="force")
+            redirect_uri=self.redirect_url,
+            auto_refresh_kwargs=self.oauth_extra,
+            auto_refresh_url=self.refresh_url,
+            token_updater=self.token,
+        ).authorization_url(
+            self.authorization_base_url,
+            # offline for refresh token
+            # force to always make user click authorize
+            access_type="offline", approval_prompt="force")
         return authorization_url
 
     def _get_state_session(self):
@@ -162,7 +175,11 @@ class OAuthEnginePlugin(SimplePlugin):
     def get_token_session(self):
         return GoogleAPI(
             self.consumer_key,
-            token=self.token)
+            token=self.token,
+            auto_refresh_kwargs=self.oauth_extra,
+            auto_refresh_url=self.refresh_url,
+            token_updater=self.token,
+        )
 
     def fetch_token(self):
         req = cherrypy.request

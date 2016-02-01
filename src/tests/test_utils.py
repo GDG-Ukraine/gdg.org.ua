@@ -1,7 +1,15 @@
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
+
 import cherrypy
 from blueberrypy.testing import ControllerTestCase
 
+from openpyxl import load_workbook
+
 from GDGUkraine.lib.utils.url import base_url, url_for
+from GDGUkraine.lib.utils.table_exporter import TableExporter
 
 
 class UtilTest(ControllerTestCase):
@@ -65,3 +73,34 @@ class UtilTest(ControllerTestCase):
         for test_url in self.urls_exc_testset:
             with self.assertRaises(test_url['res']):
                 url_for(**test_url['inp'])
+
+
+class TableExporterTest(unittest.TestCase):
+    testset = [
+        {"username": "sviat", "distro": "gentoo", "tv_show": "X-Files"},
+        {"username": "sashko", "distro": "gentoo", "tv_show": "MLP"},
+        {"username": "vlad", "distro": "windows", "tv_show": None},
+    ]
+
+    getters = [
+        ('User name', lambda x: x.get('username', '')),
+        ('OS', lambda x: x.get('distro', '')),
+    ]
+
+    def setUp(self):
+        self.xlsx_bytes = TableExporter(
+            data=self.testset,
+            data_getters=map(lambda _: _[1], self.getters),
+            headers=map(lambda _: _[0], self.getters),
+        ).get_xlsx_content()
+
+    def test_gen_xlsx(self):
+        ws = load_workbook(self.xlsx_bytes).active
+
+        for col_num, (col_name, _) in enumerate(self.getters):
+            self.assertEqual(ws.rows[0][col_num].value, col_name)
+
+        for row_num, entry in enumerate(ws.rows[1:]):
+            test_entry = self.testset[row_num]
+            for col_num, (_, getter) in enumerate(self.getters):
+                self.assertEqual(entry[col_num].value, getter(test_entry))

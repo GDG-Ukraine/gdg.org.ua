@@ -1,25 +1,27 @@
 import json
-
+import logging
+import re
 import sys
 import traceback
-import re
+
+from datetime import date
 
 import cherrypy
 
 from cherrypy import HTTPError
 from cherrypy.lib import httputil as cphttputil, file_generator
+
 from blueberrypy.util import from_collection, to_collection
 
 from . import api
-from .model import User, Event, EventParticipant
+from .model import User, Event, EventParticipant, Invite
 
-from .lib.utils.table_exporter import TableExporter
+from .lib.utils.gdrive import gdrive_upload
 from .lib.utils.mail import gmail_send_html
+from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.vcard import make_vcard, aes_encrypt
 
-from datetime import date
-
-import logging
+from uuid import uuid4
 
 
 logger = logging.getLogger(__name__)
@@ -190,6 +192,8 @@ class Events(APIBase):
                 cherrypy.request.orm_session, event.id)
             logger.debug(registrations)
             e = to_collection(event, sort_keys=True)
+            e.update({'invites': [to_collection(i, sort_keys=True)
+                     for i in event.invites]})
             e.update({'registrations': [to_collection(r, sort_keys=True)
                      for r in registrations]})
             for r in e['registrations']:
@@ -372,77 +376,103 @@ class Events(APIBase):
         id = int(id)
         req = cherrypy.request
         orm_session = req.orm_session
+
+        # Retrieve event object
         event = api.find_event_by_id(orm_session, id)
         if event is None:
             raise HTTPError(404)
-        participations = api.find_participants_by_event(orm_session, event)
-        exporter = TableExporter(
-            data=participations,
-            data_getters=[
-                (lambda x: x.EventParticipant.id),
-                (lambda x: x.EventParticipant.register_date),
-                (lambda x: id),
-                (lambda x: event.title),
-                (lambda x: x.User.full_name),
-                (lambda x: x.User.gender),
-                (lambda x: x.User.nickname or ''),
-                (lambda x: x.User.email),
-                (lambda x: x.User.phone or ''),
-                (lambda x: x.User.gplus),
-                (lambda x: x.User.hometown or ''),
-                (lambda x: x.User.company or ''),
-                (lambda x: x.User.position or ''),
-                (lambda x: x.User.www or ''),
-                (lambda x: x.User.experience_level or ''),
-                (lambda x: x.User.experience_desc or ''),
-                (lambda x: x.User.interests or ''),
-                (lambda x: x.User.events_visited or ''),
-                (lambda x: x.User.english_knowledge or ''),
-                (lambda x: x.User.t_shirt_size or ''),
-                (lambda x: x.User.additional_info or ''),
-                (lambda x: (
-                    json.dumps(x.EventParticipant.fields)
-                    if x.EventParticipant.fields
-                    else ''
-                )),
-                (lambda x: x.EventParticipant.confirmed),
-            ],
-            headers=[
-                'Registration id',
-                'Registration date',
-                'Event id',
-                'Event title',
-                'Name',
-                'Gender',
-                'Nickname',
-                'Email',
-                'Phone',
-                'Google +',
-                'City',
-                'Company',
-                'Position',
-                'Website',
-                'Experience level',
-                'Experience description',
-                'Interests',
-                'Events visited',
-                'English knowledge',
-                'T-Shirt size',
-                'Additional info',
-                'Extra fields',
-                'Confirmed',
-            ],
-        )
+
+        # Set appropriate headers
+        filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
+
         cherrypy.response.headers['Content-Type'] = (
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
-        filename = re.compile(r'[^\w-]').sub('', event.title.replace(' ', '_'))
         cherrypy.response.headers['Content-Disposition'] = (
             'attachment; filename={}-{}-{}-participants.xlsx'.format(
                 event.id, filename, event.date,
             )
         )
-        return file_generator(exporter.get_xlsx_content())
+
+        # Retrieve participation data
+        participations = api.find_participants_by_event(orm_session, event)
+
+        return file_generator(gen_participants_xlsx(participations))
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_report(self, id, mode=None):
+        """Exports spreadsheet file with event participants to Google Drive
+
+        Args:
+            id (int): event id
+            mode (str): tells us to filter out some entries,
+                        valid values: all, approved, waiting
+        """
+        id = int(id)
+        req = cherrypy.request
+        orm_session = req.orm_session
+
+        # Retrieve event object
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+
+        file_mime = ('application/vnd.openxmlformats-officedocument'
+                     '.spreadsheetml.sheet')
+        file_name = 'Participants of [#{}] {} on {}'.format(
+            event.id, event.title, event.date)
+
+        # Retrieve participation data
+        participations = api.find_participants_by_event(orm_session, event)
+
+        if mode == 'approved':  # return only accepted guys
+            participations = filter(lambda _: _.EventParticipant.accepted,
+                                    participations)
+        elif mode == 'waiting':  # return ones waiting for approval
+            participations = filter(lambda _: not _.EventParticipant.accepted,
+                                    participations)
+
+        # Upload to Google Drive
+        gd_resp = gdrive_upload(
+            file_name, file_mime,
+            gen_participants_xlsx(participations).getvalue())
+
+        return {'url': gd_resp['alternateLink']}
+
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def generate_invites(self, id):
+        req = cherrypy.request
+        orm_session = req.orm_session
+        data = req.json
+
+        try:
+            number = data['number']
+            assert number >= 0
+        except (TypeError, KeyError, AssertionError) as e:
+            # Type- or KeyError if data is None or has no 'number'
+            # AssertionError if number of invites is negative
+            logger.exception()
+            raise HTTPError(400, "Malformed request body") from e
+
+        event = api.find_event_by_id(orm_session, id)
+        if event is None:
+            raise HTTPError(404)
+
+        for _ in range(number):
+            code = uuid4().hex
+            invite = Invite(code=code, event=event)
+            orm_session.add(invite)
+        try:
+            orm_session.commit()
+        except Exception as e:
+            # If here, then smth bad happened during
+            # saving invites to db. We need to rollback.
+            orm_session.rollback()
+            logger.exception()
+            raise HTTPError(500, "Cannot save generated invites") from e
+        return {"ok": True}
 
 
 class Places(APIBase):
@@ -474,8 +504,17 @@ rest_api.connect("api_get_event", "/events/{id}", Events, action="show",
                  conditions={"method": ["GET"]})
 rest_api.connect("api_edit_event", "/events/{id}", Events, action="update",
                  conditions={"method": ["PUT"]})
-# rest_api.connect("remove_event", "/events/{id}", Events, action="delete",
+# rest_api.connect("remove_event", "/events/{id:\d+}", Events, action="delete",
 #                  conditions={"method": ["DELETE"]})
+# rest_api.connect("delete_event", "/events/{id:\d+}/delete", Events,
+#                  action="delete",
+#                  conditions={"method": ["POST"]})
+rest_api.connect("generate_invites", "/events/{id:\d+}/invites", Events,
+                 action="generate_invites",
+                 conditions={"method": ["POST"]})
+rest_api.connect("generate_report", "/events/{id:\d+}/report", Events,
+                 action="generate_report",
+                 conditions={"method": ["POST"]})
 
 rest_api.connect("approve_event_participants",
                  r"/events/{id:\d+}/approve", Events,

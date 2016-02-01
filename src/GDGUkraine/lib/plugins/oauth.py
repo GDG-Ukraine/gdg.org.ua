@@ -13,6 +13,31 @@ from ..utils.url import url_for_class
 __all__ = ['OAuthEnginePlugin']
 
 
+class GoogleAPI(OAuth2Session):
+    """GoogleAPI is a wrapper for simplifying access to Google API"""
+    google_api_url = 'https://www.googleapis.com{endpoint_uri}'
+
+    def request(self, http_method, endpoint_uri, *args, **kwargs):
+        """
+        Patch any request's URL, prepending Google API URL if necessary
+        """
+
+        # Check whether it's an URL, skip if yes
+        if not any(endpoint_uri.startswith(proto_base)
+                   for proto_base in ['https://', 'http://']):
+            # If it's a relative URI, make it absolute, starting with /
+            if not endpoint_uri.startswith('/'):
+                endpoint_uri = '/'.join(['', endpoint_uri])
+
+            # Finally prepend Google API base URL
+            endpoint_uri = self.google_api_url.format(
+                endpoint_uri=endpoint_uri)
+
+        # Do request
+        return super().request(http_method,
+                               endpoint_uri, *args, **kwargs)
+
+
 class OAuthEnginePlugin(SimplePlugin):
     # https://github.com/google/oauth2client/blob/master/
     # oauth2client/client.py#L1874
@@ -123,7 +148,7 @@ class OAuthEnginePlugin(SimplePlugin):
     #     return self.consumer_key
 
     def get_auth_url(self):
-        authorization_url, self.oauth_state = OAuth2Session(
+        authorization_url, self.oauth_state = GoogleAPI(
             self.consumer_key, scope=self.scope,
             redirect_uri=self.redirect_url,
             auto_refresh_kwargs=self.oauth_extra,
@@ -137,7 +162,7 @@ class OAuthEnginePlugin(SimplePlugin):
         return authorization_url
 
     def _get_state_session(self):
-        return OAuth2Session(
+        return GoogleAPI(
             self.consumer_key,
             state=self.oauth_state,
             redirect_uri=self.redirect_url,
@@ -147,7 +172,7 @@ class OAuthEnginePlugin(SimplePlugin):
         )
 
     def _get_session(self):
-        return OAuth2Session(
+        return GoogleAPI(
             self.consumer_key,
             redirect_uri=self.code_redirect_uri,
             auto_refresh_kwargs=self.oauth_extra,
@@ -156,7 +181,7 @@ class OAuthEnginePlugin(SimplePlugin):
         )
 
     def get_token_session(self):
-        return OAuth2Session(
+        return GoogleAPI(
             self.consumer_key,
             token=self.token,
             auto_refresh_kwargs=self.oauth_extra,

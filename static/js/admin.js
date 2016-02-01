@@ -40,13 +40,11 @@ angular.module('gdgorgua', ['directive.g+signin', 'ngRoute', 'ngResource','$stra
         // User successfully authorized the G+ App!
         console.log('Signed in!');
         console.log(authResult);
-        // debugger
-        $http.post('/api/sign-in', {
-            id_token: authResult.hg.id_token,
-            access_code: authResult.hg.login_hint
-        }).then(function(result) {
-            console.log(result);
-        });
+        // $http.post('/api/sign-in', {
+        //     access_code: authResult.hg.login_hint
+        // }).then(function(result) {
+        //     console.log(result);
+        // });
     });
     $scope.$on('event:google-plus-signin-failure', function (event, authResult) {
         // User has not authorized the G+ App!

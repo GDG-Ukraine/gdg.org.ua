@@ -51,7 +51,6 @@ class OAuthEnginePlugin(SimplePlugin):
         'oauth-url': 'get_auth_url',
         'oauth-token': 'fetch_token',
         'oauth-code-token': 'fetch_code_token',
-        # 'oauth-client-id': '_get_client_id',
     }
 
     def __init__(self, bus, consumer_key=None, consumer_secret=None):
@@ -143,9 +142,6 @@ class OAuthEnginePlugin(SimplePlugin):
     @token.deleter
     def token(self):
         del cherrypy.session['google_oauth_token']
-
-    # def _get_client_id(self):
-    #     return self.consumer_key
 
     def get_auth_url(self):
         authorization_url, self.oauth_state = GoogleAPI(

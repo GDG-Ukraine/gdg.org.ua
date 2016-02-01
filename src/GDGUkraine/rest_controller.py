@@ -74,59 +74,33 @@ class Admin(APIBase):
         req = cherrypy.request
 
         try:
-            # id_token = req.json['id_token']
-            access_code = req.json['access_code']
-            ##
-            # bts = id_token.encode('ascii')
-            # header, payload, signature = bts.split(b'.')
-            # padded = payload + b'=' * (4 - len(payload) % 4)
-            # import base64
-            # idinfo = json.loads(
-            #     base64.urlsafe_b64decode(padded).decode('utf-8'))
+            pub('oauth-code-token', req.json['access_code'])
 
-            ##
-            # client_id = pub('oauth-client-id')
-            # # idinfo = client.verify_id_token(id_token, client_id)
-            # # If multiple clients access the backend server:
-            # if idinfo['aud'] != client_id:
-            #     raise HTTPError(400, 'Invalid client_id')
-            #     # raise crypt.AppIdentityError("Unrecognized client.")
-            # if idinfo['iss'] not in ['accounts.google.com',
-            #                          'https://accounts.google.com']:
-            #     raise HTTPError(400, 'Invalid issuer')
-            #     # raise crypt.AppIdentityError("Wrong issuer.")
-            # # if idinfo['hd'] != APPS_DOMAIN_NAME:
-            # #     raise HTTPError(400, 'Invalid domain')
-            # #     # raise crypt.AppIdentityError("Wrong hosted domain.")
+            with pub('google-api') as google_api:
+                # TODO: do whatever we need with google_api
+                cherrypy.session['google_user'] = google_api.get(
+                    'https://www.googleapis.com/oauth2/v1/userinfo').json()
 
-            pub('oauth-code-token', access_code)
+                try:
+                    cherrypy.session['admin_user'] = to_collection(
+                        api.find_admin_by_email(
+                            req.orm_session,
+                            cherrypy.session['google_user']['email']))
+                except:
+                    # It seems he's not an admin. Forgive this
+                    pass
+
+                user_info = google_api.get(
+                    'https://www.googleapis.com/plus/v1/people/{}'.format(
+                        cherrypy.session['google_user']['id'])).json()
         except KeyError as ke:
             raise HTTPError(400, 'Missing input parameter') from ke
-        # except crypt.AppIdentityError:
-        #     # Invalid token
-        #     pass
         except RequestsHTTPError as httperr:
             raise HTTPError(400, 'Invalid user data') from httperr
         except Exception as exc:
             raise HTTPError(500, 'Some unexpected error happened') from exc
         else:
-            google_api = pub('google-api')  # capable of using `with`
-            # TODO: do whatever we need with google_api
-            cherrypy.session['google_user'] = google_api.get(
-                'https://www.googleapis.com/oauth2/v1/userinfo').json()
-
-            try:
-                cherrypy.session['admin_user'] = to_collection(
-                    api.find_admin_by_email(
-                        req.orm_session,
-                        cherrypy.session['google_user']['email']))
-            except:
-                # It seems he's not an admin. Forgive this
-                pass
-
-            return {'user': google_api.get(
-                'https://www.googleapis.com/plus/v1/people/{}'.format(
-                    cherrypy.session['google_user']['id'])).json()}
+            return user_info
 
 
 class Participants(APIBase):

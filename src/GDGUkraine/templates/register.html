@@ -131,7 +131,6 @@
 
                                 // Ugly jquery until #41 implemented
                                 $.postJSON('/api/sign-in', {
-                                       id_token: authResult.id_token,
                                        access_code: authResult.code,
                                    }).then(
                                     function(result) {

@@ -1,0 +1,31 @@
+{
+  "name": "GDG",
+  "version": "1.0.0",
+  "homepage": "https://gdg.org.ua/",
+  "authors": [
+    "Sviatoslav Sydorenko <wk@sydorenko.org.ua>"
+  ],
+  "description": "GDG Ukraine web-site",
+  "keywords": [
+    "gdg",
+    "python",
+    "cherrypy",
+    "blueberrypy",
+    "angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/libs/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-directive.g-signin": "git@github.com:sirkitree/angular-directive.g-signin.git#87aac779fb",
+    "angular": "1.2.9",
+    "angular-route": "1.2.9",
+    "angular-resource": "1.2.9"
+  }
+}

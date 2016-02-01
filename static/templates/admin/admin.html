@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html ng-app="gdgorgua">
 <head>
     <link href="/favicon.ico" rel="icon" type="image/x-icon">
@@ -9,8 +9,12 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular-resource.min.js"></script>
+    <script src="/libs/bower_components/angular/angular.min.js"></script>
+    <script src="/libs/bower_components/angular-route/angular-route.min.js"></script>
+    <script src="/libs/bower_components/angular-resource/angular-resource.min.js"></script>
+
+    <script src="/libs/bower_components/angular-directive.g-signin/google-plus-signin.js"></script>
+
     <script src="/js/angular-strap.min.js"></script>
     <script src="/js/bootstrap-datepicker.js"></script>
     <script src="/js/admin.js"></script>
@@ -46,7 +50,9 @@
     </div>
 </div>
 <div id="error" ng-show="error">
-    <h1>Some error happen, please reload the page!</h1>
+    <h1>Some ugly error happened, please reload the page!</h1>
+    <br>
+    <google-plus-signin clientid="1012272991665" language="en"></google-plus-signin>
 </div>
 
 <div ng-view class='content'></div>

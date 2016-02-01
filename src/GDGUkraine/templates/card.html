@@ -32,24 +32,29 @@
     </style>
 </head>
 <body>
-    <% var fieldsCount = 1; for (var f in fields) fieldsCount++; %>
     <table>
-        <% if (!reg.accepted) { %>
+        {% if not registration.accepted %}
         <tr><td class="notapproved" colspan="3">Registration is not approved yet</td></tr>
-        <% } %>
+        {% endif %}
         <tr>
         <td colspan="2" class="header">
-            <h3>Register to {{ event.title }}</h3>
-            <div><%= event.desc %></div>
+            <h3>Registration to "{{ event.title }}"</h3>
+            <div>{{ event.desc }}</div>
         </td>
-            <td class="img" rowspan="<%= fieldsCount %>"><img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=<%= qrdata %>&choe=UTF-8" /></td>
+            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}"><img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" /></td>
         </tr>
-        <% for(var field in fields) { %>
+        {% for field_name in ['name', 'surname', 'nickname', 'phone', 'gplus', 'www', 'experience_level', 'experienc_desc', 'interests', 'events_visited', 'english_knowledge', 't_shirt_size', 'gender', 'additional_info'] %}
             <tr>
-                <td><b><%= field %></b></td>
-                <td><%= fields[field] %></td>
+                <td><b>{{ field_name }}</b></td>
+                <td>{{ registration.user[field_name] }}</td>
             </tr>
-        <% } %>
+        {% endfor %}
+        {% for field_name, field_value in registration.fields.items() %}
+            <tr>
+                <td><b>{{ field_name }}</b></td>
+                <td>{{ field_value }}</td>
+            </tr>
+        {% endfor %}
     </table>
 
 </body>

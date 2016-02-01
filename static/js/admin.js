@@ -1,5 +1,5 @@
-angular.module('gdgorgua', ['ngResource','$strap'])
-    .config(function($routeProvider, $httpProvider) {
+angular.module('gdgorgua', ['directive.g+signin', 'ngRoute', 'ngResource','$strap'])
+    .config(function($routeProvider,$httpProvider) {
         $routeProvider.
             when('/events/', {controller:'EventsListCtrl', templateUrl:'/templates/admin/events/list.html'}).
             when('/events/new', {controller:'EventsCreateCtrl', templateUrl:'/templates/admin/events/detail.html'}).
@@ -31,9 +31,23 @@ angular.module('gdgorgua', ['ngResource','$strap'])
          });
     })
 .controller('MainCtrl', function($scope, $location, $http) {
-   $scope.info = $http.get('/api/info').then(function(r) { return r.data;});
-   $scope.$watch(function() { return $location.path()}, function(nv) {
-       var parts = nv.split('/');
-       $scope.current = parts[1];
-   });
+    $scope.info = $http.get('/api/info').then(function(r) { return r.data;});
+    $scope.$watch(function() { return $location.path()}, function(nv) {
+        var parts = nv.split('/');
+        $scope.current = parts[1];
+    });
+    $scope.$on('event:google-plus-signin-success', function (event, authResult) {
+        // User successfully authorized the G+ App!
+        console.log('Signed in!');
+        console.log(authResult);
+        // $http.post('/api/sign-in', {
+        //     access_code: authResult.hg.login_hint
+        // }).then(function(result) {
+        //     console.log(result);
+        // });
+    });
+    $scope.$on('event:google-plus-signin-failure', function (event, authResult) {
+        // User has not authorized the G+ App!
+        console.log('Not signed into Google Plus.');
+    });
 });

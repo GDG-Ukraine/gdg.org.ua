@@ -1,5 +1,6 @@
 from blueberrypy.testing import ControllerTestCase
 
+
 class RootTest(ControllerTestCase):
 
     def test_index(self):

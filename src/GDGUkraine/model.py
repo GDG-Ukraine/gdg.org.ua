@@ -1,26 +1,21 @@
-import calendar
-import os
-from base64 import b64decode, b64encode
-from datetime import datetime, timedelta
-from hashlib import sha256
+import json
 
-from sqlalchemy import Column, Integer, UnicodeText, Date, DateTime, String, \
-    BigInteger, Enum, SmallInteger, func, text, \
-    Boolean, ForeignKey
+from sqlalchemy import (
+    Column, UnicodeText, Date, String,
+    Enum, Boolean, ForeignKey
+)
 
-from sqlalchemy.dialects.mysql import BIGINT as BigInteger, TINYINT as TinyInt, INTEGER as Integer
+from sqlalchemy.types import TypeDecorator, VARCHAR
 
-from sqlalchemy.orm import deferred, relationship, backref
+from sqlalchemy.dialects.mysql import BIGINT as BigInteger, INTEGER as Integer
+from sqlalchemy.orm import deferred, relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from sqlalchemy.schema import UniqueConstraint
 
 Base = declarative_base()
 metadata = Base.metadata
 
-from sqlalchemy.types import TypeDecorator, VARCHAR
-import json
 
 class JSONEncodedDict(TypeDecorator):
     """Represents an immutable structure as a json-encoded string.
@@ -52,15 +47,18 @@ class Admin(Base):
 
     __tablename__ = 'gdg_admins'
 
-
     def __init__(self, **kwargs):
         super(Admin, self).__init__(**kwargs)
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     email = Column(String(128), unique=True, nullable=False, index=True)
-    filter_place = Column(Integer, ForeignKey('gdg_places.id'), nullable=True, index=True)
-    googler_id = Column(Integer, ForeignKey('gdg_participants.id'), nullable=True, index=True)
-    godmode = Column(Boolean, default = 0, nullable=False)
+    filter_place = Column(Integer, ForeignKey('gdg_places.id'),
+                          nullable=True, index=True)
+    googler_id = Column(Integer, ForeignKey('gdg_participants.id'),
+                        nullable=True, index=True)
+    godmode = Column(Boolean, default=0, nullable=False)
+
+    place = relationship("Place", backref="admins")
 
 
 class EventParticipant(Base):
@@ -69,24 +67,29 @@ class EventParticipant(Base):
     """
 
     __tablename__ = 'gdg_events_participation'
-    __table_args__ = (UniqueConstraint('googler_id', 'event_id', name='unique_participation'),
-                     )
-
+    __table_args__ = (
+        UniqueConstraint('googler_id', 'event_id',
+                         name='unique_participation'),
+    )
 
     def __init__(self, **kwargs):
         super(EventParticipant, self).__init__(**kwargs)
 
     id = Column(Integer, autoincrement=True, primary_key=True)
-    googler_id = Column(Integer, ForeignKey('gdg_participants.id'), nullable=False, index=True)
-    event_id = Column(Integer, ForeignKey('gdg_events.id'), nullable=False, index=True)
+    googler_id = Column(Integer, ForeignKey('gdg_participants.id'),
+                        nullable=False, index=True)
+    event_id = Column(Integer, ForeignKey('gdg_events.id'), nullable=False,
+                      index=True)
 
     register_date = Column(Date)
-    accepted = Column(Boolean, default = None)
-    visited = Column(Boolean, default = None)
+
+    accepted = Column(Boolean, default=None)
+    visited = Column(Boolean, default=None)
+    confirmed = Column(Boolean, nullable=False, default=False)
+
     fields = deferred(Column(JSONEncodedDict(512)))
 
-    users = relationship("User", backref="event_assocs")
-    events = relationship("Event", backref="event_assocs")
+    user = relationship("User", backref="event_assocs")
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -99,14 +102,14 @@ class User(Base):
 
     __tablename__ = 'gdg_participants'
 
-
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     name = Column(String(35), nullable=False)
     surname = Column(String(35), nullable=False)
-    nickname = Column(String(45), unique=True, index=True) # Should we accept handles without Full Name?
+    # Should we accept handles without Full Name?
+    nickname = Column(String(45), unique=True, index=True)
     email = Column(String(64), unique=True, nullable=False, index=True)
 
     phone = Column(String(20), default=None, unique=True, index=True)
@@ -116,18 +119,45 @@ class User(Base):
     position = Column(String(64), default=None, index=True)
     www = Column(String(100), default=None, unique=True)
 
-    experience_level = Column(Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi', name='experience_level'), default=None)
+    experience_level = Column(
+        Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi',
+             name='experience_level'),
+        default=None)
     experience_desc = Column(UnicodeText)
     interests = Column(UnicodeText)
 
-    events_visited = Column(UnicodeText) # TODO: make normal previous/upcoming events DB\nnow it is JSON field.
-    english_knowledge = Column(Enum('elementary', 'intermediate', 'upper intermediate', 'advanced', 'native', name="english_knowledge"), default=None)
-    t_shirt_size = Column(Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"), default=None)
+    # TODO: make normal previous/upcoming events DB
+    # now it is JSON field.
+    events_visited = Column(UnicodeText)
+    english_knowledge = Column(
+        Enum('elementary', 'intermediate', 'upper intermediate', 'advanced',
+             'native', name="english_knowledge"),
+        default=None)
+    t_shirt_size = Column(
+        Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"),
+        default=None)
     gender = Column(Enum('male', 'female', name="gender"), nullable=False)
 
     additional_info = deferred(Column(UnicodeText))
     local_gdg_id = Column(Integer, index=True)
     uid = Column(BigInteger)
+
+    # events = relationship("Event", secondary=EventParticipant,
+    #                       backref="users")
+    events = relationship("EventParticipant",
+                          backref="users")
+
+    @property
+    def full_name(self):
+        if all([self.name, self.surname]):
+            return '{name} {surname}'.format(name=self.name,
+                                             surname=self.surname)
+
+        for n in ['name', 'nickname', 'surname']:
+            if self.__getattribute__(n):
+                return self.__getattribute__(n)
+
+        return ''
 
 
 class Event(Base):
@@ -137,7 +167,6 @@ class Event(Base):
 
     __tablename__ = 'gdg_events'
 
-
     def __init__(self, **kwargs):
         super(Event, self).__init__(**kwargs)
 
@@ -146,7 +175,8 @@ class Event(Base):
     title = Column(String(64), nullable=False)
     desc = deferred(Column(UnicodeText, nullable=False))
     gplus_event_id = Column(String(27), unique=True, index=True)
-    host_gdg_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=False, index=True)
+    host_gdg_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=False,
+                         index=True)
 
     date = Column(Date)
     closereg = Column(Date)
@@ -155,9 +185,13 @@ class Event(Base):
     # crutch for olostan's code
     background = Column(String(255), nullable=True)
     max_regs = Column(Integer, nullable=True, default=None)
-    google_map_iframe = deferred(Column(UnicodeText, nullable=True, default=None))
+    google_map_iframe = deferred(Column(UnicodeText, nullable=True,
+                                        default=None))
 
-    participants = relationship("EventParticipant", backref="event")
+    testing = Column(Boolean, nullable=False, default=False)
+    require_confirmation = Column(Boolean, nullable=False, default=False)
+
+    participants = relationship("EventParticipant", backref="events")
     host_gdg = relationship("Place", backref="events")
 
 
@@ -167,7 +201,6 @@ class Invite(Base):
     """
 
     __tablename__ = 'gdg_invites'
-
 
     def __init__(self, **kwargs):
         super(Invite, self).__init__(**kwargs)
@@ -187,7 +220,6 @@ class Place(Base):
 
     __tablename__ = 'gdg_places'
 
-
     def __init__(self, **kwargs):
         super(Place, self).__init__(**kwargs)
 
@@ -200,3 +232,8 @@ class Place(Base):
     logo = Column(String(255), nullable=True, default=None)
 
     show = Column(Enum('1', '0', name="show"), nullable=False, default='0')
+
+    master_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=True,
+                       default=None)
+    master = relationship("Place", remote_side='Place.id',
+                          backref='subdivisions')

@@ -1,0 +1,17 @@
+<div class="form-horizontal" ng-form="invites">
+    <div class="control-group" ng-init="genInvitesNumber=0">
+        <label class="control-label">Number of invites to generate</label>
+        <div class="controls">
+            <input ng-model="genInvitesNumber" required type="number">
+            <button ng-disabled="invites.$invalid" class="btn btn-info" ng-click="generateInvites(genInvitesNumber)">Generate</button>
+        </div>
+    </div>
+    <table class="table table-stripped">
+        <tr ng-repeat="invite in e.invites">
+            <td>{{invite.code}}</td>
+            <td>{{invite.email}}</td>
+            <td><i ng-class="{'icon-check':invite.used, 'icon-question-sign':!invite.used}"></i></td>
+        </tr>
+    </table>
+
+</div>

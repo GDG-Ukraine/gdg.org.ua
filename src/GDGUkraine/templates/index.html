@@ -6,7 +6,7 @@
     <script src="https://jquery-json.googlecode.com/files/jquery.json-2.4.min.js"></script>
     <script>
         $.postJSON = function(url, data, callback) {
-            $.ajaxSetup({ scriptCharset:"utf-8", 
+            $.ajaxSetup({ scriptCharset:"utf-8",
                             contentType:"application/json; charset=utf-8" });
             $.post(url, $.toJSON(data), callback, "json");
         }

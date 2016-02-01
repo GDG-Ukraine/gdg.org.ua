@@ -1,62 +1,39 @@
 import cherrypy
-import json
 import logging
 
 from cherrypy import HTTPError, HTTPRedirect
 
 from blueberrypy.util import to_collection
 
-from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2.rfc6749.errors import (MissingCodeError,
                                             MismatchingStateError)
 
 from .api import find_admin_by_email
+from .lib.utils.url import url_for_class
+from .lib.utils.signals import pub
 
 
 logger = logging.getLogger(__name__)
 
-client_id = '1012272991665.apps.googleusercontent.com'
-client_secret = 'baKsIdO1RgRZVfoEetx1oTjT'
-redirect_uri = 'http://localhost:8080/auth/google'
-
-authorization_base_url = "https://accounts.google.com/o/oauth2/auth"
-token_url = "https://accounts.google.com/o/oauth2/token"
-
-scope = [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile"
-]
-
-google = OAuth2Session(client_id, scope=scope, redirect_uri=redirect_uri)
-
-# Redirect user to Google for authorization
-authorization_url, state = google.authorization_url(
-    authorization_base_url,
-    # offline for refresh token
-    # force to always make user click authorize
-    access_type="offline", approval_prompt="force")
-
 
 class AuthController:
     """AuthController implements authentication via Google's OAuth2"""
-    def __init__(self, arg=None):
-        super(AuthController, self).__init__()
-        self.arg = arg
-
-    get_user_info = lambda self: google.\
-        get('https://www.googleapis.com/oauth2/v1/userinfo').json()
 
     @cherrypy.expose
-    def google(self, *args, **kwargs):
+    @cherrypy.tools.json_out()
+    def google(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
         try:
-            redirect_response = '{}?{}'.format(cherrypy.url(),
-                                               req.query_string)
-            google.fetch_token(token_url, client_secret=client_secret,
-                               authorization_response=redirect_response)
+            # Aquire API token internally
+            pub('oauth-token')
 
-            cherrypy.session['google_user'] = self.get_user_info()
+            # Aquire OAuth2Session instance, built with token
+            google_api = pub('google-api')
+
+            cherrypy.session['google_user'] = google_api.get(
+                'https://www.googleapis.com/oauth2/v1/userinfo').json()
+
             cherrypy.session['admin_user'] = to_collection(find_admin_by_email(
                 orm_session,
                 cherrypy.session['google_user']['email']))
@@ -67,12 +44,15 @@ class AuthController:
                 logger.debug('redirect after auth')
                 raise HTTPRedirect(cherrypy.session['auth_redirect'])
             else:
-                raise HTTPRedirect('/')
-            return json.dumps(cherrypy.session['admin_user'])
-        except MissingCodeError:
-            raise HTTPError(401, 'Error: {}'.format(kwargs.get('error')))
-        except MismatchingStateError:
-            raise HTTPRedirect('/auth')
+                raise HTTPRedirect(url_for_class('controller.Root'))
+
+            return cherrypy.session['admin_user']
+        except MissingCodeError as mce:
+            raise HTTPError(401,
+                            'Error: {}'.format(kwargs.get('error'))) from mce
+        except (MismatchingStateError, KeyError) as wrong_state:
+            raise HTTPRedirect(
+                url_for_class('controller.Root.auth')) from wrong_state
 
     # index = google
 
@@ -87,6 +67,8 @@ class AuthController:
            and not return_url.startswith('/auth'):
             cherrypy.session['auth_redirect'] = return_url
 
+        authorization_url = pub('oauth-url')
+
         raise HTTPRedirect(authorization_url)
 
     @cherrypy.expose
@@ -100,8 +82,9 @@ class AuthController:
                       if return_url
                       else cherrypy.request.headers.get('Referer', '/'))
 
-        if return_url.stratswith(['/', 'https://', 'http://']) \
-           and not return_url.startswith('/auth'):
+        if (any(return_url.startswith(_)
+                for _ in ['/', 'https://', 'http://']) and
+                not return_url.startswith('/auth')):
             raise HTTPRedirect(return_url)
 
-        raise HTTPRedirect('/')
+        raise HTTPRedirect(url_for_class('controller.Root'))

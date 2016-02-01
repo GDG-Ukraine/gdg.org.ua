@@ -8,6 +8,10 @@ loggers:
     level: DEBUG
     handlers: [trfile]
     propagate: false
+  alembic:
+    level: INFO
+    handlers: [trfile]
+    propagate: false
 handlers:
   stdout:
     class: logging.StreamHandler
@@ -20,21 +24,21 @@ handlers:
   rfile:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8
   trfile:
     class: logging.handlers.TimedRotatingFileHandler
     formatter: warning
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     when: midnight
     backupCount: 60
     encoding: utf8
   sa:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: /home/gtug2/gdg.org.ua/log/GDGUkraine.log
+    filename: log/GDGUkraine.log
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8

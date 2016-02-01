@@ -1,0 +1,54 @@
+import binascii
+import os
+import urllib
+
+from Crypto import Random
+from Crypto.Cipher import AES
+
+from .url import base_url
+
+# TODO: make this stuff normal
+card_secret_key = os.getenv('CARD_SECRET_KEY',
+                            'sHsagghsSBackFbscoEhTdBtpQtsszds').encode('utf8')
+
+
+def pad(s):
+    return s + b'\0' * (AES.block_size - len(s) % AES.block_size)
+
+
+def aes_decrypt(ciphertext):
+    if isinstance(ciphertext, str):
+        ciphertext = binascii.unhexlify(ciphertext.encode('ascii'))
+    iv = ciphertext[:AES.block_size]
+    cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
+    plaintext = cipher.decrypt(ciphertext[AES.block_size:])
+    return plaintext.rstrip(b'\0').decode('utf8')
+
+
+def aes_encrypt(message):
+    if isinstance(message, str):
+        message = message.encode('utf8')
+    message = pad(message)
+    iv = Random.new().read(AES.block_size)
+    cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
+    return binascii.hexlify(iv + cipher.encrypt(message)).decode('ascii')
+
+
+def make_vcard(user_reg, url=None):
+    if url is None:
+        url = '/card/{}'.format(aes_encrypt(user_reg.user.id))
+
+    if not url.startswith('http'):
+        url = ('' if url.startswith('/') else '/').join([base_url(), url])
+
+    vcard = '''BEGIN:VCARD
+VERSION:2.1
+N:{user.name};{user.surname}
+EMAIL;TYPE=INTERNET:{user.email}
+NOTE:REG:{reg.id} EV:{event.id}
+URL:{url}
+END:VCARD'''
+    return urllib.parse.quote_plus(
+        vcard.format(
+            user=user_reg.user, reg=user_reg, event=user_reg.event,
+            url=url))

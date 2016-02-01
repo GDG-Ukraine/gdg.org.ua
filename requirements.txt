@@ -1,2 +1,0 @@
-hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk
-pre-commit

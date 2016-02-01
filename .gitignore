@@ -16,6 +16,8 @@ develop-eggs
 .installed.cfg
 lib
 lib64
+# we mustn't ignore project lib
+!src/GDGUkraine/lib
 
 # Installer logs
 pip-log.txt
@@ -35,13 +37,12 @@ nosetests.xml
 
 # added by webknjaz
 .cache/*.cache
-src/GDGUkraine/__pycache__/
+__pycache__
+*.pyc
 env/
+.env/
 log/*.log
 log/*.log.*
-config
-config/
-config/dev/app.yml
-config/prod/app.yml
 *.py.bak
 .hidden
+bower_components

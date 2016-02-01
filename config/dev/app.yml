@@ -2,9 +2,50 @@ project_metadata:
   package: GDGUkraine
 
 global:
+  engine.url_for.on: true
   engine.logging.on: true
   engine.sqlalchemy.on: true
+  engine.oauth.on: true
+  google_oauth:
+    id: <google_app_id>.apps.googleusercontent.com
+    secret: <google_app_secret>
+    scope:
+        - https://www.googleapis.com/auth/userinfo.email
+        - https://www.googleapis.com/auth/userinfo.profile
+        # Send an email message:
+        - https://www.googleapis.com/auth/gmail.compose
+        # Create a new file on Google Drive
+        - https://www.googleapis.com/auth/drive.file
   #tools.trailing_slash.on: false
+  base_app_url: http://localhost:8080
+  alembic:
+    # path to migration scripts
+    script_location: src/db
+    # template used to generate migration files
+    # file_template: %%(rev)s_%%(slug)s
+
+    # max length of characters to apply to the
+    # "slug" field
+    #truncate_slug_length: 40
+
+    # set to 'true' to run the environment during
+    # the 'revision' command, regardless of autogenerate
+    # revision_environment: false
+
+    # set to 'true' to allow .pyc and .pyo files without
+    # a source .py file to be detected as revisions in the
+    # versions/ directory
+    # sourceless: false
+
+    # version location specification; this defaults
+    # to db/versions.  When using multiple version
+    # directories, initial revisions must be specified with --version-path
+    # version_locations: %(here)s/bar %(here)s/bat db/versions
+
+    # the output encoding used when revision files
+    # are written from script.py.mako
+    # output_encoding: utf-8
+    sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
 
 controllers:
   '':
@@ -12,8 +53,8 @@ controllers:
     /:
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.staticdir.root: /home/gtug2/gdg.org.ua/static
-      tools.staticfile.root: /home/gtug2/gdg.org.ua/static
+      tools.staticdir.root: static
+      tools.staticfile.root: static
     /css:
       tools.sessions.on: false
       tools.staticdir.on: true
@@ -26,6 +67,10 @@ controllers:
       tools.sessions.on: false
       tools.staticdir.on: true
       tools.staticdir.dir: img
+    /libs:  # Path for third-party libs, bower_components etc.
+      tools.sessions.on: false
+      tools.staticdir.on: true
+      tools.staticdir.dir: libs
     /admin:
       tools.sessions.on: false
       tools.staticfile.on: true
@@ -56,15 +101,21 @@ controllers:
       tools.sessions.on: true
 
 sqlalchemy_engine:
-  url: <connection uri here>
+  url: *db_url
   #pool_recycle: 3600
   pool_recycle: 60
 
 jinja2:
   loader: !!python/object:jinja2.loaders.FileSystemLoader
           encoding: utf-8
-          searchpath: [/home/gtug2/gdg.org.ua/src/GDGUkraine/templates]
-  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: /home/gtug2/gdg.org.ua/.cache,
+          searchpath: [src/GDGUkraine/templates]
+  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: .cache,
                                                                           pattern: __jinja2_%s.cache}
   auto_reload: true
   use_webassets: true
+  globals:
+    url_for: !!python/name:GDGUkraine.lib.utils.url.url_for
+    url_for_class: !!python/name:GDGUkraine.lib.utils.url.url_for_class
+    url_for_routes: !!python/name:GDGUkraine.lib.utils.url.url_for_routes
+    url_for_cp: !!python/name:GDGUkraine.lib.utils.url.url_for_cp
+    url_for_static: !!python/name:GDGUkraine.lib.utils.url.url_for_static

@@ -9,17 +9,19 @@
     </h2>
     <h2 ng-hide="editing">Creating event</h2>
     <div ng-show='editing' class="alert alert-success" >
-        Registration form: <a href='http://gdg.org.ua/events/{{e.id}}/register' target='_blank'>Link</a> (dev: [<a href='http://olostan.org.ua:4242/events/{{e.id}}/register' target='_blank'>olostan</a>] | [<a href='http://wk.webknjaz.com:11010/events/{{e.id}}/register' target='_blank'>wk</a>])
+        Registration form: <a href='http://gdg.org.ua/events/{{e.id}}/register' target='_blank'>Link</a> <span class="muted">(local <a href='/events/{{e.id}}/register' target='_blank'>link</a>)</span>
     </div>
 
     <ul class="nav nav-tabs" ng-show="editing">
         <li ng-class="{active: tab == 'info'}"><a ng-click="tab='info'"><i class="icon-magic"></i> Information</a></li>
-        <li ng-class="{active: tab == 'part'}"><a ng-click="tab='part'"><i class="icon-group"></i> Participants ({{ e.participants.length}})</a></li>
-        <li ng-class="{active: tab == 'fields'}"><a ng-click="tab='fields'"><i class="icon-tasks"></i> Form fields</a></li>
+        <li ng-class="{active: tab == 'part'}"><a ng-click="tab='part'"><i class="icon-group"></i> Participants ({{ e.registrations.length}})</a></li>
+        <li ng-class="{active: tab == 'fields'}"><a ng-click="tab='fields'"><i class="icon-tasks"></i> Custom fields</a></li>
+        <li ng-class="{active: tab == 'form'}"><a ng-click="tab='form'"><i class="icon-tasks"></i> Form fields</a></li>
+        <li ng-class="{active: tab == 'invites'}"><a ng-click="tab='invites'"><i class="icon-envelope"></i> Invites</a></li>
     </ul>
 </div>
 
-<form name="myForm" class="form-horizontal" ng-show="enable">
+<form name="myForm" class="form-horizontal" ng-show='enable' >
  <div ng-show="tab == 'info' || !editing">
     <div class="control-group" ng-class="{error: myForm.title.$invalid}">
         <label class="control-label">Title</label>
@@ -72,6 +74,22 @@
              <input name="max_regs" ng-model="e.max_regs" ng-disabled='e.max_regs==null'>
          </div>
     </div>
+    <div class="control-group ">
+         <label class="control-label">Testing event</label>
+         <div class="controls">
+             <input type="checkbox" ng-model="e.testing"> Event will be
+                <span class="text-error" ng-show="e.testing">hidden from</span>
+                <span class="text-success" ng-hide="e.testing">shown on</span>
+                the list of events.
+         </div>
+    </div>
+    <div class="control-group ">
+         <label class="control-label">Require confirmation</label>
+         <div class="controls">
+             <input type="checkbox" ng-model="e.require_confirmation">
+
+         </div>
+    </div>
 
     <div class="control-group " ng-class="{error: myForm.place.$invalid}">
          <label class="control-label">Host</label>
@@ -86,31 +104,31 @@
     <script type="text/ng-template" id="confirmSend.html">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h4>Re-sending email to {{p.name}} {{p.surname}}</h4>
+            <h4>Re-sending email to {{p.participant.name}} {{p.participant.surname}}</h4>
         </div>
         <div class="modal-body">
-            Are you sure you want to send invitation email to <b>{{p.email}}</b>?
-
-            <div ng-show='!accepted[p.id]' class='alert alert-error'>The application is not accepted yet!</div>
+            Are you sure you want to send invitation email to <b>{{p.participant.email}}</b>?
+            <div ng-show='p.accepted' class='alert alert-warn'>The application is already accepted! Email probably was already sent.</div>
+            <div ng-show='!p.accepted' class='alert alert-error'>The application is not accepted! Don't give false promises</div>
 
         </div>
         <div class="modal-footer">
             <button class="btn cancel" ng-click="dismiss()" ng-disabled='sending'>Cancel</button>
-            <button class="btn btn-primary" ng-click="resend(p.id)" ng-disabled='sending'>
+            <button class="btn btn-primary" ng-click="resend(p.participant.id)" ng-disabled='sending'>
                 <i class="icon-spinner icon-spin" ng-show='sending'></i> Resend<span ng-show='sending'>ing...</span></button>
         </div>
 
     </script>
 
     <script type="text/ng-template" id="confirmDeleteApp.html">
+
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h4>Deleting application of {{p.name}} {{p.surname}}</h4>
+            <h4>Deleting application of {{p.participant.name}} {{p.participant.surname}}</h4>
         </div>
         <div class="modal-body">
-            Are you sure you want to delete application of <b>{{p.name}}</b>?
-
-            <div ng-show='accepted[p.id]' class='alert alert-error'>The application is already accepted!</div>
+            Are you sure you want to delete application of <b>{{p.participant.name}} ({{p.participant.email}})</b>?
+            <div ng-show='p.accepted' class='alert alert-error'>The application is already accepted!</div>
 
         </div>
         <div class="modal-footer">
@@ -127,8 +145,8 @@
     <input type="text" ng-model="search" class="search-query" placeholder="Search">
     <div class="btn-group" bs-buttons-radio ng-model="eFilter">
         <button type="button" class="btn" value="all"><i class="icon-asterisk"></i> All</button>
-        <button type="button" class="btn" value="approved" ng-disabled="keys(accepted)==0"><i class="icon-check"></i> Approved ({{keys(accepted)}})</button>
-        <button type="button" class="btn" value="waiting" ng-disabled="e.participants.length - keys(accepted) == 0"><i class="icon-check-empty"></i> Waiting for approval ({{e.participants.length - keys(accepted)}})</button>
+        <button type="button" class="btn" value="approved" ng-disabled="accepted==0"><i class="icon-check"></i> Approved ({{accepted}})</button>
+        <button type="button" class="btn" value="waiting" ng-disabled="e.registrations.length - accepted == 0"><i class="icon-check-empty"></i> Waiting for approval ({{e.registrations.length - accepted}})</button>
     </div>
     <div class="btn-group" >
         <button type="button" class="btn" ng-click="openReportParticipants()" ng-disabled='reporting'>
@@ -142,26 +160,28 @@
         <tr>
             <th>
                 <input ng-disabled="keys(accepted)==e.participants.length ||approving" type="checkbox" ng-show="eFilter!='approved'" ng-model='allSelected' ng-click='selectAll()'> Approved</th>
-            <th>Name</th>
             <th>Surname</th>
+            <th>Name</th>
             <th>e-mail</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="p in e.participants | filter:filterEvent | filter:search | orderBy:'title'" class="clickable">
+        <tr ng-repeat="p in e.registrations | filter:filterEvent | filter:search | orderBy:'participant.surname'" class="clickable">
             <td>
-                <input type="checkbox" ng-model='toAccept[p.id]' ng-hide='accepted[p.id]' ng-disabled="approving">
-                <i class="icon-ok" ng-show='accepted[p.id]'></i>
+                <input type="checkbox" ng-model='toAccept[p.id]' ng-hide='p.accepted' ng-disabled="approving">
+                <i class="icon-ok" ng-show='p.accepted'></i>
+                <i class="icon-question-sign" style='color:blue' bs-tooltip="'Not confirmed'" ng-show='e.require_confirmation && !p.confirmed'></i>
+                <i class="icon-ok-sign" style='color:green' bs-tooltip="'Confirmed'" ng-show='e.require_confirmation && p.confirmed'></i>
             </td>
-            <td>{{p.name}}</td>
-            <td>{{p.surname}}</td>
-            <td>{{p.email}}</td>
+            <td>{{p.participant.surname}}</td>
+            <td>{{p.participant.name}}</td>
+            <td>{{p.participant.email}}</td>
             <td>
-                <button class='btn btn-danger' ng-controller='notificationDeleteAppCtrl' bs-modal="'confirmDeleteApp.html'"><i class="icon-trash"></i></button>
-                <button class='btn' ng-click='show(p.id)'><i class='icon-user'></i></button>
-                <button class='btn'  ng-click='showCard(p.id)'><i class="icon-credit-card"></i></button>
-                <button class='btn' ng-controller='notificationResendCtrl' bs-modal="'confirmSend.html'"><i class="icon-envelope"></i></button>
+                <button class='btn btn-danger' ng-controller='notificationDeleteAppCtrl' bs-tooltip="'Delete application'" bs-modal="'confirmDeleteApp.html'"><i class="icon-trash"></i></button>
+                <button class='btn' ng-click='show(p.googler_id)' bs-tooltip="'Show participants\'s details'"><i class='icon-user'></i></button>
+                <button class='btn'  ng-click='showCard(p.id)' bs-tooltip="'Application info'"><i class="icon-credit-card"></i></button>
+                <button class='btn' ng-controller='notificationResendCtrl' bs-tooltip="'Send confirmation email'" bs-modal="'confirmSend.html'"><i class="icon-envelope"></i></button>
             </td>
         </tr>
         </tbody>
@@ -172,18 +192,27 @@
     </div>
     <div ng-show='toAcceptArray.length >0' class="control-group">
       <label class="control-label">
-            <input type="checkbox" ng-model='sendEmail' ng-init="sendEmail= true"  ng-disabled="approving">Send email
+
       </label>
       <div class="controls">
-        <button class='btn btn-info' ng-click='approve()' ng-disabled="approving">
+        <button class='btn btn-primary' ng-click='approve()' ng-disabled="approving">
             Approve {{toAcceptArray.length}} application<span ng-show='toAcceptArray.length>1'>s</span>
             <i class="icon-spinner icon-spin" ng-show="approving"></i>
         </button>
+        <button class='btn btn-info' ng-click='sendConfirm()' ng-disabled="approving">
+              Send confirmation request to {{toAcceptArray.length}} application<span ng-show='toAcceptArray.length>1'>s</span>
+              <i class="icon-spinner icon-spin" ng-show="sending"></i>
+        </button>
+        <div>
+            <input type="checkbox" ng-model='sendEmail' ng-init="sendEmail= true"  ng-disabled="approving"> Send email
+            from <span class="clickable" ng-show="!fromEmailEditing" ng-click="fromEmailEditing=true">{{fromEmail}}</span>
+            <input ng-show="fromEmailEditing" ng-model="fromEmail">
+        </div>
+
       </div>
 
     </div>
 </div>
-
 <div class='' ng-show="editing && tab=='fields'">
     <table class='table'>
         <thead>
@@ -192,15 +221,26 @@
             <th>Title</th>
             <th>Type</th>
             <th>Require</th>
-            <th><button class='btn btn-success' ng-click='addField()'>Add</button></th>
+            <th><button class='btn btn-success' ng-click='addField()'><i class='icon-plus-sign'></i> Add</button></th>
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="field in e.fields" class="clickable">
+        <tr ng-repeat="field in e.fields track by $index" class="clickable">
             <td><input ng-model='field.name' required class='input-large'/></td>
             <td><input ng-model='field.title' required class='input-xlarge'/></td>
-            <td>Text</td>
-            <td><input type="checkbox" ng-bind='field.req'/> </td>
+            <td>
+                <select ng-model='field.type' required ng-options="t.type as t.name for t in types"></select>
+                <div ng-show="field.type=='select'">
+                    <input type="checkbox" ng-model="field.multiple"> Allow multiple selection
+                    <div ng-repeat='option in field.options track by $index'>
+                        {{ $index+1 }}. <input type="text" ng-model='field.options[$index]' required>
+                        <button ng-click="removeOption(field, $index)" class="btn btn-small"><i class="icon-minus"></i></button>
+                    </div>
+                    <button class="btn btn-small" ng-click="addOption(field)"><i class='icon-plus-sign'></i> Add option</button>
+                    <input type="checkbox" ng-model="field.allow_custom"> Allow custom answer
+                </div>
+            </td>
+            <td><input ng-show="field.type!='checkbox'" type="checkbox" ng-model='field.required'/> </td>
             <td>
                 <i class="icon-trash" ng-click='deleteField(field)'></i>
             </td>
@@ -209,20 +249,47 @@
     </table>
 </div>
 
+<div class='' ng-show="editing && tab=='form'">
+    <div class="alert"><i class="icon-wrench"></i> Under construction <i class="icon-wrench"></i>
+
+    </div>
+     <table class='table'>
+         <thead>
+         <tr>
+             <th>Field</th>
+             <th>Enabled</th>
+         </tr>
+         </thead>
+         <tbody>
+         <tr ng-repeat="field in formFields track by field.name" class="clickable">
+             <td>{{ field.title }}</td>
+             <td><input type="checkbox" ng-checked='!isHidden(field)' ng-click="toggleHiddenField(e,field)" /></td>
+         </tr>
+         </tbody>
+     </table>
+ </div>
+
+ <div ng-show="editing && tab=='invites'" ng-include="'/templates/admin/events/invites.html'"></div>
+
+
     <script type="text/ng-template" id="eventDelete.html">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
             <h4>Deleting event "{{e.title}}"</h4>
         </div>
         <div class="modal-body">
-            If you delete this event, all registration would be also deleted.
+            If you delete this event, <ul><li>all registrations would be also <b>deleted</b></li><li><b>no</b> visiting history would he recorded</li></ul>
+            <div>
+                If you're really sure, enter "<kbd>sure</kbd>":<input ng-model="checkTxt">
+            </div>
         </div>
         <div class="modal-footer">
             <button class="btn cancel" ng-click="dismiss()">Cancel</button>
-            <button class="btn btn-danger" ng-click="destroy();dismiss()">Delete</button>
+            <button class="btn btn-danger" ng-disabled="checkTxt!='sure'" ng-click="destroy();dismiss()">Delete</button>
         </div>
 
     </script>
+    <div class='alert alert-error' ng-show='myForm.$invalid'>There are some errors above</div>
     <div class="control-group">
         <div class="controls">
             <a href="#/" class="btn"><i class="icon-reply"></i> Cancel</a>

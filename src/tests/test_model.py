@@ -4,12 +4,10 @@ except ImportError:
     import unittest
 from datetime import date
 
-from sqlalchemy import *
-from sqlalchemy.exc import *
-
 from GDGUkraine.model import User
 
 from tests.helper import DBTestFixture, orm_session, Session
+
 
 class UserTest(DBTestFixture, unittest.TestCase):
 
@@ -42,4 +40,6 @@ class UserTest(DBTestFixture, unittest.TestCase):
 
         self.assertTrue(user.validate_password("password"))
         from base64 import b64decode
-        self.assertEqual(user._User__encrypt_password("password", b64decode(user.salt)), user.password)
+        self.assertEqual(
+            user._User__encrypt_password("password", b64decode(user.salt)),
+            user.password)

@@ -18,4 +18,4 @@ env:
 
 # Run tests
 script:
-    - make test-envs TOX_ARGS="-e $TOX_ENV"
+    - make TOX_ARGS="-e $TOX_ENV" test-envs

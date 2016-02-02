@@ -72,7 +72,7 @@ test: test-nose test-style
 	python --version
 
 test-envs: test-env
-	BLUEBERRYPY_CONFIG='{}' tox $@
+	BLUEBERRYPY_CONFIG='{}' tox $(TOX_ARGS)
 
 test-nose: test-deps
 	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils

@@ -31,6 +31,9 @@ dev-deps: env front-deps
 test-deps: env front-deps
 	$(PINST) $(REQ_DIR)/test.txt
 
+test-env: env
+	$(PINST) $(REQ_DIR)/test-env.txt
+
 front-deps:
 	$(BWR) install
 
@@ -52,10 +55,10 @@ issues:
 	echo "Please check out issues at $(ISSUES_URL)"
 
 issue:
-	OPEN_URL "$(ISSUES_URL)/$1"
+	$(OPEN_URL) "$(ISSUES_URL)/$1"
 
 help: readme issues
-	OPEN_URL "$(ISSUES_URL)"
+	$(OPEN_URL) "$(ISSUES_URL)"
 
 db: env
 	$(MIGRATOR) -x environment=dev upgrade head
@@ -65,8 +68,17 @@ migration: env
 	git add src/db/versions
 	git commit -m "$1"
 
-test: test-deps env
-	tox
+test: test-nose test-style
+	python --version
+
+test-envs: test-env
+	BLUEBERRYPY_CONFIG='{}' tox $*
+
+test-nose: test-deps
+	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
+
+test-style: test-deps
+	BLUEBERRYPY_CONFIG='{}' pre-commit run --all-files
 
 run-dev: env
 	$(BLUEBERRY) $(DEV_IF):$(DEV_PORT) -P $(DEV_PID)

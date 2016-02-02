@@ -1,3 +1,2 @@
 redis==2.10.5
-tox==2.3.1
 -r dev.txt

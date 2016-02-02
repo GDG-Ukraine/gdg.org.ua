@@ -3,7 +3,7 @@ python: 3.5
 
 # Scripts to install dependencies
 install:
-    - pip install tox
+    - make test-env
 
 # Environmental variables
 env:
@@ -18,4 +18,4 @@ env:
 
 # Run tests
 script:
-    - tox -e $TOX_ENV
+    - make test-envs -e $TOX_ENV

@@ -31,7 +31,7 @@ dev-deps: env front-deps
 test-deps: env front-deps
 	$(PINST) $(REQ_DIR)/test.txt
 
-test-env: env
+test-env:
 	$(PINST) $(REQ_DIR)/test-env.txt
 
 front-deps:

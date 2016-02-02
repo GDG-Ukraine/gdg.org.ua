@@ -6,20 +6,19 @@ ISSUES_URL=https://github.com/GDG-Ukraine/gdg.org.ua/issues
 OPEN_URL=xdg-open
 MIGRATOR=alembic -c config/dev/alembic.ini
 BWR=bower
-BLUEBERRY=blueberrypy
+BLUEBERRY=blueberrypy serve -b
+PENV=env
+
+PID_PATH=/var/tmp/run
+STAGING_PORT=11010
 
 PROD_IF=127.0.0.1
 PROD_PORT=10110
-PROD_PID_PATH=/var/tmp/run
 PROD_PID=$(PID_PATH)/gdg.org.ua.pid
 
 DEV_IF=0.0.0.0
 DEV_PORT=8080
-DEV_PID_PATH=/var/tmp/run
 DEV_PID=$(PID_PATH)/gdg.org.ua.development.pid
-
-STAGING_PORT=11010
-
 
 all: dev
 
@@ -36,12 +35,15 @@ front-deps:
 	$(BWR) install
 
 mkenv:
-	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 .env
+	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 $(PENV)
 
-env:
-	. .env/bin/activate
-	. ~/.exports &2>1 >/dev/null
-	mkdir -p $PID_PATH &2>1 >/dev/null
+env: mkpidpath
+	. $(PENV)/bin/activate
+	#test -f ~/.exports && . ~/.exports 2>&1 >/dev/null
+
+mkpidpath:
+	echo "Create PID directory: $(PID_PATH)"
+	mkdir -p "$(PID_PATH)" 2>&1 >/dev/null
 
 readme:
 	$(READ) README.md
@@ -66,14 +68,18 @@ migration: env
 test: test-deps env
 	tox
 
-dev: dev-deps env
-	$(BLUEBERRY) -b $DEV_IF:$DEV_PORT -P $DEV_PID
+run-dev: env
+	$(BLUEBERRY) $(DEV_IF):$(DEV_PORT) -P $(DEV_PID)
+
+dev: dev-deps run-dev
 
 run: deps db env
 	echo "This is not implemented yet!" || $(WSGI) not_implemented.wsgi $1
 
-run-prod: deps db env
-	$(BLUEBERRY) -b $PROD_IF:$PROD_PORT -P $PROD_PID -e production -d
+run-prod: env
+	$(BLUEBERRY) $(PROD_IF):$(PROD_PORT) -P $(PROD_PID) -e production -d
+
+prod: deps db run-prod
 
 restart-prod:
 	kill -SIGHUP `cat $PROD_PID`

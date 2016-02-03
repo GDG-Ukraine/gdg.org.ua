@@ -27,7 +27,6 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
 * First, prepare the environment:
 
     $ make env
-    $ make activate-env
     [gdg.org.ua]$ make dev-deps
 
 * Create database tables:
@@ -45,7 +44,6 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
 * Prepare the environment:
 
     $ make env
-    $ make activate-env
     [gdg.org.ua]$ make deps
 
 * Create database tables:

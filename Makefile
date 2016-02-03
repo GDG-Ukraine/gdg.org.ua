@@ -41,8 +41,8 @@ env:
 	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 $(PENV)
 
 activate-env: mkpidpath
-	if test -d $(PENV); then . $(PENV)/bin/activate; fi
-	if test -f .exports; then . .exports; fi
+	if test -d ./$(PENV); then . ./$(PENV)/bin/activate; fi
+	if test -f ./.exports; then . ./.exports; fi
 
 mkpidpath:
 	echo "Create PID directory: $(PID_PATH)"

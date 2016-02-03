@@ -46,3 +46,4 @@ log/*.log.*
 *.py.bak
 .hidden
 bower_components
+.exports

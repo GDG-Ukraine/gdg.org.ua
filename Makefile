@@ -1,4 +1,4 @@
-PINST=pip install -r
+PINST=pip install --no-use-wheel -U -r
 WSGI=gunicorn
 REQ_DIR=requirements
 READ=more
@@ -42,7 +42,7 @@ mkenv:
 
 env: mkpidpath
 	. $(PENV)/bin/activate
-	#test -f ~/.exports && . ~/.exports 2>&1 >/dev/null
+	if test -f .exports; then . .exports; fi
 
 mkpidpath:
 	echo "Create PID directory: $(PID_PATH)"

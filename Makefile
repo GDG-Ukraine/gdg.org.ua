@@ -22,13 +22,13 @@ DEV_PID=$(PID_PATH)/gdg.org.ua.development.pid
 
 all: dev
 
-deps: env front-deps
+deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/prod.txt
 
-dev-deps: env front-deps
+dev-deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/dev.txt
 
-test-deps: env front-deps
+test-deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/test.txt
 
 test-env:
@@ -37,10 +37,10 @@ test-env:
 front-deps:
 	$(BWR) install
 
-mkenv:
+env:
 	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 $(PENV)
 
-env: mkpidpath
+activate-env: mkpidpath
 	. $(PENV)/bin/activate
 	if test -f .exports; then . .exports; fi
 
@@ -60,10 +60,10 @@ issue:
 help: readme issues
 	$(OPEN_URL) "$(ISSUES_URL)"
 
-db: env
+db: activate-env
 	$(MIGRATOR) -x environment=dev upgrade head
 
-migration: env
+migration: activate-env
 	$(MIGRATOR) -x environment=dev revision --autogenerate -m "$1"
 	git add src/db/versions
 	git commit -m "$1"
@@ -80,15 +80,15 @@ test-nose: test-deps
 test-style: test-deps
 	BLUEBERRYPY_CONFIG='{}' pre-commit run --all-files
 
-run-dev: env
+run-dev: activate-env
 	$(BLUEBERRY) $(DEV_IF):$(DEV_PORT) -P $(DEV_PID)
 
 dev: dev-deps run-dev
 
-run: deps db env
+run: deps db activate-env
 	echo "This is not implemented yet!" || $(WSGI) not_implemented.wsgi $1
 
-run-prod: env
+run-prod: activate-env
 	$(BLUEBERRY) $(PROD_IF):$(PROD_PORT) -P $(PROD_PID) -e production -d
 
 prod: deps db run-prod

@@ -7,7 +7,7 @@ OPEN_URL=xdg-open
 MIGRATOR=alembic -c config/alembic.ini
 BWR=bower
 BLUEBERRY=blueberrypy serve -b
-PENV=env
+PENV=.env
 
 PID_PATH=/var/tmp/run
 STAGING_PORT=11010
@@ -41,7 +41,7 @@ env:
 	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 $(PENV)
 
 activate-env: mkpidpath
-	. $(PENV)/bin/activate
+	if test -d $(PENV); then . $(PENV)/bin/activate; fi
 	if test -f .exports; then . .exports; fi
 
 mkpidpath:

@@ -12,60 +12,49 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
     Python 3.5
     MySQL db
 
+## Prerequisites:
+
+    $ cd gdg.org.ua
+
+### Create `.exports` file with following contents:
+    export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
+
+### For dev add following line as well:
+    export OAUTHLIB_INSECURE_TRANSPORT=1
+
 ## How to run it on localhost
 
 * First, prepare the environment:
 
-        $ cd gdg.org.ua
-        $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
-        $ . env/bin/activate
-        [gdg.org.ua]$ pip install -U -r requirements/dev.txt
-        [gdg.org.ua]$ pip install -U -e .
-
-* Set up config in environment variables:
-
-        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
-        [gdg.org.ua]$ export OAUTHLIB_INSECURE_TRANSPORT=1
+    $ make env
+    $ make activate-env
+    [gdg.org.ua]$ make dev-deps
 
 * Create database tables:
 
-        [gdg.org.ua]$ alembic -c config/alembic.ini upgrade head
+    [gdg.org.ua]$ make db
 
 * Start application:
 
-        [gdg.org.ua]$ blueberrypy serve -b 0.0.0.0:8080
+    [gdg.org.ua]$ make run-dev
 
 * Open `http://localhost:8080/` in your favourite browser and have fun :)
-
-Finally, to log out from virtualenv you may simply type:
-
-    [gdg.org.ua]$ deactivate
 
 ## How to run it in production
 
 * Prepare the environment:
 
-        $ cd gdg.org.ua
-        $ virtualenv --clear --prompt="[gdg.org.ua]" -p python3.5 env
-        $ . env/bin/activate
-        [gdg.org.ua]$ pip install -U -r requirements/prod.txt
-        [gdg.org.ua]$ pip install -U -e .
-
-* Set up config in environment variables:
-
-        [gdg.org.ua]$ export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
-
-* If you don't have HTTPS enabled you'll need to set this variable as well:
-
-        [gdg.org.ua]$ export OAUTHLIB_INSECURE_TRANSPORT=1
+    $ make env
+    $ make activate-env
+    [gdg.org.ua]$ make deps
 
 * Create database tables:
 
-        [gdg.org.ua]$ alembic -c config/alembic.ini -x environment=prod upgrade head
+    [gdg.org.ua]$ make prod-db
 
 * Start application:
 
-        [gdg.org.ua]$ ./init_production.sh start
+    [gdg.org.ua]$ make run-prod
 
 ## How to upgrade production
 
@@ -73,18 +62,15 @@ We have `bin/update_gdg` script for this
 
 ## Running tests
 
-    $ cd gdg.org.ua
-    $ . env/bin/activate
-    [gdg.org.ua]$ pip install -U -r requirements/test.txt
-    [gdg.org.ua]$ NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
+    [gdg.org.ua]$ make test
 
 You can use [`tox`](https://tox.readthedocs.org) to run tests as well. Unfortunately, due to some bug in tox itself some special steps are required.
 
-    [gdg.org.ua]$ BLUEBERRYPY_CONFIG='{}' tox
+    [gdg.org.ua]$ make test-envs
 
 You can also run only specific set of tests. To do that, add `-e toxenv[,toxenv]` to tox comand. For example, to run tests only for python3.5, use the following command:
 
-    [gdg.org.ua]$ BLUEBERRYPY_CONFIG='{}' tox -e py35-codestyle,py35-nosetests
+    [gdg.org.ua]$ make TOX_ARGS="-e py35-codestyle,py35-nosetests" test-envs
 
 ## Troubleshooting
 

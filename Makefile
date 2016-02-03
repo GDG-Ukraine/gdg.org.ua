@@ -63,6 +63,9 @@ help: readme issues
 db: activate-env
 	$(MIGRATOR) -x environment=dev upgrade head
 
+prod-db: activate-env
+	$(MIGRATOR) -x environment=prod upgrade head
+
 migration: activate-env
 	$(MIGRATOR) -x environment=dev revision --autogenerate -m "$1"
 	git add src/db/versions

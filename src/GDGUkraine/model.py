@@ -90,6 +90,7 @@ class EventParticipant(Base):
     fields = deferred(Column(JSONEncodedDict(512)))
 
     user = relationship("User", backref="event_assocs")
+    event = relationship("Event", backref="event_assocs")
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the

@@ -1,4 +1,5 @@
-PINST=pip install --no-use-wheel -U -r
+PENV=.env
+PINST=$(PENV)/bin/pip install --no-use-wheel -U -r
 WSGI=gunicorn
 REQ_DIR=requirements
 READ=more
@@ -6,8 +7,9 @@ ISSUES_URL=https://github.com/GDG-Ukraine/gdg.org.ua/issues
 OPEN_URL=xdg-open
 MIGRATOR=alembic -c config/alembic.ini
 BWR=bower
+NPM=npm
+PRECOMMIT=pre-commit
 BLUEBERRY=blueberrypy serve -b
-PENV=.env
 
 PID_PATH=/var/tmp/run
 STAGING_PORT=11010
@@ -26,7 +28,9 @@ deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/prod.txt
 
 dev-deps: activate-env front-deps
+	$(PINST) -U pip
 	$(PINST) $(REQ_DIR)/dev.txt
+	$(PRECOMMIT) install
 
 test-deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/test.txt
@@ -34,7 +38,8 @@ test-deps: activate-env front-deps
 test-env:
 	$(PINST) $(REQ_DIR)/test-env.txt
 
-front-deps:
+front-deps: activate-env
+	$(NPM) install -g $(BWR)
 	$(BWR) install
 
 env:
@@ -67,9 +72,9 @@ prod-db: activate-env
 	$(MIGRATOR) -x environment=prod upgrade head
 
 migration: activate-env
-	$(MIGRATOR) -x environment=dev revision --autogenerate -m "$1"
+	$(MIGRATOR) -x environment=dev revision --autogenerate -m "$(COMMIT_MSG)"
 	git add src/db/versions
-	git commit -m "$1"
+	git commit -m "$(COMMIT_MSG)"
 
 test: test-nose test-style
 	python --version
@@ -81,7 +86,7 @@ test-nose: test-deps
 	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
 
 test-style: test-deps
-	BLUEBERRYPY_CONFIG='{}' pre-commit run --all-files
+	BLUEBERRYPY_CONFIG='{}' $(PRECOMMIT) run --all-files
 
 run-dev: activate-env
 	$(BLUEBERRY) $(DEV_IF):$(DEV_PORT) -P $(DEV_PID)

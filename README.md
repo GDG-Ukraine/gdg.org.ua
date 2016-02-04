@@ -9,8 +9,9 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
 
 ## Requirements:
 
-    Python 3.5
-    MySQL db
+    Python 3.5.0 (it is recommended to use pyenv for dev environment)
+    NodeJS 5.0.0 (it is recommended to use nvm for dev environment)
+    MySQL        (MariaDB works well)
 
 ## Prerequisites:
 
@@ -27,7 +28,8 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
 * First, prepare the environment:
 
     $ make env
-    [gdg.org.ua]$ make dev-deps
+
+    $ make dev-deps
 
 * Create database tables:
 
@@ -38,6 +40,8 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
     [gdg.org.ua]$ make run-dev
 
 * Open `http://localhost:8080/` in your favourite browser and have fun :)
+
+P.S. `make dev` combines steps above except db target
 
 ## How to run it in production
 

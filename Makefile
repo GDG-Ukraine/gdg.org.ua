@@ -79,7 +79,7 @@ migration: activate-env
 test: test-nose test-style
 	python --version
 
-test-envs: test-env
+test-envs: test-env activate-env
 	BLUEBERRYPY_CONFIG='{}' tox $(TOX_ARGS)
 
 test-nose: test-deps

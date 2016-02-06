@@ -1,15 +1,21 @@
 PENV=.env
-PINST=$(PENV)/bin/pip install --no-use-wheel -U -r
-WSGI=gunicorn
+PENV_BIN_PATH=
+ifdef test -d $(PENV)
+PENV_BIN_PATH=./$(PENV)/bin/
+endif
+PINST=$(PENV_BIN_PATH)pip install --no-use-wheel -U -r
+WSGI=$(PENV_BIN_PATH)gunicorn
 REQ_DIR=requirements
 READ=more
 ISSUES_URL=https://github.com/GDG-Ukraine/gdg.org.ua/issues
 OPEN_URL=xdg-open
-MIGRATOR=alembic -c config/alembic.ini
+MIGRATOR=$(PENV_BIN_PATH)alembic -c config/alembic.ini
 BWR=bower
 NPM=npm
-PRECOMMIT=pre-commit
-BLUEBERRY=blueberrypy serve -b
+PRECOMMIT=$(PENV_BIN_PATH)pre-commit
+BLUEBERRY=$(PENV_BIN_PATH)blueberrypy serve -b
+TOX=$(PENV_BIN_PATH)tox
+NOSE=$(PENV_BIN_PATH)nosetests
 
 PID_PATH=/var/tmp/run
 STAGING_PORT=11010
@@ -80,10 +86,10 @@ test: test-nose test-style
 	python --version
 
 test-envs: test-env activate-env
-	BLUEBERRYPY_CONFIG='{}' tox $(TOX_ARGS)
+	BLUEBERRYPY_CONFIG='{}' $(TOX) $(TOX_ARGS)
 
 test-nose: test-deps
-	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml nosetests -w src/tests --tests=test_utils
+	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_utils
 
 test-style: test-deps
 	BLUEBERRYPY_CONFIG='{}' $(PRECOMMIT) run --all-files

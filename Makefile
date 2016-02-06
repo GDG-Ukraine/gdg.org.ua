@@ -1,6 +1,6 @@
 PENV=.env
 PENV_BIN_PATH=
-ifdef test -d $(PENV)
+ifdef $(PENV)
 PENV_BIN_PATH=./$(PENV)/bin/
 endif
 PINST=$(PENV_BIN_PATH)pip install --no-use-wheel -U -r

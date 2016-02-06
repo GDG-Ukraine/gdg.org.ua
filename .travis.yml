@@ -3,6 +3,7 @@ python: 3.5
 
 # Scripts to install dependencies
 install:
+    - make env
     - make test-env
 
 # Environmental variables

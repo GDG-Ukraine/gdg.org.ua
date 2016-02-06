@@ -35,7 +35,7 @@ dev-deps: activate-env front-deps
 test-deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/test.txt
 
-test-env:
+test-env: activate-env
 	$(PINST) $(REQ_DIR)/test-env.txt
 
 front-deps: activate-env

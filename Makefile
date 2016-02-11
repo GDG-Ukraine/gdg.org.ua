@@ -34,7 +34,7 @@ deps: activate-env front-deps
 	$(PINST) $(REQ_DIR)/prod.txt
 
 dev-deps: activate-env front-deps
-	$(PINST) -U pip
+	$(PENV_BIN_PATH)pip install -U pip
 	$(PINST) $(REQ_DIR)/dev.txt
 	$(PRECOMMIT) install
 
@@ -45,7 +45,7 @@ test-env: activate-env
 	$(PINST) $(REQ_DIR)/test-env.txt
 
 front-deps: activate-env
-	$(NPM) install -g $(BWR)
+	sudo $(NPM) install -g $(BWR)
 	$(BWR) install
 
 env:

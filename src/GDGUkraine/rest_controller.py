@@ -24,6 +24,7 @@ from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
+from .lib.validation import regform_validator
 
 
 logger = logging.getLogger(__name__)
@@ -110,6 +111,9 @@ class Participants(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
         u = req.json['user']
+
+        if not (regform_validator.validate(u)):
+            return {'errors': regform_validator.errors}
         logger.debug(req.json)
         logger.debug(u)
         user = User(**u)

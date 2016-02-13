@@ -113,7 +113,7 @@ class Participants(APIBase):
         u = req.json['user']
 
         if not (regform_validator.validate(u)):
-            return {'errors': regform_validator.errors}
+            return {'code': 200, 'errors': regform_validator.errors}
         logger.debug(req.json)
         logger.debug(u)
         user = User(**u)

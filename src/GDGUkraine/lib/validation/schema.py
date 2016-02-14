@@ -66,14 +66,7 @@ regform_schema = {
         ],
     },
     't_shirt_size': {
-        'allowed': [
-            'xs', 'XS',
-            's', 'S',
-            'm', 'M',
-            'l', 'L',
-            'xl', 'XL',
-            'xxl', 'XXL',
-        ],
+        'allowed': ['xs', 's', 'm', 'l', 'xl', 'xxl'],
     },
     'gender': {
         'allowed': ['male', 'female', ],

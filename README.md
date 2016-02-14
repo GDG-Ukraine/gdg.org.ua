@@ -14,66 +14,71 @@ api-for-admin: [![`api-for-admin` brach status](https://api.travis-ci.org/GDG-Uk
     MySQL        (MariaDB works well)
 
 ## Prerequisites:
-
+```
     $ cd gdg.org.ua
-
-### Create `.exports` file with following contents:
-    export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
-
+```
 ### For dev add following line as well:
+```
     export OAUTHLIB_INSECURE_TRANSPORT=1
-
+```
 ## How to run it on localhost
+*Note: if the make.sh is not executable, you should call `chmod +x make.sh`*
+
+#### Command by command instruction
 
 * First, prepare the environment:
-
-    $ make env
-
-    $ make dev-deps
+```
+    $ ./make.sh dev-deps
+```
+* While dependencies are installing, update the placeholder values in .exports file (use preffered text editor: vim, nano, atom, etc.)
 
 * Create database tables:
-
-    [gdg.org.ua]$ make db
-
+```
+    $ ./make.sh db
+```
 * Start application:
-
-    [gdg.org.ua]$ make run-dev
-
+```
+    $ ./make.sh run-dev
+```
 * Open `http://localhost:8080/` in your favourite browser and have fun :)
 
-P.S. `make dev` combines steps above except db target
+#### When the environment is already set up and .exports file has no placeholders, you can call this
+```
+    $ ./make.sh dev
+```
 
 ## How to run it in production
 
 * Prepare the environment:
-
-    $ make env
-    [gdg.org.ua]$ make deps
-
+```
+    $ ./make.sh deps
+```
 * Create database tables:
-
-    [gdg.org.ua]$ make prod-db
-
+```
+    $ ./make.sh prod-db
+```
 * Start application:
-
-    [gdg.org.ua]$ make run-prod
-
+```
+    $ ./make.sh run-prod
+```
 ## How to upgrade production
 
 We have `bin/update_gdg` script for this
 
 ## Running tests
-
-    [gdg.org.ua]$ make test
+```
+    $ ./make.sh test
+```
+#### Tox testing
 
 You can use [`tox`](https://tox.readthedocs.org) to run tests as well. Unfortunately, due to some bug in tox itself some special steps are required.
-
-    [gdg.org.ua]$ make test-envs
-
+```
+    $ ./make.sh test-envs
+```
 You can also run only specific set of tests. To do that, add `-e toxenv[,toxenv]` to tox comand. For example, to run tests only for python3.5, use the following command:
-
-    [gdg.org.ua]$ make TOX_ARGS="-e py35-codestyle,py35-nosetests" test-envs
-
+```
+    $ ./make.sh test-envs TOX_ARGS="-e py35-codestyle,py35-nosetests"
+```
 ## Troubleshooting
 
 ### Converting packages to python3

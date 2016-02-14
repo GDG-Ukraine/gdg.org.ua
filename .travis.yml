@@ -3,8 +3,8 @@ python: 3.5
 
 # Scripts to install dependencies
 install:
-    - make env
-    - make test-env
+    - chmod +x make.sh
+    - ./make.sh test-env py35 # py35 here is for non-displaying of dialog
 
 # Environmental variables
 env:
@@ -19,4 +19,5 @@ env:
 
 # Run tests
 script:
-    - make TOX_ARGS="-e $TOX_ENV" test-envs
+    - TOX_ARGS="-e $TOX_ENV"
+    - ./make.sh test-envs

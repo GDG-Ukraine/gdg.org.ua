@@ -47,3 +47,4 @@ log/*.log.*
 .hidden
 bower_components
 .exports
+node_modules

@@ -11,7 +11,6 @@ class ValidatorsTests(unittest.TestCase):
     """ Set of tests to check validation rules """
 
     def test_regform_validator(self):
-        """ Check if regform_validator performs correctly """
         testsuite = [
             {
                 'data': {

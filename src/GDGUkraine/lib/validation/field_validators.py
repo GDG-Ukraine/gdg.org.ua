@@ -5,12 +5,12 @@ def email(field, value, error):
     regex = r'^[a-zA-Z0-9_.+-]+@(?P<hostname>[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)$'
     match = re.match(regex, value)
     if not match:
-        error(field, 'Not a valid email address')
+        error(field, 'Invalid email address')
     else:
         hostname = match.group('hostname')
         for section in hostname.split('.'):
             if not section:
-                error(field, 'Not a valid email address')
+                error(field, 'Invalid email address')
 
 
 def url(field, value, error):
@@ -20,4 +20,4 @@ def url(field, value, error):
         '(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$'
     )
     if not re.match(regex, value):
-        error(field, 'Not a valid URL')
+        error(field, 'Invalid URL')

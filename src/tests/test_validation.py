@@ -111,7 +111,7 @@ class ValidatorsTests(unittest.TestCase):
                 'errors': {
                     'company': 'max length is 64',
                     't_shirt_size': 'unallowed value big',
-                    'www': 'Not a valid URL',
+                    'www': 'Invalid URL',
                     'email': 'required field',
                 },
             },

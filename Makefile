@@ -3,7 +3,8 @@ PENV_BIN_PATH=
 ifdef $(PENV)
 PENV_BIN_PATH=./$(PENV)/bin/
 endif
-PINST=$(PENV_BIN_PATH)pip install --no-use-wheel -U -r
+PINST=$(PENV_BIN_PATH)pip install --no-use-wheel -U
+PINSTR=$(PINST) -r
 WSGI=$(PENV_BIN_PATH)gunicorn
 REQ_DIR=requirements
 READ=more
@@ -31,18 +32,18 @@ DEV_PID=$(PID_PATH)/gdg.org.ua.development.pid
 all: dev
 
 deps: activate-env front-deps
-	$(PINST) $(REQ_DIR)/prod.txt
+	$(PINSTR) $(REQ_DIR)/prod.txt
 
 dev-deps: activate-env front-deps
-	$(PINST) -U pip
-	$(PINST) $(REQ_DIR)/dev.txt
+	$(PINST) pip
+	$(PINSTR) $(REQ_DIR)/dev.txt
 	$(PRECOMMIT) install
 
 test-deps: activate-env front-deps
-	$(PINST) $(REQ_DIR)/test.txt
+	$(PINSTR) $(REQ_DIR)/test.txt
 
 test-env: activate-env
-	$(PINST) $(REQ_DIR)/test-env.txt
+	$(PINSTR) $(REQ_DIR)/test-env.txt
 
 front-deps: activate-env
 	$(NPM) install -g $(BWR)
@@ -50,10 +51,15 @@ front-deps: activate-env
 
 env:
 	virtualenv --clear --prompt="[gdg.org.ua][py3.5] " -p python3.5 $(PENV)
+	touch ./$(PENV)/.zshrc
+	chmod +x ./$(PENV)/.zshrc
+	if test -f ~/.zshrc; then cat ~/.zshrc >> ./$(PENV)/.zshrc; fi; \
+	cat ./$(PENV)/bin/activate >> ./$(PENV)/.zshrc
 
 activate-env: mkpidpath
-	if test -d ./$(PENV); then . ./$(PENV)/bin/activate; fi
-	if test -f ./.exports; then . ./.exports; fi
+	if test -d ./$(PENV); then . ./$(PENV)/bin/activate ; fi; \
+	if test -f ./.exports; then . ./.exports; fi; \
+	ZDOTDIR=$(PENV) $(SHELL) -i
 
 mkpidpath:
 	echo "Create PID directory: $(PID_PATH)"

@@ -107,10 +107,12 @@ test-envs: test-env
 	BLUEBERRYPY_CONFIG='{}' $(TOX) $(TOX_ARGS)
 
 test-nose: test-deps
-	@BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_utils
+	@$(ACTIVATE_ENV) ; \
+	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_utils
 
 test-style: test-deps
-	@BLUEBERRYPY_CONFIG='{}' $(PRECOMMIT) run --all-files
+	@$(ACTIVATE_ENV) ; \
+	BLUEBERRYPY_CONFIG='{}' $(PRECOMMIT) run --all-files
 
 run-dev:
 	@$(ACTIVATE_ENV) ; \

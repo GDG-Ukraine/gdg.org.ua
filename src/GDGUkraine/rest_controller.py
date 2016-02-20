@@ -17,6 +17,7 @@ from blueberrypy.util import from_collection, to_collection
 from requests.exceptions import HTTPError as RequestsHTTPError
 
 from . import api
+from .errors import InvalidFormDataError
 from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
@@ -113,8 +114,7 @@ class Participants(APIBase):
         u = req.json['user']
 
         if not (regform_validator.validate(u)):
-            cherrypy.response.status = 400
-            return {'errors': regform_validator.errors}
+            raise InvalidFormDataError(regform_validator.errors)
         logger.debug(req.json)
         logger.debug(u)
         user = User(**u)
@@ -618,7 +618,8 @@ def unexpected_error_handler():
         response.headers['Content-Type'] = "application/json"
         response.headers.pop('Content-Length', None)
         content = {}
-
+        if isinstance(value, InvalidFormDataError):
+            content = {'code': 400, 'errors': value._errors}
         if isinstance(typ, HTTPError):
             cherrypy._cperror.clean_headers(value.code)
             response.status = value.status
@@ -634,4 +635,4 @@ def unexpected_error_handler():
         if cherrypy.serving.request.show_tracebacks or debug:
             tb = traceback.format_exc()
             content["traceback"] = tb
-        response.body = json.dumps(content)
+        response.body = json.dumps(content).encode('utf-8')

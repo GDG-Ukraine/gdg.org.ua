@@ -17,7 +17,7 @@ from blueberrypy.util import from_collection, to_collection
 from requests.exceptions import HTTPError as RequestsHTTPError
 
 from . import api
-from .errors import InvalidFormDataError
+from .errors import ExtendedHTTPError, InvalidFormDataError
 from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
@@ -111,10 +111,12 @@ class Participants(APIBase):
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
-        u = req.json['user']
+
+        u = req.json.get('user')
 
         if not (regform_validator.validate(u)):
             raise InvalidFormDataError(regform_validator.errors)
+
         logger.debug(req.json)
         logger.debug(u)
         user = User(**u)
@@ -588,7 +590,7 @@ rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
 
 # Error handlers
 
-def generic_error_handler(status, message, traceback, version):
+def generic_error_handler(status, message, traceback, version, errors=None):
     """error_page.default"""
 
     response = cherrypy.response
@@ -597,6 +599,8 @@ def generic_error_handler(status, message, traceback, version):
 
     code, reason, _ = cphttputil.valid_status(status)
     result = {"code": code, "reason": reason, "message": message}
+    if errors is not None:
+        result["errors"] = errors
     if hasattr(cherrypy.request, "params"):
         params = cherrypy.request.params
         if "debug" in params and params["debug"]:
@@ -618,13 +622,13 @@ def unexpected_error_handler():
         response.headers['Content-Type'] = "application/json"
         response.headers.pop('Content-Length', None)
         content = {}
-        if isinstance(value, InvalidFormDataError):
-            content = {'code': 400, 'errors': value._errors}
+        if isinstance(value, ExtendedHTTPError):
+            content.update({'errors': value.errors})
         if isinstance(typ, HTTPError):
             cherrypy._cperror.clean_headers(value.code)
             response.status = value.status
-            content = {"code": value.code, "reason": value.reason,
-                       "message": value._message}
+            content.update({"code": value.code, "reason": value.reason,
+                            "message": value._message})
         elif isinstance(typ, (TypeError, ValueError, KeyError)):
             cherrypy._cperror.clean_headers(400)
             response.status = 400

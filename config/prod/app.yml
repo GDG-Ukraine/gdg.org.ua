@@ -70,8 +70,8 @@ controllers:
     controller: !!python/name:GDGUkraine.rest_controller.rest_api
     /:
       request.dispatch: !!python/name:GDGUkraine.rest_controller.rest_api
-      request.error_response: !!python/name:GDGUkraine.rest_controller.unexpected_error_handler
-      error_page.default: !!python/name:GDGUkraine.rest_controller.generic_error_handler
+      request.error_response: !!python/name:GDGUkraine.errors.unexpected_json_error_handler
+      error_page.default: !!python/name:GDGUkraine.errors.generic_json_error_handler
       tools.orm_session.on: true
       tools.sessions.on: true
   /events:

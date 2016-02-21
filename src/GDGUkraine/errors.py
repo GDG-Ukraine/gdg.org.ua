@@ -3,14 +3,20 @@
 
 from cgi import escape as _escape
 from sys import exc_info as _exc_info
-from traceback import format_exception as _format_exception
+from traceback import (
+    format_exception as _format_exception, format_exc as _format_exc
+)
 
-from cherrypy import HTTPError
+import cherrypy
 from cherrypy.lib import httputil as _httputil
 from cherrypy._cpcompat import tonative
 
+from .lib.utils import json
 
-class ExtendedHTTPError(HTTPError):
+
+# Error classes
+
+class ExtendedHTTPError(cherrypy.HTTPError):
     def __init__(self, status=500, message=None, errors=None):
         self._errors = errors
         super().__init__(status, message)
@@ -27,6 +33,63 @@ class InvalidFormDataError(ExtendedHTTPError):
     def __init__(self, errors=None):
         super().__init__(400, 'Invalid request', errors=errors)
 
+
+# JSON error handlers
+
+def generic_json_error_handler(status, message, traceback, version,
+                               errors=None):
+    """error_page.default"""
+
+    response = cherrypy.response
+    response.headers['Content-Type'] = "application/json"
+    response.headers.pop('Content-Length', None)
+
+    code, reason, _ = _httputil.valid_status(status)
+    result = {"code": code, "reason": reason, "message": message}
+    if errors is not None:
+        result["errors"] = errors
+    if hasattr(cherrypy.request, "params"):
+        params = cherrypy.request.params
+        if "debug" in params and params["debug"]:
+            result["traceback"] = traceback
+    return json.dumps(result)
+
+
+def unexpected_json_error_handler():
+    """request.error_response"""
+
+    (typ, value, tb) = _exc_info()
+    if typ:
+        debug = False
+        if hasattr(cherrypy.request, "params"):
+            params = cherrypy.request.params
+            debug = "debug" in params and params["debug"]
+
+        response = cherrypy.response
+        response.headers['Content-Type'] = "application/json"
+        response.headers.pop('Content-Length', None)
+        content = {}
+        if isinstance(value, ExtendedHTTPError):
+            content.update({'errors': value.errors})
+        if isinstance(typ, cherrypy.HTTPError):
+            cherrypy._cperror.clean_headers(value.code)
+            response.status = value.status
+            content.update({"code": value.code, "reason": value.reason,
+                            "message": value._message})
+        elif isinstance(typ, (TypeError, ValueError, KeyError)):
+            cherrypy._cperror.clean_headers(400)
+            response.status = 400
+            reason, default_message = _httputil.response_codes[400]
+            content = {"code": 400, "reason": reason,
+                       "message": value.message or default_message}
+
+        if cherrypy.serving.request.show_tracebacks or debug:
+            tb = _format_exc()
+            content["traceback"] = tb
+        response.body = json.dumps(content).encode('utf-8')
+
+
+# Copy-pasted stuff
 
 _HTTPErrorTemplate = '''<!DOCTYPE html PUBLIC
 "-//W3C//DTD XHTML 1.0 Transitional//EN"

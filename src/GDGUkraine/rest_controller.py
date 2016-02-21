@@ -1,8 +1,5 @@
-import json
 import logging
 import re
-import sys
-import traceback
 
 from datetime import date
 from uuid import uuid4
@@ -10,14 +7,14 @@ from uuid import uuid4
 import cherrypy
 
 from cherrypy import HTTPError
-from cherrypy.lib import httputil as cphttputil, file_generator
+from cherrypy.lib import file_generator
 
 from blueberrypy.util import from_collection, to_collection
 
 from requests.exceptions import HTTPError as RequestsHTTPError
 
 from . import api
-from .errors import ExtendedHTTPError, InvalidFormDataError
+from .errors import InvalidFormDataError
 from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
@@ -586,57 +583,3 @@ rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
 rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
                  conditions={"method": ["POST"]})
-
-
-# Error handlers
-
-def generic_error_handler(status, message, traceback, version, errors=None):
-    """error_page.default"""
-
-    response = cherrypy.response
-    response.headers['Content-Type'] = "application/json"
-    response.headers.pop('Content-Length', None)
-
-    code, reason, _ = cphttputil.valid_status(status)
-    result = {"code": code, "reason": reason, "message": message}
-    if errors is not None:
-        result["errors"] = errors
-    if hasattr(cherrypy.request, "params"):
-        params = cherrypy.request.params
-        if "debug" in params and params["debug"]:
-            result["traceback"] = traceback
-    return json.dumps(result)
-
-
-def unexpected_error_handler():
-    """request.error_response"""
-
-    (typ, value, tb) = sys.exc_info()
-    if typ:
-        debug = False
-        if hasattr(cherrypy.request, "params"):
-            params = cherrypy.request.params
-            debug = "debug" in params and params["debug"]
-
-        response = cherrypy.response
-        response.headers['Content-Type'] = "application/json"
-        response.headers.pop('Content-Length', None)
-        content = {}
-        if isinstance(value, ExtendedHTTPError):
-            content.update({'errors': value.errors})
-        if isinstance(typ, HTTPError):
-            cherrypy._cperror.clean_headers(value.code)
-            response.status = value.status
-            content.update({"code": value.code, "reason": value.reason,
-                            "message": value._message})
-        elif isinstance(typ, (TypeError, ValueError, KeyError)):
-            cherrypy._cperror.clean_headers(400)
-            response.status = 400
-            reason, default_message = cphttputil.response_codes[400]
-            content = {"code": 400, "reason": reason,
-                       "message": value.message or default_message}
-
-        if cherrypy.serving.request.show_tracebacks or debug:
-            tb = traceback.format_exc()
-            content["traceback"] = tb
-        response.body = json.dumps(content).encode('utf-8')

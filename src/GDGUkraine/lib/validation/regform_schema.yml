@@ -12,7 +12,7 @@ nickname:
     maxlength: 45
 email:
     type: string
-    nullable: true
+    required: true
     validator: !!python/name:GDGUkraine.lib.validation.field_validators.email
 phone:
     type: string
@@ -20,7 +20,7 @@ phone:
     maxlength: 20
 gplus:
     type: string
-    nullable: true
+    required: true
     maxlength: 128
 hometown:
     type: string

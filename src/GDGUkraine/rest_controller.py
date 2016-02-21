@@ -112,9 +112,9 @@ class Participants(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
 
-        u = req.json.get('user')
+        u = req.json.get('user', {})
 
-        if not (regform_validator.validate(u)):
+        if not regform_validator.validate(u):
             raise InvalidFormDataError(regform_validator.errors)
 
         logger.debug(req.json)

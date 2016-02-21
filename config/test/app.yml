@@ -20,6 +20,8 @@ global:
   alembic:
     script_location: src/db
     sqlalchemy.url: &db_url sqlite://
+  alembic.exclude:
+    - gdg_blog_posts_view
 
 controllers:
   '':

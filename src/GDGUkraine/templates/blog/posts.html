@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns#">
+<head>
+    <meta charset="UTF-8">
+    <base href="{{ url_for_class('controller.Root') }}"></base>
+    <title>GDG | Blogs</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="author" content="Oleh Zasadnyy">
+    <meta name="author" content="Olexandr Kovalchuk">
+    <meta name="author" content="Svyatoslav Sydorenko">
+    <meta name="author" content="Valentyn Shybanov">
+
+    <!-- Start opengraph meta -->
+    <!-- Override author, cause opengraph picks last author meta -->
+    <meta name="author" content="GDG Ukraine">
+    <!-- Actually opengraph meta -->
+    <meta property="og:title" content="GDG | Upcoming Events">
+    <meta property="og:description" content="Events set up by GDG Ukraine">
+    <meta property="og:site_name" content="GDG Ukraine Events">
+    <meta property="og:image" content="{{ url_for_static('img/pattern.png') }}"><!-- TODO: refactor with dynamic url generation -->
+
+    <!-- Twitter meta tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
+    <meta name="twitter:title" content="GDG | Upcoming Events">
+    <meta name="twitter:description" content="Events set up by GDG Ukraine">
+    <meta name="twitter:image" content="{{ url_for_static('img/pattern.png') }}">
+    <!-- End opengraph meta-->
+
+    <link href="{{ url_for_static('favicon.ico') }}" rel="icon" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="{{ url_for_static('css/style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div id="main" role="main">
+            {% for post in posts %}
+            <div id="contact-form">
+                <h1>{{ post.post_title }}</h2>
+                <div id="desc">
+                    <label><span>by {{ post.display_name }} (GDG {{ post.gdg_place | title }}) on {{ post.post_date }}</span></label>
+                    <label>{{ post.post_content }}</label>
+                    <label><span><a href="{{ post.guid }}">Find out more</a></span></label>
+                </div>
+            </div>
+            {{ '<hr>' if not loop.last }}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

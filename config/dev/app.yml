@@ -46,6 +46,8 @@ global:
     # are written from script.py.mako
     # output_encoding: utf-8
     sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
+  alembic.exclude:
+    - gdg_blog_posts_view
 
 controllers:
   '':

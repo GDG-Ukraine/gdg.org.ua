@@ -2,11 +2,16 @@ import logging
 
 from GDGUkraine.model import (Admin, User,
                               Event, EventParticipant,
-                              Place, Invite)
+                              Place, Invite, WPPost)
 from datetime import date
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_all_posts(session, offset=0, lim=10):
+    q = session.query(WPPost).order_by(-WPPost.post_date)
+    return q.offset(offset).limit(lim).all()
 
 
 def get_place_by_id(session, id):

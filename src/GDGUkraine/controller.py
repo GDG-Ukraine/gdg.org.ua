@@ -5,6 +5,7 @@ import functools
 from blueberrypy.template_engine import get_template
 
 from .auth_controller import AuthController
+from .blog_controller import BlogController
 from .lib.utils.vcard import make_vcard, aes_decrypt
 from . import api
 
@@ -83,3 +84,4 @@ class Root:
 
 
 Root.auth = AuthController()
+Root.blog = BlogController()

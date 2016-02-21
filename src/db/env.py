@@ -29,7 +29,9 @@ sqlalchemy_config = conf.sqlalchemy_config
 # access to the values within the .ini file in use.
 config = context.config
 
-alembic_config = app_config.get('global', {}).get(config.config_ini_section)
+global_config = app_config.get('global', {})
+alembic_config = global_config.get(config.config_ini_section)
+exclude_tables = global_config.get('alembic.exclude')
 
 # Update alembic's context. Just in case...
 for option, value in alembic_config.items():
@@ -46,6 +48,12 @@ for option, value in alembic_config.items():
 dictConfig(conf.logging_config)
 
 
+# http://dev.utek.pl/2013/ignoring-tables-in-alembic/
+def include_object(object, name, type_, reflected, compare_to):
+    """Helper to determine whether to generate migration for a given table"""
+    return type_ != "table" or name not in exclude_tables
+
+
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
@@ -59,6 +67,7 @@ def run_migrations_offline():
 
     """
     context.configure(target_metadata=target_metadata,
+                      include_object=include_object,
                       **sqlalchemy_config['sqlalchemy_engine'])
 
     with context.begin_transaction():
@@ -81,7 +90,8 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             user_module_prefix='GDGUkraine.model.',
-            target_metadata=target_metadata
+            target_metadata=target_metadata,
+            include_object=include_object
         )
 
         with context.begin_transaction():

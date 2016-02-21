@@ -37,7 +37,35 @@ class JSONEncodedDict(TypeDecorator):
     def process_result_value(self, value, dialect):
         return json.loads(value) if value is not None else []
 
-__all__ = ['Admin', 'User', 'Event', 'EventParticipant', 'Place', 'Invite']
+__all__ = [
+    'WPPost', 'Admin',
+    'User', 'Event', 'EventParticipant',
+    'Place', 'Invite',
+]
+
+
+class WPPost(Base):
+    """WPPost is a view representing Wordpress posts of all groups"""
+
+    __tablename__ = 'gdg_blog_posts_view'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    wp_post_id = Column(BigInteger, primary_key=True)
+    post_date = Column(Date)
+    post_content = Column(UnicodeText)
+    post_title = Column(UnicodeText)
+    post_name = Column(String(200))
+    guid = Column(String(255))
+    comment_count = Column(BigInteger)
+    wp_user_id = Column(BigInteger, primary_key=True)
+    user_login = Column(String(60), primary_key=True)
+    user_nicename = Column(String(50), primary_key=True)
+    user_email = Column(String(100), primary_key=True)
+    user_status = Column(Integer, primary_key=True)
+    display_name = Column(String(250), primary_key=True)
+    gdg_place = Column(String(12), primary_key=True)
 
 
 class Admin(Base):

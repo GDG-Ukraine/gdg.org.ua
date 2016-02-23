@@ -31,7 +31,12 @@ config = context.config
 
 global_config = app_config.get('global', {})
 alembic_config = global_config.get(config.config_ini_section)
-exclude_tables = global_config.get('alembic.exclude')
+
+alembic_excludes = global_config.get('alembic.exclude', {})
+exclude_tables = alembic_excludes.get('tables', {})
+exclude_indexes = alembic_excludes.get('indexes', {})
+exclude_fkeys = alembic_excludes.get('foreign_keys', {})
+exclude_ukeys = alembic_excludes.get('unique_keys', {})
 
 # Update alembic's context. Just in case...
 for option, value in alembic_config.items():
@@ -48,10 +53,19 @@ for option, value in alembic_config.items():
 dictConfig(conf.logging_config)
 
 
-# http://dev.utek.pl/2013/ignoring-tables-in-alembic/
+# http://dev.utek.pl/2013/ignorivalueng-tables-in-alembic/
+# Alternatively, if we needed to,
+# include_symbol(tablename, schema) could help us filter out just tables:
+# http://alembic.readthedocs.org/en/rel_0_7/api.html
 def include_object(object, name, type_, reflected, compare_to):
     """Helper to determine whether to generate migration for a given table"""
-    return type_ != "table" or name not in exclude_tables
+    return not (
+        (type_ == 'table' and name in exclude_tables) or
+        (type_ == 'index' or name in exclude_indexes) or
+        (type_ == 'unique_constraint' or name in exclude_ukeys) or
+        (type_ == 'foreign_key_constraint' or name in exclude_fkeys) or
+        True
+    )
 
 
 def run_migrations_offline():

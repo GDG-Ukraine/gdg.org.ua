@@ -47,7 +47,49 @@ global:
     # output_encoding: utf-8
     sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
   alembic.exclude:
-    - gdg_blog_posts_view
+    tables:
+      - gdg_blog_posts_view  # exclude view, aggregating posts from all GDGs
+      # Exclude Wordpress-specific tables:
+      - wp_blog_versions
+      - wp_blogs
+      - wp_commentmeta
+      - wp_comments
+      - wp_links
+      - wp_openid_identities
+      - wp_options
+      - wp_postmeta
+      - wp_posts
+      - wp_posts_dup
+      - wp_registration_log
+      - wp_signups
+      - wp_site
+      - wp_sitemeta
+      - wp_term_relationships
+      - wp_term_taxonomy
+      - wp_terms
+      - wp_usermeta
+      - wp_users
+    indexes:
+      - ix_gdg_admins_email
+      - ix_gdg_admins_filter_place
+      - ix_gdg_admins_googler_id
+      - googler_id_UNIQUE
+      - id_UNIQUE
+      - code_UNIQUE
+      - ix_gdg_participants_company
+      - ix_gdg_participants_email
+      - ix_gdg_participants_gplus
+      - ix_gdg_participants_hometown
+      - ix_gdg_participants_local_gdg_id
+      - ix_gdg_participants_nickname
+      - ix_gdg_participants_phone
+      - ix_gdg_participants_position
+      - email_UNIQUE
+      - uid_UNIQUE
+    foreign_keys:
+      - gdg_participants_ibfk_1
+    unique_keys:
+      - unique_participation
 
 controllers:
   '':

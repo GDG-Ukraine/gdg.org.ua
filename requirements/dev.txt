@@ -1,3 +1,4 @@
 -r test-env.txt
 -r common.txt
 hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk#egg=blueberrypy[speedups,dev]
+git+https://github.com/webknjaz/nose-ipdb@ed378ac  # enables nosetests --ipdb

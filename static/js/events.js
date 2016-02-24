@@ -40,7 +40,7 @@ angular.module('gdgorgua')
               var i = $scope.e.fields.indexOf(field);
               if (i>=0) $scope.e.fields.splice(i,1);
            };
-           $scope.places = $http.get('/api/places',{cache:true}).then(function(r) { return r.data;});
+           $http.get('/api/places',{cache:true}).then(function(r) { $scope.places = r.data;});
            $scope.logoForPlace = function(placeId) {
                var place;
                for (var p in $scope.places) if ($scope.places[p] && $scope.places[p].id==placeId) place = $scope.places[p];

@@ -141,8 +141,6 @@ controllers:
       error_page.default: !!python/name:GDGUkraine.rest_controller.generic_error_handler
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.sessions.storage_type: file
-      tools.sessions.storage_path: .sessions
   /events:
     controller: !!python/name:GDGUkraine.events_controller.events
     /:

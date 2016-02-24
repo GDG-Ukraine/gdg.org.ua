@@ -248,10 +248,8 @@ class Events(APIBase):
     @cherrypy.tools.authorize()
     def list_all(self, **kwargs):
         events = api.get_all_events(cherrypy.request.orm_session)
-        if events:
-            return [to_collection(e, sort_keys=True)
-                    for e in events]
-        raise HTTPError(404)
+        return [to_collection(e, sort_keys=True)
+                for e in events] if events else []
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()

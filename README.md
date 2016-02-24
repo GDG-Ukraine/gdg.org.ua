@@ -12,6 +12,7 @@ api-for-admin: [![`api-for-admin` branch status](https://api.travis-ci.org/GDG-U
     Python 3.5.0 (it is recommended to use pyenv for dev environment)
     NodeJS 5.0.0 (it is recommended to use nvm for dev environment)
     MySQL        (MariaDB works well)
+    Mercurial    (because there's some `hg+` dependencies)
 
 ## Prerequisites:
 

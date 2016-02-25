@@ -519,11 +519,11 @@ class Events(APIBase):
         orm_session = req.orm_session
         reg_id = int(id)
         reg_data = api.get_event_registration_by_id(orm_session, reg_id)
-        visit = EventParticipant(
-            visited=True
-            )
+        reg_data.visited = True
         if reg_data:
-            orm_session.merge(visit)
+            orm_session.merge(reg_data)
+        else:
+            raise HTTPError(400, "Something wrong with registration")
         orm_session.commit()
         return to_collection(reg_data, sort_keys=True)
 

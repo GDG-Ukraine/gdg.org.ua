@@ -28,7 +28,7 @@ class AuthController:
         section and sets fake data about the user into session
         """
 
-        if not cherrypy.config.get('global', {}).get('bypass_auth'):
+        if not cherrypy.config.get('bypass_auth'):
             raise HTTPError(403)
 
         req = cherrypy.request

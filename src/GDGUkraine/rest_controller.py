@@ -511,6 +511,23 @@ class Events(APIBase):
             raise HTTPError(500, "Cannot save generated invites") from e
         return {"ok": True}
 
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def record_visit(self, id):
+        '''POST /api/events/:id/check-in'''
+        req = cherrypy.request
+        orm_session = req.orm_session
+        reg_id = int(id)
+        reg_data = api.get_event_registration_by_id(orm_session, reg_id)
+        if not reg_data:
+            raise HTTPError(400,
+                            'There is no registration record'
+                            'for id={id}'.format(id=reg_id))
+        reg_data.visited = True
+        orm_session.merge(reg_data)
+        orm_session.commit()
+        return to_collection(reg_data, sort_keys=True)
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -576,6 +593,10 @@ rest_api.connect("list_places", "/places", Places, action="list_all",
 rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
 rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
+                 conditions={"method": ["POST"]})
+rest_api.connect("check-in",
+                 r"/events/{id:\d+}/check-in", Events,
+                 action="record_visit",
                  conditions={"method": ["POST"]})
 
 

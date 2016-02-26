@@ -520,7 +520,9 @@ class Events(APIBase):
         reg_id = int(id)
         reg_data = api.get_event_registration_by_id(orm_session, reg_id)
         if not reg_data:
-            raise HTTPError(400, "Something wrong with registration")
+            raise HTTPError(400,
+                            'There is no registration record'
+                            'for id={id}'.format(id=reg_id))
         reg_data.visited = True
         orm_session.merge(reg_data)
         orm_session.commit()

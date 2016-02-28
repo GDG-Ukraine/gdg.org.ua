@@ -108,7 +108,7 @@ test-envs: test-env
 
 test-nose: test-deps
 	@$(ACTIVATE_ENV) ; \
-	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_utils
+	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_utils,test_api
 
 test-style: test-deps
 	@$(ACTIVATE_ENV) ; \

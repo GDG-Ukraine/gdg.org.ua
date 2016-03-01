@@ -44,7 +44,7 @@ class APITest(DBTestFixture, unittest.TestCase):
         session.add_all([gdg_host, vasia_pupkin, conf, alice, bob, epa, epb])
         session.commit()
 
-    # test_get_all_users
+    # test_get_all_posts
 
     @orm_session
     def test_get_place_by_id(self):
@@ -91,8 +91,24 @@ class APITest(DBTestFixture, unittest.TestCase):
         self.assertEquals(con.gplus_event_id, '11111111111111111')
         self.assertEquals(con.host_gdg.city, 'Gotham')
 
-    # def test_get_all_users
-    # def test_get_users_by_ids(session, ids):
+    @orm_session
+    def test_get_all_users(self):
+        session = Session()
+        usrs = api.get_all_users(session)
+        self.assertEqual(usrs[0].nickname, "alice")
+        self.assertEqual(usrs[0].email, 'alice@wonderland.com')
+        self.assertEqual(usrs[0].gender, 'female')
+        self.assertEqual(usrs[0].surname, 'Johns')
+
+    @orm_session
+    def test_get_users_by_ids(self):
+        session = Session()
+        alice, *_ = api.get_users_by_ids(session, [1])
+        self.assertEqual(alice.nickname, "alice")
+        self.assertEqual(alice.email, 'alice@wonderland.com')
+        self.assertEqual(alice.gender, 'female')
+        self.assertEqual(alice.surname, 'Johns')
+
     # def test_get_event_registrations_by_ids(session, reg_ids):
     # def test_get_event_registration_by_id(session, reg_id):
     # def test_get_all_gdg_places(session, filtered=False):

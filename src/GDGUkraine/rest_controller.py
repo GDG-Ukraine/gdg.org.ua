@@ -236,6 +236,7 @@ class Events(APIBase):
             e.update({'registrations': [to_collection(r, sort_keys=True)
                      for r in registrations]})
             for r in e['registrations']:
+                r.update({'cardUrl': aes_encrypt(str(r['id']))})
                 r.update({'participant': to_collection(
                     api.find_user_by_id(cherrypy.request.orm_session,
                                         r['googler_id']),

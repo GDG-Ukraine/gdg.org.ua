@@ -1,0 +1,14 @@
+{% if event.background %}
+    <a href="{{ event.url }}">
+        <img style="max-width: 100%;" src="{{ event.background }}" title="GDG {{ event.host_gdg.name | e }}: {{ event.title | e }}" alt="{{ event.title | e }}">
+    </a>
+{% elif event.host_gdg_id and event.host_gdg %}
+    <a href="{{ event.host_gdg.url }}">
+        <img id="logo" src="{{ event.host_gdg.logo }}" title="GDG {{ event.host_gdg.name | e }}: {{ event.title | e }}" alt="GDG {{ event.host_gdg.name }} logo">
+    </a>
+{% else %}
+    <img id="logo" src="/img/logo.png" title="{{ event.title | e }}" alt="logo">
+{% endif %}
+<!--
+    vim: softtabstop=4 shiftwidth=4 expandtab
+-->

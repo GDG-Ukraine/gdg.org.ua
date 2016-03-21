@@ -24,11 +24,7 @@
 <div class="wrapper">
     <div id="main" role="main">
             <div id="contact-form">
-                {% if event.host_gdg_id and event.host_gdg %}
-                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="logo"></a>
-                {% else %}
-                <img id="logo" src="/img/logo.png" alt="logo">
-                {% endif %}
+                {% include 'logo.html' %}
 
                 <h1>Registration to {{ event.title }} is closed</h1>
 

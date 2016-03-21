@@ -37,11 +37,7 @@
     <div class="wrapper">
         <div id="main" role="main">
             <div id="contact-form">
-                {% if event.host_gdg_id and event.host_gdg %}
-                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="{{ event.host_gdg.name }}" title="{{ event.host_gdg.name }}"></a>
-                {% else %}
-                <img id="logo" src="{{ url_for_static('img/logo.png') }}" alt="GDG Ukraine" title="GDG Ukraine">
-                {% endif %}
+                {% include 'logo.html' %}
                 <h1>{{ event.title }}</h2>
                 <div id="desc">
                     <label><span>Description:</span> {{ event.desc }}</label>

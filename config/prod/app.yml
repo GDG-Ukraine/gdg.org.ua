@@ -141,6 +141,7 @@ jinja2:
   auto_reload: false
   use_webassets: true
   globals:
+    is_admin: !!python/name:GDGUkraine.lib.utils.auth.is_admin
     url_for: !!python/name:GDGUkraine.lib.utils.url.url_for
     url_for_class: !!python/name:GDGUkraine.lib.utils.url.url_for_class
     url_for_routes: !!python/name:GDGUkraine.lib.utils.url.url_for_routes

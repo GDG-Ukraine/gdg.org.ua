@@ -30,56 +30,57 @@
         div {
             text-align: justify;
         }
-        .approve-btn:hover {
-            background-color: black; 
+        .check-in:hover {
+            background-color: black;
             color: white;
         }
         .btn {
-                        border-radius: 5px;
+            border-radius: 5px;
             display: block;
             padding: 10px 5px;
             margin: 0 auto;
             cursor: pointer;
-            width: 100px;
+            width: 200px;
             border: 0;
             box-shadow: none;
         }
-        .approve-btn {
-
+        .check-in {
             color: black;
             background-color: rgb(240,240,240);
         }
+        .result {
+            margin: 10px 0;
+            display: inline-block;
+        }
         .btn-success {
-    color: #fff;
-    background-color: #5cb85c;
-
-    border-color: #4cae4c;
-}
+            color: #fff;
+            background-color: #5cb85c;
+        }
     </style>
     <script type="text/javascript">
         function approve_visit () {
             $.ajax({
-              url: "http://localhost:8080/api/events/{{registration.id}}/check-in",
+              url: "{{ url_for_routes('check-in', id=registration.id) }}",
               type: "POST",
               data:'{}',
               contentType:"application/json; charset=utf-8",
                 dataType: 'json',
-             
+
             }).done(function( data, status) {
                         if (data['visited']) {
-                            $('.approve-btn').html('Successfully approved');
-                            $('.approve-btn').attr('disabled','disabled');
-                            $('.approve-btn').addClass('btn-success ');
-                            $('.approve-btn').removeClass('approve-btn');
-                        } else {
-                            console.log(data);
-                            $('.result').html('Some error happends');
+                            $('.check-in').html('Successfully approved');
+                            $('.check-in').attr('disabled','disabled');
+                            $('.check-in').addClass('btn-success');
+                            $('.check-in').removeClass('check-in');
                         }
-                    });
-  
-            
+            }).fail(function(data,status) {
+                console.log(data);
+                 $('.result').html("Couldn't perform check-in for this person now");
+            });
+
+
         }
-    </script>>
+    </script>
 </head>
 <body>
     <table>
@@ -91,8 +92,16 @@
             <h3>Registration to "{{ event.title }}"</h3>
             <div>{{ event.desc }}</div>
         </td>
-            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}"><img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" />
-                {% if is_admin %} {% if registration.visited %} <button disabled="disabled" class="btn btn-success">Visited</button> {% else %}<button class="btn approve-btn" onclick="approve_visit()">Approve visit</button> <span class="result"></span>{% endif %}{% endif %}
+            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}">
+                <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" />
+                {% if is_admin() %}
+                    {% if registration.visited %}
+                        <span class="btn btn-success">One has already checked in</span>
+                    {% else %}
+                        <button class="btn check-in" onclick="approve_visit()">Approve visit</button>
+                        <span class="result"></span>
+                    {% endif %}
+                {% endif %}
             </td>
         </tr>
         {% for field_name in ['name', 'surname', 'nickname', 'phone', 'gplus', 'www', 'experience_level', 'experienc_desc', 'interests', 'events_visited', 'english_knowledge', 't_shirt_size', 'gender', 'additional_info'] %}
@@ -108,6 +117,5 @@
             </tr>
         {% endfor %}
     </table>
-    1----{{event}}
 </body>
 </html>

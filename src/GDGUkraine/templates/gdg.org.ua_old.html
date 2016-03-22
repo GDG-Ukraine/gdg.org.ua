@@ -46,7 +46,7 @@ div#mapa {width:100%;height:600px;border:1px solid #ccc;}
 			<h2>Google Developer Groups in Ukraine</h2>
 			<ul>
             {% for place in places %}
-                <li><a href="{{ place.url }}" title="GDG {{ place.name }} ">{{ place.city }}</a>{% if not loop.last %} •{% endif %}</li>
+                <li><a href="{{ place.url }}" title="GDG {{ place.name | e }} ">{{ place.city }}</a>{% if not loop.last %} •{% endif %}</li>
             {% endfor %}
 			</ul>
 		</div>

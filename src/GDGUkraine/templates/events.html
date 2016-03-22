@@ -39,7 +39,7 @@
             {% for event in events[-10:]|reverse if not event.testing %}
             <div id="contact-form">
                 {% if event.host_gdg_id and event.host_gdg %}
-                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="{{ event.host_gdg.name }}" title="{{ event.host_gdg.name }}"></a>
+                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="{{ event.host_gdg.name | e }}" title="{{ event.host_gdg.name | e }}"></a>
                 {% else %}
                 <img id="logo" src="{{ url_for_static('img/logo.png') }}" alt="GDG Ukraine" title="GDG Ukraine">
                 {% endif %}

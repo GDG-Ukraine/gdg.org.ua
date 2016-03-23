@@ -76,7 +76,7 @@ controllers:
       tools.proxy.on: true
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.sessions.storage_type: memcached
+      #tools.sessions.storage_type: memcached
       tools.staticdir.root: static
       tools.staticfile.root: static
     /css:
@@ -119,14 +119,14 @@ controllers:
       error_page.default: !!python/name:GDGUkraine.rest_controller.generic_error_handler
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.sessions.storage_type: memcached
+      #tools.sessions.storage_type: memcached
   /events:
     controller: !!python/name:GDGUkraine.events_controller.events
     /:
       request.dispatch: !!python/name:GDGUkraine.events_controller.events
       tools.orm_session.on: true
       tools.sessions.on: true
-      tools.sessions.storage_type: memcached
+      #tools.sessions.storage_type: memcached
 
 sqlalchemy_engine:
   url: *db_url

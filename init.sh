@@ -26,6 +26,7 @@ export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
+. "$APP_PATH/.exports-dev"
 . "$APP_PATH/.exports"
 
 

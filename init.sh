@@ -48,7 +48,8 @@ case "$1" in
         ;;
     reload)
         PROC_PID=`cat $PID`
-        kill -SIGUSR1 $PROC_PID
+        # send SIGUSR1 as a number, since sh doesn't understand that
+        kill -10 $PROC_PID
         exit $?
         ;;
     stop)

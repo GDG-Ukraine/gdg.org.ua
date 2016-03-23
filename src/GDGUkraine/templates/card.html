@@ -110,10 +110,10 @@
                 <td>{{ registration.user[field_name] }}</td>
             </tr>
         {% endfor %}
-        {% for (field_name, field_value) in registration.fields %}
+        {% for field_name in registration.fields %}
             <tr>
                 <td><b>{{ field_name }}</b></td>
-                <td>{{ field_value }}</td>
+                <td>{{ registration.fields[field_name] }}</td>
             </tr>
         {% endfor %}
     </table>

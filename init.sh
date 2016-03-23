@@ -43,7 +43,8 @@ case "$1" in
         ;;
     restart)
         PROC_PID=`cat $PID`
-        kill -SIGHUP $PROC_PID
+        # Send SIGHUP
+        kill -9 $PROC_PID
         exit $?
         ;;
     reload)
@@ -54,7 +55,8 @@ case "$1" in
         ;;
     stop)
         PROC_PID=`cat $PID`
-        kill -SIGTERM $PROC_PID && \
+        # Send SIGTERM
+        kill -15 $PROC_PID && \
         log_daemon_msg "Killed blueberrypy with PID $PROC_PID."
         exit $?
         ;;

@@ -34,25 +34,31 @@ set -e
 
 case "$1" in
     start)
-        test -f $PID && log_daemon_msg "PID exists: `cat $PID`." && exit 1
+        PROC_PID=`cat $PID`
+        test -f $PID && log_daemon_msg "PID exists: $PROC_PID." && exit 1
         log_daemon_msg "Starting web server" "blueberrypy"
         blueberrypy serve -b $IF:$PORT -P $PID -d && sleep 2 && \
         log_daemon_msg "New blueberrypy with PID `cat $PID` has been started."
         exit $?
         ;;
-    restart|reload|force-reload)
-        $0 stop
-        $0 start
+    restart)
+        PROC_PID=`cat $PID`
+        kill -SIGHUP $PROC_PID
+        exit $?
+        ;;
+    reload)
+        PROC_PID=`cat $PID`
+        kill -SIGUSR1 $PROC_PID
         exit $?
         ;;
     stop)
         PROC_PID=`cat $PID`
-        kill $PROC_PID && \
+        kill -SIGTERM $PROC_PID && \
         log_daemon_msg "Killed blueberrypy with PID $PROC_PID."
         exit $?
         ;;
     *)
-        log_daemon_msg "Usage: $0 start|stop" >&2
+        log_daemon_msg "Usage: $0 start|stop|restart|reload" >&2
         exit 3
         ;;
 esac

@@ -27,8 +27,6 @@ eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
 . "$APP_PATH/.exports"
-export OAUTHLIB_INSECURE_TRANSPORT=1
-export APP_URL="http://dev.gdg.org.ua"
 
 
 set -e

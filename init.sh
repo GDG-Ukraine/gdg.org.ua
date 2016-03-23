@@ -34,7 +34,6 @@ set -e
 
 case "$1" in
     start)
-        PROC_PID=`cat $PID`
         test -f $PID && log_daemon_msg "PID exists: $PROC_PID." && exit 1
         log_daemon_msg "Starting web server" "blueberrypy"
         blueberrypy serve -b $IF:$PORT -P $PID -d && sleep 2 && \

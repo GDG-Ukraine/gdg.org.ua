@@ -8,9 +8,11 @@ containers:
       - !UbuntuPPA fkrull/deadsnakes
       - !Install [python3.5]
       - !Py3Requirements requirements/dev.txt
-      - !NpmInstall [nodejs]
+      - !NpmInstall [nodejs, bower]
       volumes:
           /root: !BindRW /volumes/home
+          /usr/local/: !BindRW /volumes/home
+          /var: !BindRW /volumes/home
 
 commands:
   run: !Supervise
@@ -21,4 +23,3 @@ commands:
         run: |
           cd gdg.org.ua
           sudo make dev-deps
-

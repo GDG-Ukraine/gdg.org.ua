@@ -3,14 +3,15 @@ containers:
       setup:
       - !Ubuntu trusty
       - !UbuntuUniverse
-      - !Install [software-properties-common, curl, git, openssl, libssl-dev, libpq-dev, ca-certificates, build-essential, wget, python-pip, python-dev, mercurial]
-      - !Sh |
-          curl -sL https://deb.nodesource.com/setup_5.x | sudo -E bash -
-          sudo add-apt-repository -y ppa:fkrull/deadsnakes
-          sudo apt-get update
-      - !Install [python3.5, nodejs]
-      - !Sh |
-          pip install virtualenv
+      - !Install [software-properties-common, npm, curl, git, openssl, libssl-dev, libpq-dev, ca-certificates, build-essential, wget, python-pip, python-dev, mercurial]
+      - !AptTrust keys: [5BB92C09DB82666C]
+      - !UbuntuPPA fkrull/deadsnakes
+      - !Install [python3.5]
+      - !Py3Requirements requirements/dev.txt
+      - !NpmInstall [nodejs]
+      volumes:
+          /root: !BindRW /volumes/home
+
 commands:
   run: !Supervise
     description: Run app - testing status
@@ -18,11 +19,6 @@ commands:
       env: !Command
         container: gdg_dev
         run: |
-          export OAUTHLIB_INSECURE_TRANSPORT=1
-          if [ ! -d "gdg.org.ua" ]; then
-          git clone https://github.com/GDG-Ukraine/gdg.org.ua
-          fi
           cd gdg.org.ua
-          make env
-          make dev-deps
+          sudo make dev-deps
 

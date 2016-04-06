@@ -3,6 +3,7 @@ project_metadata:
 
 global:
   environment: test_suite
+  bypass_auth: true
   engine.url_for.on: true
   engine.sqlalchemy.on: true
   engine.oauth.on: true
@@ -20,6 +21,50 @@ global:
   alembic:
     script_location: src/db
     sqlalchemy.url: &db_url sqlite://
+  alembic.exclude:
+    tables:
+      - gdg_blog_posts_view  # exclude view, aggregating posts from all GDGs
+      # Exclude Wordpress-specific tables:
+      - wp_blog_versions
+      - wp_blogs
+      - wp_commentmeta
+      - wp_comments
+      - wp_links
+      - wp_openid_identities
+      - wp_options
+      - wp_postmeta
+      - wp_posts
+      - wp_posts_dup
+      - wp_registration_log
+      - wp_signups
+      - wp_site
+      - wp_sitemeta
+      - wp_term_relationships
+      - wp_term_taxonomy
+      - wp_terms
+      - wp_usermeta
+      - wp_users
+    indexes:
+      - ix_gdg_admins_email
+      - ix_gdg_admins_filter_place
+      - ix_gdg_admins_googler_id
+      - googler_id_UNIQUE
+      - id_UNIQUE
+      - code_UNIQUE
+      - ix_gdg_participants_company
+      - ix_gdg_participants_email
+      - ix_gdg_participants_gplus
+      - ix_gdg_participants_hometown
+      - ix_gdg_participants_local_gdg_id
+      - ix_gdg_participants_nickname
+      - ix_gdg_participants_phone
+      - ix_gdg_participants_position
+      - email_UNIQUE
+      - uid_UNIQUE
+    foreign_keys:
+      - gdg_participants_ibfk_1
+    unique_keys:
+      - unique_participation
 
 controllers:
   '':
@@ -89,6 +134,7 @@ jinja2:
   auto_reload: true
   use_webassets: false
   globals:
+    is_admin: !!python/name:GDGUkraine.lib.utils.auth.is_admin
     url_for: !!python/name:GDGUkraine.lib.utils.url.url_for
     url_for_class: !!python/name:GDGUkraine.lib.utils.url.url_for_class
     url_for_routes: !!python/name:GDGUkraine.lib.utils.url.url_for_routes

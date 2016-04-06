@@ -28,7 +28,7 @@ angular.module('gdgorgua')
 })
 
 
-.controller('ParticipantsEditCtrl', function ($scope, $location, $routeParams, Participant, $window,GEvent, $http) {
+.controller('ParticipantsEditCtrl', function ($scope, $location, $routeParams, Participant, $window,GEvent) {
   var self = this;
   if ($window.sessionStorage) {
             try {

@@ -31,7 +31,7 @@ angular.module('gdgorgua', ['directive.g+signin', 'ngRoute', 'ngResource','$stra
          });
     })
 .controller('MainCtrl', function($scope, $location, $http) {
-    $scope.info = $http.get('/api/info').then(function(r) { return r.data;});
+    $http.get('/api/info').then(function(r) { $scope.info = r.data;});
     $scope.$watch(function() { return $location.path()}, function(nv) {
         var parts = nv.split('/');
         $scope.current = parts[1];

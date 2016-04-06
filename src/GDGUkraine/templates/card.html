@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <title>GDG Events | Registration info to "{{ event.title }}"</title>
     <style>
         table {
@@ -29,7 +30,57 @@
         div {
             text-align: justify;
         }
+        .check-in:hover {
+            background-color: black;
+            color: white;
+        }
+        .btn {
+            border-radius: 5px;
+            display: block;
+            padding: 10px 5px;
+            margin: 0 auto;
+            cursor: pointer;
+            width: 200px;
+            border: 0;
+            box-shadow: none;
+        }
+        .check-in {
+            color: black;
+            background-color: rgb(240,240,240);
+        }
+        .result {
+            margin: 10px 0;
+            display: inline-block;
+        }
+        .btn-success {
+            color: #fff;
+            background-color: #5cb85c;
+        }
     </style>
+    <script type="text/javascript">
+        function approve_visit () {
+            $.ajax({
+              url: "{{ url_for_routes('check-in', id=registration.id) }}",
+              type: "POST",
+              data:'{}',
+              contentType:"application/json; charset=utf-8",
+                dataType: 'json',
+
+            }).done(function( data, status) {
+                        if (data['visited']) {
+                            $('.check-in').html('Successfully approved');
+                            $('.check-in').attr('disabled','disabled');
+                            $('.check-in').addClass('btn-success');
+                            $('.check-in').removeClass('check-in');
+                        }
+            }).fail(function(data,status) {
+                console.log(data);
+                 $('.result').html("Couldn't perform check-in for this person now");
+            });
+
+
+        }
+    </script>
 </head>
 <body>
     <table>
@@ -41,7 +92,17 @@
             <h3>Registration to "{{ event.title }}"</h3>
             <div>{{ event.desc }}</div>
         </td>
-            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}"><img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" /></td>
+            <td class="img" rowspan="{{ registration.fields | length + 14 + 1 }}">
+                <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl={{ qrdata }}&choe=UTF-8" />
+                {% if is_admin() %}
+                    {% if registration.visited %}
+                        <span class="btn btn-success">One has already checked in</span>
+                    {% else %}
+                        <button class="btn check-in" onclick="approve_visit()">Approve visit</button>
+                        <span class="result"></span>
+                    {% endif %}
+                {% endif %}
+            </td>
         </tr>
         {% for field_name in ['name', 'surname', 'nickname', 'phone', 'gplus', 'www', 'experience_level', 'experienc_desc', 'interests', 'events_visited', 'english_knowledge', 't_shirt_size', 'gender', 'additional_info'] %}
             <tr>
@@ -49,13 +110,12 @@
                 <td>{{ registration.user[field_name] }}</td>
             </tr>
         {% endfor %}
-        {% for field_name, field_value in registration.fields.items() %}
+        {% for field_name in registration.fields %}
             <tr>
                 <td><b>{{ field_name }}</b></td>
-                <td>{{ field_value }}</td>
+                <td>{{ registration.fields[field_name] }}</td>
             </tr>
         {% endfor %}
     </table>
-
 </body>
 </html>

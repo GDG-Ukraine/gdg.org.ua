@@ -19,6 +19,42 @@ logger = logging.getLogger(__name__)
 class AuthController:
     """AuthController implements authentication via Google's OAuth2"""
 
+    # TODO: decide whether to keep it here or move to test suite
+    @cherrypy.expose
+    def fake_login(self):
+        """This is a method to be used while testing secured area
+
+        It requires `bypass_auth`  option to be enabled in global config
+        section and sets fake data about the user into session
+        """
+
+        if not cherrypy.config.get('bypass_auth'):
+            raise HTTPError(403)
+
+        req = cherrypy.request
+        orm_session = req.orm_session
+
+        cherrypy.session['google_user'] = {
+            "given_name": "Petryk",
+            "gender": "male",
+            "link": "https://plus.google.com/+SvyatoslavSydorenko",
+            "picture": "https://www.wired.com/wp-content/uploads/blogs"
+                       "/wiredenterprise/wp-content/uploads/2012/06"
+                       "/Screen-shot-2012-06-18-at-10.32.45-AM.png",
+            "name": "Petryk Piatochkin",
+            "hd": "gdg.org.ua",
+            "email": "test@gdg.org.ua",
+            "id": "133555540822907599802",
+            "locale": "uk",
+            "verified_email": True,
+            "family_name": "Piatochkin"
+        }
+        cherrypy.session['admin_user'] = to_collection(find_admin_by_email(
+            orm_session,
+            cherrypy.session['google_user']['email']))
+
+        HTTPRedirect(url_for_class('controller.Root'))
+
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def google(self, **kwargs):

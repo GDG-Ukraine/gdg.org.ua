@@ -29,7 +29,14 @@ sqlalchemy_config = conf.sqlalchemy_config
 # access to the values within the .ini file in use.
 config = context.config
 
-alembic_config = app_config.get('global', {}).get(config.config_ini_section)
+global_config = app_config.get('global', {})
+alembic_config = global_config.get(config.config_ini_section)
+
+alembic_excludes = global_config.get('alembic.exclude', {})
+exclude_tables = alembic_excludes.get('tables', {})
+exclude_indexes = alembic_excludes.get('indexes', {})
+exclude_fkeys = alembic_excludes.get('foreign_keys', {})
+exclude_ukeys = alembic_excludes.get('unique_keys', {})
 
 # Update alembic's context. Just in case...
 for option, value in alembic_config.items():
@@ -46,6 +53,21 @@ for option, value in alembic_config.items():
 dictConfig(conf.logging_config)
 
 
+# http://dev.utek.pl/2013/ignorivalueng-tables-in-alembic/
+# Alternatively, if we needed to,
+# include_symbol(tablename, schema) could help us filter out just tables:
+# http://alembic.readthedocs.org/en/rel_0_7/api.html
+def include_object(object, name, type_, reflected, compare_to):
+    """Helper to determine whether to generate migration for a given table"""
+    return not (
+        (type_ == 'table' and name in exclude_tables) or
+        (type_ == 'index' or name in exclude_indexes) or
+        (type_ == 'unique_constraint' or name in exclude_ukeys) or
+        (type_ == 'foreign_key_constraint' or name in exclude_fkeys) or
+        True
+    )
+
+
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
 
@@ -59,6 +81,7 @@ def run_migrations_offline():
 
     """
     context.configure(target_metadata=target_metadata,
+                      include_object=include_object,
                       **sqlalchemy_config['sqlalchemy_engine'])
 
     with context.begin_transaction():
@@ -81,7 +104,8 @@ def run_migrations_online():
         context.configure(
             connection=connection,
             user_module_prefix='GDGUkraine.model.',
-            target_metadata=target_metadata
+            target_metadata=target_metadata,
+            include_object=include_object
         )
 
         with context.begin_transaction():

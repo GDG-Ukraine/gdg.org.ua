@@ -15,7 +15,7 @@
 
                 <div>{{ event.desc }}</div>
 
-                <div>If you are really going to visit this event please follow this link: <a href='{{ confirm.url }}'>{{ confirm.url }}</a>.
+                <div>If you are really going to visit this event please follow this link: <a href="{{ confirm.url | e }}">{{ confirm.url }}</a>.
                     You can ignore this email if you're not going to attend.
                 </div>
             </div>

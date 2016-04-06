@@ -21,7 +21,14 @@ mkdir -p $PID_PATH
 
 . /lib/init/vars.sh
 . /lib/lsb/init-functions
-. $APP_PATH/env/bin/activate
+
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+. "$APP_PATH/.exports-prod"
+. "$APP_PATH/.exports"
+
 
 set -e
 

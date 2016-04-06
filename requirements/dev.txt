@@ -1,3 +1,4 @@
 -r test-env.txt
 -r common.txt
 hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk#egg=blueberrypy[speedups,dev]
+ipdbplugin==1.4.3  # enables nosetests --ipdb

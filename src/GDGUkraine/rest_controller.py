@@ -240,6 +240,7 @@ class Events(APIBase):
             e.update({'registrations': [to_collection(r, sort_keys=True)
                      for r in registrations]})
             for r in e['registrations']:
+                r.update({'cardUrl': aes_encrypt(str(r['id']))})
                 r.update({'participant': to_collection(
                     api.find_user_by_id(cherrypy.request.orm_session,
                                         r['googler_id']),
@@ -252,10 +253,8 @@ class Events(APIBase):
     @cherrypy.tools.authorize()
     def list_all(self, **kwargs):
         events = api.get_all_events(cherrypy.request.orm_session)
-        if events:
-            return [to_collection(e, sort_keys=True)
-                    for e in events]
-        raise HTTPError(404)
+        return [to_collection(e, sort_keys=True)
+                for e in events] if events else []
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.authorize()
@@ -517,6 +516,23 @@ class Events(APIBase):
             raise HTTPError(500, "Cannot save generated invites") from e
         return {"ok": True}
 
+    @cherrypy.tools.json_out()
+    @cherrypy.tools.authorize()
+    def record_visit(self, id):
+        '''POST /api/events/:id/check-in'''
+        req = cherrypy.request
+        orm_session = req.orm_session
+        reg_id = int(id)
+        reg_data = api.get_event_registration_by_id(orm_session, reg_id)
+        if not reg_data:
+            raise HTTPError(400,
+                            'There is no registration record'
+                            'for id={id}'.format(id=reg_id))
+        reg_data.visited = True
+        orm_session.merge(reg_data)
+        orm_session.commit()
+        return to_collection(reg_data, sort_keys=True)
+
 
 class Places(APIBase):
     @cherrypy.tools.json_out()
@@ -582,4 +598,8 @@ rest_api.connect("list_places", "/places", Places, action="list_all",
 rest_api.connect("api_info", "/info", Admin, action="info",
                  conditions={"method": ["GET"]})
 rest_api.connect("sign-in", "/sign-in", Admin, action="sign_in",
+                 conditions={"method": ["POST"]})
+rest_api.connect("check-in",
+                 r"/events/{id:\d+}/check-in", Events,
+                 action="record_visit",
                  conditions={"method": ["POST"]})

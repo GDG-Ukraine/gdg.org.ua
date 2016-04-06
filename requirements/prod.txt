@@ -1,2 +1,3 @@
 -r common.txt
-hg+https://hg@bitbucket.org/webknjaz/blueberrypy-wk#egg=blueberrypy[speedups]
+python-memcached==1.57
+-e hg+https://bitbucket.org/webknjaz/blueberrypy-wk@cb2753d#egg=blueberrypy[speedups]

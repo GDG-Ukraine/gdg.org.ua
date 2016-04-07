@@ -1,8 +1,5 @@
-import json
 import logging
 import re
-import sys
-import traceback
 
 from datetime import date
 from uuid import uuid4
@@ -10,13 +7,14 @@ from uuid import uuid4
 import cherrypy
 
 from cherrypy import HTTPError
-from cherrypy.lib import httputil as cphttputil, file_generator
+from cherrypy.lib import file_generator
 
 from blueberrypy.util import from_collection, to_collection
 
 from requests.exceptions import HTTPError as RequestsHTTPError
 
 from . import api
+from .errors import InvalidFormDataError
 from .model import User, Event, EventParticipant, Invite
 
 from .lib.utils.gdrive import gdrive_upload
@@ -24,6 +22,7 @@ from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
+from .lib.validation import regform_validator
 
 
 logger = logging.getLogger(__name__)
@@ -109,7 +108,12 @@ class Participants(APIBase):
     def create(self, **kwargs):
         req = cherrypy.request
         orm_session = req.orm_session
-        u = req.json['user']
+
+        u = req.json.get('user', {})
+
+        if not regform_validator.validate(u):
+            raise InvalidFormDataError(regform_validator.errors)
+
         logger.debug(req.json)
         logger.debug(u)
         user = User(**u)
@@ -599,54 +603,3 @@ rest_api.connect("check-in",
                  r"/events/{id:\d+}/check-in", Events,
                  action="record_visit",
                  conditions={"method": ["POST"]})
-
-
-# Error handlers
-
-def generic_error_handler(status, message, traceback, version):
-    """error_page.default"""
-
-    response = cherrypy.response
-    response.headers['Content-Type'] = "application/json"
-    response.headers.pop('Content-Length', None)
-
-    code, reason, _ = cphttputil.valid_status(status)
-    result = {"code": code, "reason": reason, "message": message}
-    if hasattr(cherrypy.request, "params"):
-        params = cherrypy.request.params
-        if "debug" in params and params["debug"]:
-            result["traceback"] = traceback
-    return json.dumps(result)
-
-
-def unexpected_error_handler():
-    """request.error_response"""
-
-    (typ, value, tb) = sys.exc_info()
-    if typ:
-        debug = False
-        if hasattr(cherrypy.request, "params"):
-            params = cherrypy.request.params
-            debug = "debug" in params and params["debug"]
-
-        response = cherrypy.response
-        response.headers['Content-Type'] = "application/json"
-        response.headers.pop('Content-Length', None)
-        content = {}
-
-        if isinstance(typ, HTTPError):
-            cherrypy._cperror.clean_headers(value.code)
-            response.status = value.status
-            content = {"code": value.code, "reason": value.reason,
-                       "message": value._message}
-        elif isinstance(typ, (TypeError, ValueError, KeyError)):
-            cherrypy._cperror.clean_headers(400)
-            response.status = 400
-            reason, default_message = cphttputil.response_codes[400]
-            content = {"code": 400, "reason": reason,
-                       "message": value.message or default_message}
-
-        if cherrypy.serving.request.show_tracebacks or debug:
-            tb = traceback.format_exc()
-            content["traceback"] = tb
-        response.body = json.dumps(content)

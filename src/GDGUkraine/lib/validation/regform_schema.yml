@@ -1,0 +1,68 @@
+# TODO: consider moving this file somewhere
+name:
+    type: string
+    maxlength: 35
+    required: true
+surname:
+    type: string
+    maxlength: 35
+    required: true
+nickname:
+    type: string
+    maxlength: 45
+email:
+    type: string
+    required: true
+    validator: !!python/name:GDGUkraine.lib.validation.field_validators.email
+phone:
+    type: string
+    nullable: true
+    maxlength: 20
+gplus:
+    type: string
+    required: true
+    maxlength: 128
+hometown:
+    type: string
+    nullable: true
+    maxlength: 30
+company:
+    type: string
+    nullable: true
+    maxlength: 64
+position:
+    type: string
+    nullable: true
+    maxlength: 64
+www:
+    type: string
+    nullable: true
+    maxlength: 100
+    validator: !!python/name:GDGUkraine.lib.validation.field_validators.url
+experience_level:
+    allowed:
+        - newbie
+        - elementary
+        - intermediate
+        - advanced
+        - jedi
+    nullable: true
+english_knowledge:
+    allowed:
+        - elementary
+        - intermediate
+        - upper intermediate
+        - advanced
+        - native
+t_shirt_size:
+    allowed:
+        - xs
+        - s
+        - m
+        - l
+        - xl
+        - xxl
+gender:
+    allowed:
+        - male
+        - female

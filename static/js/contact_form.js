@@ -1,6 +1,7 @@
 angular.module('gdgorgua', [])
 .controller('contactForm', function($scope,$http, $window, $location,GoogleUser, GoogleEvent) {
   $scope.user = { gender:'male', t_shirt_size:'m', 'english_knowledge':'elementary', 'experience_level':'newbie' };
+  $scope._errors = {};
 
         if ($window.localStorage) {
             var user = $window.localStorage.getItem('user');
@@ -47,10 +48,12 @@ angular.module('gdgorgua', [])
 
        if ( r.status!=200 || r.data.code) {
 	        $scope.showError = true;
+                $scope._errors = r.data.hasOwnProperty('errors') ? r.data.errors : {};
        		console.log("error:", r);
 
        } else {
 	        $scope.showOk = true;
+                $scope._errors = {};
 	        var uid = r.data.uid;
 	        if ($window.localStorage) $window.localStorage.setItem('user', JSON.stringify($scope.user));
             if (GoogleEvent && GoogleEvent.url) {

@@ -187,7 +187,7 @@ class OAuthEnginePlugin(SimplePlugin):
 
     def fetch_token(self):
         req = cherrypy.request
-        redirect_response = '{}?{}'.format(cherrypy.url(),
+        redirect_response = '{}?{}'.format(self.redirect_url,
                                            req.query_string)
         self.token = self._get_state_session().fetch_token(
             self.token_url, client_secret=self.consumer_secret,

@@ -99,7 +99,7 @@ class AuthController:
                       else cherrypy.request.headers.get('Referer'))
 
         if return_url is not None and \
-           return_url.stratswith(['/', 'https://', 'http://']) \
+           return_url.startswith(['/', 'https://', 'http://']) \
            and not return_url.startswith('/auth'):
             cherrypy.session['auth_redirect'] = return_url
 

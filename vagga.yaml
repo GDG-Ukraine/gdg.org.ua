@@ -1,25 +1,42 @@
 containers:
-    gdg_dev:
-      setup:
+  gdg_dev:
+    setup:
       - !Ubuntu trusty
       - !UbuntuUniverse
-      - !Install [software-properties-common, npm, curl, git, openssl, libssl-dev, libpq-dev, ca-certificates, build-essential, wget, python-pip, python-dev, mercurial]
       - !AptTrust keys: [5BB92C09DB82666C]
       - !UbuntuPPA fkrull/deadsnakes
-      - !Install [python3.5]
+      - !BuildDeps
+        - git
+        - curl
+        - wget
+        - mercurial
+      - !Install
+        - software-properties-common
+        - openssl
+        - libssl-dev
+        - libpq-dev
+        - ca-certificates
+        - build-essential
+        - python-dev
+        - python3.5
+      - !PipConfig
+        dependencies: true
       - !Py3Requirements requirements/dev.txt
-      - !NpmInstall [nodejs, bower]
-      volumes:
-          /root: !BindRW /volumes/home
-          /usr/local/: !BindRW /volumes/home
-          /var: !BindRW /volumes/home
+      - !NpmInstall [bower]
+    environ:
+      APP_ROOT: /work  # Make sure this is not overriden by .exports
+    volumes:
+      /var/tmp: !Tmpfs
+        size: 5Mi
+        mode: 0o766
+        subdirs:
+          run: { mode: 0o1777 }
 
 commands:
   run: !Supervise
-    description: Run app - testing status
-    children:
-      env: !Command
-        container: gdg_dev
-        run: |
-          cd gdg.org.ua
-          sudo make dev-deps
+  description: Run app - testing status
+  children:
+    env: !Command
+    container: gdg_dev
+    run: |
+      make run-dev

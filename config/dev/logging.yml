@@ -47,21 +47,21 @@ handlers:
   rfile:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: log/GDGUkraine.log
+    filename: &logfile log/GDGUkraine.log
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8
   trfile:
     class: logging.handlers.TimedRotatingFileHandler
     formatter: warning
-    filename: log/GDGUkraine.log
+    filename: *logfile
     when: midnight
     backupCount: 60
     encoding: utf8
   sa:
     class: logging.handlers.RotatingFileHandler
     formatter: debug
-    filename: log/GDGUkraine.log
+    filename: *logfile
     maxBytes: 1048576
     backupCount: 5
     encoding: utf8

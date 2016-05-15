@@ -12,25 +12,26 @@ containers:
         - mercurial
       - !Install
         - software-properties-common
+        - python3.5
+        - python3.5-dev
         - openssl
         - libssl-dev
         - libpq-dev
         - ca-certificates
         - build-essential
-        - python-dev
-        - python3.5
       - !PipConfig
         dependencies: true
+        python-exe: python3.5
+      - !Depends requirements/common.txt  # As to https://github.com/tailhook/vagga/issues/236
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
+      - !EnsureDir /var/tmp/run
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
     volumes:
-      /var/tmp: !Tmpfs
+      /var/tmp/run: !Tmpfs
         size: 5Mi
-        mode: 0o766
-        subdirs:
-          run: { mode: 0o1777 }
+        mode: 0o1777
 
 commands:
   run: !Supervise

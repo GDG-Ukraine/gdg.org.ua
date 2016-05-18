@@ -106,6 +106,7 @@ class TableExporterTest(unittest.TestCase):
             for col_num, (_, getter) in enumerate(self.getters):
                 self.assertEqual(entry[col_num].value, getter(test_entry))
 
+
 class VCardTest(unittest.TestCase):
     testset = [
             (b'asfssad', b'asfssad\0\0\0\0\0\0\0\0\0'),

@@ -13,12 +13,16 @@ card_secret_key = os.getenv('CARD_SECRET_KEY',
 
 
 def pad(s):
+    assert isinstance(s, bytes)
     return s + b'\0' * (AES.block_size - len(s) % AES.block_size)
 
 
 def aes_decrypt(ciphertext):
-    if isinstance(ciphertext, str):
-        ciphertext = binascii.unhexlify(ciphertext.encode('ascii'))
+    if not isinstance(ciphertext, (str, bytes)):
+        ciphertext = str(ciphertext)
+    if not isinstance(ciphertext, bytes):
+        ciphertext = ciphertext.encode('ascii')
+    ciphertext = binascii.unhexlify(ciphertext)
     iv = ciphertext[:AES.block_size]
     cipher = AES.new(card_secret_key, AES.MODE_CBC, iv)
     plaintext = cipher.decrypt(ciphertext[AES.block_size:])
@@ -26,7 +30,9 @@ def aes_decrypt(ciphertext):
 
 
 def aes_encrypt(message):
-    if isinstance(message, str):
+    if not isinstance(message, (str, bytes)):
+        message = str(message)
+    if not isinstance(message, bytes):
         message = message.encode('utf8')
     message = pad(message)
     iv = Random.new().read(AES.block_size)

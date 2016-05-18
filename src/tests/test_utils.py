@@ -8,8 +8,9 @@ from blueberrypy.testing import ControllerTestCase
 
 from openpyxl import load_workbook
 
-from GDGUkraine.lib.utils.url import base_url, url_for
 from GDGUkraine.lib.utils.table_exporter import TableExporter
+from GDGUkraine.lib.utils.url import base_url, url_for
+from GDGUkraine.lib.utils.vcard import pad
 
 
 class UtilTest(ControllerTestCase):
@@ -104,3 +105,20 @@ class TableExporterTest(unittest.TestCase):
             test_entry = self.testset[row_num]
             for col_num, (_, getter) in enumerate(self.getters):
                 self.assertEqual(entry[col_num].value, getter(test_entry))
+
+class VCardTest(unittest.TestCase):
+    testset = [
+            (b'asfssad', b'asfssad\0\0\0\0\0\0\0\0\0'),
+            (b'asfssadasfssadx', b'asfssadasfssadx\0'),
+            (b'', b'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'),
+            (b'asfssadasfssadxx', b'asfssadasfssadxx\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'),
+    ]
+
+    negative_testset = ('str', 6, 1.5, None)
+
+    def test_pad(self):
+        for inp, outp in self.testset:
+            self.assertEqual(pad(inp), outp)
+
+        for inp in self.negative_testset:
+            self.assertRaises(AssertionError, pad, inp)

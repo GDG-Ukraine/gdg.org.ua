@@ -22,7 +22,6 @@ containers:
   gdg-devel:
     setup:
       - !Container base
-      - !EnsureDir /var/tmp/run
       - !BuildDeps
         - git
         - mercurial
@@ -33,10 +32,6 @@ containers:
       - !Py3Requirements requirements/dev.txt
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
-    volumes:
-      /var/tmp/run: !Tmpfs
-        size: 5Mi
-        mode: 0o1777
 
   gdg-test:
     setup:
@@ -60,7 +55,7 @@ commands:
         container: gdg-devel
         run:
           if test -f ./.exports; then . ./.exports; fi &&
-          blueberrypy serve -b 0.0.0.0:8080 -P /var/run/gdg.org.ua.development.pid
+          blueberrypy serve -b 0.0.0.0:8080
   nose: !Command
     description: Run nosetests for gdg.org.ua project
     container: gdg-test

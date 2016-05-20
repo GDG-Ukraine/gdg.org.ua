@@ -56,7 +56,7 @@ commands:
         run:
           if test -f ./.exports; then . ./.exports; fi &&
           blueberrypy serve -b 0.0.0.0:8080
-  nose: !Command
-    description: Run nosetests for gdg.org.ua project
+  test: !Command
+    description: Run tests for gdg.org.ua project
     container: gdg-test
     run: nosetests -w src/tests --tests=test_utils

@@ -58,7 +58,9 @@ commands:
     children:
       run-app: !Command
         container: gdg-devel
-        run: make run-dev
+        run:
+          if test -f ./.exports; then . ./.exports; fi &&
+          blueberrypy serve -b 0.0.0.0:8080 -P /var/run/gdg.org.ua.development.pid
   nose: !Command
     description: Run nosetests for gdg.org.ua project
     container: gdg-test

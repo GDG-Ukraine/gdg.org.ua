@@ -1,15 +1,10 @@
 containers:
-  gdg_dev:
+  base:
     setup:
       - !Ubuntu trusty
       - !UbuntuUniverse
       - !AptTrust keys: [5BB92C09DB82666C]
       - !UbuntuPPA fkrull/deadsnakes
-      - !BuildDeps
-        - git
-        - curl
-        - wget
-        - mercurial
       - !Install
         - software-properties-common
         - python3.5
@@ -22,10 +17,20 @@ containers:
       - !PipConfig
         dependencies: true
         python-exe: python3.5
+      - !NpmInstall [bower]
+
+  gdg-devel:
+    setup:
+      - !Container base
+      - !EnsureDir /var/tmp/run
+      - !BuildDeps
+        - git
+        - mercurial
+      - !PipConfig
+        dependencies: true
+        python-exe: python3.5
       - !Depends requirements/common.txt  # As to https://github.com/tailhook/vagga/issues/236
       - !Py3Requirements requirements/dev.txt
-      - !NpmInstall [bower]
-      - !EnsureDir /var/tmp/run
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
     volumes:
@@ -33,11 +38,28 @@ containers:
         size: 5Mi
         mode: 0o1777
 
+  gdg-test:
+    setup:
+      - !Container base
+      - !BuildDeps
+        - git
+        - mercurial
+      - !Depends requirements/common.txt
+      - !Depends requirements/dev.txt
+      - !Py3Requirements requirements/test.txt
+      - !Py3Requirements requirements/test-env.txt
+    environ:
+      BLUEBERRYPY_CONFIG: "{}"
+      NOSE_TESTCONFIG_AUTOLOAD_YAML: "config/test/app.yml"
+
 commands:
   run: !Supervise
-  description: Run app - testing status
-  children:
-    env: !Command
-    container: gdg_dev
-    run: |
-      make run-dev
+    description: Run application in development mode
+    children:
+      run-app: !Command
+        container: gdg-devel
+        run: make run-dev
+  nose: !Command
+    description: Run nosetests for gdg.org.ua project
+    container: gdg-test
+    run: nosetests -w src/tests --tests=test_utils

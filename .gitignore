@@ -52,5 +52,8 @@ __pycache__
 /coverage.xml
 bower_components
 
-#vagga configs
+# vagga files
 .vagga/
+
+# vagrant files
+.vagrant/

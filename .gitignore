@@ -48,3 +48,4 @@ log/*.log.*
 bower_components
 .exports*
 .sessions/
+coverage.xml

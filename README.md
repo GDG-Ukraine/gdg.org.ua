@@ -1,11 +1,9 @@
 # gdg.org.ua
 This is the event registration system for GDG Ukraine events.
 
-Tasks: [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=Stage: Ready For Dev&title=Ready for dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
+[![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=Stage: Ready For Dev&title=Ready for dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
 
-CI:
-master: [![`master` branch status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=master)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua)
-api-for-admin: [![`api-for-admin` branch status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=api-for-admin)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua/branches)
+[![`master` branch status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=master)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua) [![codecov](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua/branch/master/graph/badge.svg)](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua) [![Requirements Status](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements.svg?branch=master)](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements/?branch=master)
 
 ## Requirements:
 

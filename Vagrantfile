@@ -1,5 +1,5 @@
 # -*- mode: ruby -*-
-# vi: set ft=ruby ts=2 sw=2 tw=2 et :
+# vi: set ft=ruby :
 
 
 $script = <<SCRIPT

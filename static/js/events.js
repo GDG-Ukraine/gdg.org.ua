@@ -362,4 +362,3 @@ angular.module('gdgorgua')
         );
         return GEvent;
     });
-

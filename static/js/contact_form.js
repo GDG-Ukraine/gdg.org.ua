@@ -6,7 +6,7 @@ angular.module('gdgorgua', [])
         if ($window.localStorage) {
             var user = $window.localStorage.getItem('user');
             if (user) {
-//		  $http.get('api/participants/'+user,{params:{uid:user}}).then(function(r){ $scope.user = r.data});
+//          $http.get('api/participants/'+user,{params:{uid:user}}).then(function(r){ $scope.user = r.data});
                 try {
                     $scope.user = JSON.parse(user);
                 } catch(err) {};
@@ -34,8 +34,8 @@ angular.module('gdgorgua', [])
 
   $scope.submit = function() {
     if (!$scope.contactForm.$valid) {
-	console.log("form is not valid");
-		return;
+    console.log("form is not valid");
+        return;
    }
 
     console.log("Saving");
@@ -47,15 +47,15 @@ angular.module('gdgorgua', [])
        $scope.saving = false;
 
        if ( r.status!=200 || r.data.code) {
-	        $scope.showError = true;
+            $scope.showError = true;
                 $scope._errors = r.data.hasOwnProperty('errors') ? r.data.errors : {};
-       		console.log("error:", r);
+               console.log("error:", r);
 
        } else {
-	        $scope.showOk = true;
+            $scope.showOk = true;
                 $scope._errors = {};
-	        var uid = r.data.uid;
-	        if ($window.localStorage) $window.localStorage.setItem('user', JSON.stringify($scope.user));
+            var uid = r.data.uid;
+            if ($window.localStorage) $window.localStorage.setItem('user', JSON.stringify($scope.user));
             if (GoogleEvent && GoogleEvent.url) {
                 $window.location.href = GoogleEvent.url;
             }

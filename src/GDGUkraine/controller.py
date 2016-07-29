@@ -37,14 +37,14 @@ class Root:
     @cherrypy.expose
     # @render(template = 'gdg.org.ua_old.html', page_id = 'about')
     def index(self, **kwargs):
-        tmpl = get_template("gdg.org.ua_old.html")
+        tmpl = get_template('gdg.org.ua_old.html')
         return tmpl.render(
             places=api.get_all_gdg_places(cherrypy.request.orm_session,
                                           filtered=True))
 
     @cherrypy.expose
     def admin(self, **kwargs):
-        tmpl = get_template("admin/admin.html")
+        tmpl = get_template('admin/admin.html')
         return tmpl.render(p={})
 
     @cherrypy.expose
@@ -62,7 +62,7 @@ class Root:
         except:
             raise cherrypy.HTTPError(400, 'Invalid confirmation number')
         else:
-            tmpl = get_template("confirmed.html")
+            tmpl = get_template('confirmed.html')
             return tmpl.render(event=user_reg.event, user=user_reg.user)
 
     @cherrypy.expose
@@ -78,7 +78,7 @@ class Root:
             raise cherrypy.HTTPError(400, 'Invalid card number')
         else:
             vcard = make_vcard(user_reg, url=req.path_info)
-            tmpl = get_template("card.html")
+            tmpl = get_template('card.html')
             return tmpl.render(event=user_reg.event, user=user_reg.user,
                                registration=user_reg, qrdata=vcard)
 

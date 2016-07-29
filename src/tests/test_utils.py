@@ -78,9 +78,9 @@ class UtilTest(ControllerTestCase):
 
 class TableExporterTest(unittest.TestCase):
     testset = [
-        {"username": "sviat", "distro": "gentoo", "tv_show": "X-Files"},
-        {"username": "sashko", "distro": "gentoo", "tv_show": "MLP"},
-        {"username": "vlad", "distro": "windows", "tv_show": None},
+        {'username': 'sviat', 'distro': 'gentoo', 'tv_show': 'X-Files'},
+        {'username': 'sashko', 'distro': 'gentoo', 'tv_show': 'MLP'},
+        {'username': 'vlad', 'distro': 'windows', 'tv_show': None},
     ]
 
     getters = [

@@ -15,14 +15,14 @@ def populate_db():
                  email='alice@wonderland.com',
                  password='alicepassword',
                  sex='f',
-                 phone="23452342",
+                 phone='23452342',
                  birthday=date(1985, 3, 26))
 
     bob = User(displayname='bob',
                email='bob@example.com',
                password='bobpassword',
                sex='m',
-               phone="99990000",
+               phone='99990000',
                birthday=date(1978, 4, 27))
 
     session.add(alice)

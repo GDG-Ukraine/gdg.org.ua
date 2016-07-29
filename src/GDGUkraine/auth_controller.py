@@ -35,19 +35,19 @@ class AuthController:
         orm_session = req.orm_session
 
         cherrypy.session['google_user'] = {
-            "given_name": "Petryk",
-            "gender": "male",
-            "link": "https://plus.google.com/+SvyatoslavSydorenko",
-            "picture": "https://www.wired.com/wp-content/uploads/blogs"
-                       "/wiredenterprise/wp-content/uploads/2012/06"
-                       "/Screen-shot-2012-06-18-at-10.32.45-AM.png",
-            "name": "Petryk Piatochkin",
-            "hd": "gdg.org.ua",
-            "email": "test@gdg.org.ua",
-            "id": "133555540822907599802",
-            "locale": "uk",
-            "verified_email": True,
-            "family_name": "Piatochkin"
+            'given_name': 'Petryk',
+            'gender': 'male',
+            'link': 'https://plus.google.com/+SvyatoslavSydorenko',
+            'picture': 'https://www.wired.com/wp-content/uploads/blogs'
+                       '/wiredenterprise/wp-content/uploads/2012/06'
+                       '/Screen-shot-2012-06-18-at-10.32.45-AM.png',
+            'name': 'Petryk Piatochkin',
+            'hd': 'gdg.org.ua',
+            'email': 'test@gdg.org.ua',
+            'id': '133555540822907599802',
+            'locale': 'uk',
+            'verified_email': True,
+            'family_name': 'Piatochkin'
         }
         cherrypy.session['admin_user'] = to_collection(find_admin_by_email(
             orm_session,

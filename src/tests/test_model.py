@@ -16,10 +16,10 @@ class UserTest(DBTestFixture, unittest.TestCase):
 
         session = Session()
 
-        user = User(displayname="alice in wonderland",
-                    email="alice@wonderland.com",
-                    password="wonderlandpass",
-                    sex="m",
+        user = User(displayname='alice in wonderland',
+                    email='alice@wonderland.com',
+                    password='wonderlandpass',
+                    sex='m',
                     date_of_birth=date.today())
 
         session.add(user)
@@ -30,16 +30,16 @@ class UserTest(DBTestFixture, unittest.TestCase):
 
         session = Session()
 
-        user = User(displayname="displayname",
-                    email="abc@example.com",
-                    sex="m",
+        user = User(displayname='displayname',
+                    email='abc@example.com',
+                    sex='m',
                     date_of_birth=date(1980, 1, 1))
-        user.password = "password"
+        user.password = 'password'
         session.add(user)
         session.commit()
 
-        self.assertTrue(user.validate_password("password"))
+        self.assertTrue(user.validate_password('password'))
         from base64 import b64decode
         self.assertEqual(
-            user._User__encrypt_password("password", b64decode(user.salt)),
+            user._User__encrypt_password('password', b64decode(user.salt)),
             user.password)

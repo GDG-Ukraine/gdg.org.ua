@@ -61,8 +61,8 @@ class UserRESTAPITest(ControllerTestCase):
         self.getJSON('/api/info')
         self.assertStatus(401)
         print('401 asserted, start checking json')
-        self.assertJSON({"reason": "Unauthorized", "code": 401,
-                         "message": "Please authorize"})
+        self.assertJSON({'reason': 'Unauthorized', 'code': 401,
+                         'message': 'Please authorize'})
         self.getPage('/auth/fake-login')
         self.assertStatus(200)
         status, headers, json_res = self.getJSON('/api/info')

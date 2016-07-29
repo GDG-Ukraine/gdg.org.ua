@@ -20,7 +20,7 @@ class BlogController:
         posts = get_all_posts(cherrypy.request.orm_session)
         pprint(posts)
         if posts:
-            tmpl = get_template("blog/posts.html")
+            tmpl = get_template('blog/posts.html')
             return tmpl.render(posts=posts)
         raise HTTPError(404)
 

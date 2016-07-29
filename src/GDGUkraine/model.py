@@ -86,7 +86,7 @@ class Admin(Base):
                         nullable=True, index=True)
     godmode = Column(Boolean, default=0, nullable=False)
 
-    place = relationship("Place", backref="admins")
+    place = relationship('Place', backref='admins')
 
 
 class EventParticipant(Base):
@@ -117,8 +117,8 @@ class EventParticipant(Base):
 
     fields = deferred(Column(JSONEncodedDict(512)))
 
-    user = relationship("User", backref="event_assocs")
-    event = relationship("Event", backref="event_assocs")
+    user = relationship('User', backref='event_assocs')
+    event = relationship('Event', backref='event_assocs')
 
 
 # NOTE: This class is PostgreSQL specific. You should customize age() and the
@@ -160,12 +160,12 @@ class User(Base):
     events_visited = Column(UnicodeText)
     english_knowledge = Column(
         Enum('elementary', 'intermediate', 'upper intermediate', 'advanced',
-             'native', name="english_knowledge"),
+             'native', name='english_knowledge'),
         default=None)
     t_shirt_size = Column(
-        Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name="t_shirt_size"),
+        Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name='t_shirt_size'),
         default=None)
-    gender = Column(Enum('male', 'female', name="gender"), nullable=False)
+    gender = Column(Enum('male', 'female', name='gender'), nullable=False)
 
     additional_info = deferred(Column(UnicodeText))
     local_gdg_id = Column(Integer, index=True)
@@ -173,8 +173,8 @@ class User(Base):
 
     # events = relationship("Event", secondary=EventParticipant,
     #                       backref="users")
-    events = relationship("EventParticipant",
-                          backref="users")
+    events = relationship('EventParticipant',
+                          backref='users')
 
     @property
     def full_name(self):
@@ -220,8 +220,8 @@ class Event(Base):
     testing = Column(Boolean, nullable=False, default=False)
     require_confirmation = Column(Boolean, nullable=False, default=False)
 
-    participants = relationship("EventParticipant", backref="events")
-    host_gdg = relationship("Place", backref="events")
+    participants = relationship('EventParticipant', backref='events')
+    host_gdg = relationship('Place', backref='events')
 
 
 class Invite(Base):
@@ -239,7 +239,7 @@ class Invite(Base):
     event_id = Column(Integer, ForeignKey('gdg_events.id'), nullable=False)
     used = Column(Boolean, nullable=False, default=False)
 
-    event = relationship("Event", backref="invites")
+    event = relationship('Event', backref='invites')
 
 
 class Place(Base):
@@ -260,9 +260,9 @@ class Place(Base):
     geo = Column(String(30), nullable=False, default='')
     logo = Column(String(255), nullable=True, default=None)
 
-    show = Column(Enum('1', '0', name="show"), nullable=False, default='0')
+    show = Column(Enum('1', '0', name='show'), nullable=False, default='0')
 
     master_id = Column(Integer, ForeignKey('gdg_places.id'), nullable=True,
                        default=None)
-    master = relationship("Place", remote_side='Place.id',
+    master = relationship('Place', remote_side='Place.id',
                           backref='subdivisions')

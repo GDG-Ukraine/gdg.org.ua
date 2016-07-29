@@ -41,17 +41,17 @@ def generic_json_error_handler(status, message, traceback, version,
     """error_page.default"""
 
     response = cherrypy.response
-    response.headers['Content-Type'] = "application/json"
+    response.headers['Content-Type'] = 'application/json'
     response.headers.pop('Content-Length', None)
 
     code, reason, _ = _httputil.valid_status(status)
-    result = {"code": code, "reason": reason, "message": message}
+    result = {'code': code, 'reason': reason, 'message': message}
     if errors is not None:
-        result["errors"] = errors
-    if hasattr(cherrypy.request, "params"):
+        result['errors'] = errors
+    if hasattr(cherrypy.request, 'params'):
         params = cherrypy.request.params
-        if "debug" in params and params["debug"]:
-            result["traceback"] = traceback
+        if 'debug' in params and params['debug']:
+            result['traceback'] = traceback
     return json.dumps(result)
 
 
@@ -61,12 +61,12 @@ def unexpected_json_error_handler():
     (typ, value, tb) = _exc_info()
     if typ:
         debug = False
-        if hasattr(cherrypy.request, "params"):
+        if hasattr(cherrypy.request, 'params'):
             params = cherrypy.request.params
-            debug = "debug" in params and params["debug"]
+            debug = 'debug' in params and params['debug']
 
         response = cherrypy.response
-        response.headers['Content-Type'] = "application/json"
+        response.headers['Content-Type'] = 'application/json'
         response.headers.pop('Content-Length', None)
         content = {}
         if isinstance(value, ExtendedHTTPError):
@@ -74,18 +74,18 @@ def unexpected_json_error_handler():
         if isinstance(typ, cherrypy.HTTPError):
             cherrypy._cperror.clean_headers(value.code)
             response.status = value.status
-            content.update({"code": value.code, "reason": value.reason,
-                            "message": value._message})
+            content.update({'code': value.code, 'reason': value.reason,
+                            'message': value._message})
         elif isinstance(typ, (TypeError, ValueError, KeyError)):
             cherrypy._cperror.clean_headers(400)
             response.status = 400
             reason, default_message = _httputil.response_codes[400]
-            content = {"code": 400, "reason": reason,
-                       "message": value.message or default_message}
+            content = {'code': 400, 'reason': reason,
+                       'message': value.message or default_message}
 
         if cherrypy.serving.request.show_tracebacks or debug:
             tb = _format_exc()
-            content["traceback"] = tb
+            content['traceback'] = tb
         response.body = json.dumps(content).encode('utf-8')
 
 
@@ -140,7 +140,7 @@ def get_error_page(status, errors=None, **kwargs):
     # We can't use setdefault here, because some
     # callers send None for kwarg values.
     if kwargs.get('status') is None:
-        kwargs['status'] = "%s %s" % (code, reason)
+        kwargs['status'] = '%s %s' % (code, reason)
     if kwargs.get('message') is None:
         kwargs['message'] = message
     if kwargs.get('traceback') is None:
@@ -150,7 +150,7 @@ def get_error_page(status, errors=None, **kwargs):
 
     for k, v in kwargs.items():
         if v is None:
-            kwargs[k] = ""
+            kwargs[k] = ''
         else:
             kwargs[k] = _escape(kwargs[k])
 
@@ -189,11 +189,11 @@ def get_error_page(status, errors=None, **kwargs):
             e = _format_exception(*_exc_info())[-1]
             m = kwargs['message']
             if m:
-                m += "<br />"
-            m += "In addition, the custom error page failed:\n<br />%s" % e
+                m += '<br />'
+            m += 'In addition, the custom error page failed:\n<br />%s' % e
             kwargs['message'] = m
 
     response = cherrypy.serving.response
-    response.headers['Content-Type'] = "text/html;charset=utf-8"
+    response.headers['Content-Type'] = 'text/html;charset=utf-8'
     result = template % kwargs
     return result.encode('utf-8')

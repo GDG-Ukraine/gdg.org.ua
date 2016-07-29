@@ -26,7 +26,7 @@ def gmail_send(message, sbj, to_email,
         data=json.dumps({'raw': base64.urlsafe_b64encode(message.as_string()
                                                          .encode('utf8'))
                         .decode('utf8')}),
-        headers={"content-type": "application/json"})
+        headers={'content-type': 'application/json'})
 
     logger.debug(st.json())
     logger.debug('Sent message to {}'.format(to_email))

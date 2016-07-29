@@ -57,7 +57,7 @@ class APITest(DBTestFixture, unittest.TestCase):
     def test_find_user_by_id(self):
         session = Session()
         alice = api.find_user_by_id(session, 1)
-        self.assertEqual(alice.nickname, "alice")
+        self.assertEqual(alice.nickname, 'alice')
         self.assertEqual(alice.email, 'alice@wonderland.com')
         self.assertEqual(alice.gender, 'female')
         self.assertEqual(alice.surname, 'Johns')
@@ -95,7 +95,7 @@ class APITest(DBTestFixture, unittest.TestCase):
     def test_get_all_users(self):
         session = Session()
         usrs = api.get_all_users(session)
-        self.assertEqual(usrs[0].nickname, "alice")
+        self.assertEqual(usrs[0].nickname, 'alice')
         self.assertEqual(usrs[0].email, 'alice@wonderland.com')
         self.assertEqual(usrs[0].gender, 'female')
         self.assertEqual(usrs[0].surname, 'Johns')
@@ -104,7 +104,7 @@ class APITest(DBTestFixture, unittest.TestCase):
     def test_get_users_by_ids(self):
         session = Session()
         alice, *_ = api.get_users_by_ids(session, [1])
-        self.assertEqual(alice.nickname, "alice")
+        self.assertEqual(alice.nickname, 'alice')
         self.assertEqual(alice.email, 'alice@wonderland.com')
         self.assertEqual(alice.gender, 'female')
         self.assertEqual(alice.surname, 'Johns')

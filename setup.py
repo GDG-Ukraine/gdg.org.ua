@@ -11,6 +11,6 @@ setup(name='GDGUkraine',
       author='Svyatoslav Sydorenko',
       author_email='svyatoslav@sydorenko.org.ua',
       package_dir={'': 'src'},
-      packages=find_packages('src', exclude=["test**"]),
+      packages=find_packages('src', exclude=['test**']),
       install_requires=install_requires,
       zip_safe=False)

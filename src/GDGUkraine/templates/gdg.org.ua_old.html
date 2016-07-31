@@ -1,28 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" prefix="og: http://ogp.me/ns#">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+{% extends "base.html" %}
 
-        <!-- Start opengraph meta -->
-        <!-- Override author, cause opengraph picks last author meta -->
-        <meta name="author" content="GDG Ukraine">
-        <!-- Actually opengraph meta -->
-        <meta property="og:title" content="Google Developer Groups in Ukraine">
-        <meta property="og:description" content="Think global. Hack local. Enjoy.">
-        <meta property="og:site_name" content="GDG Ukraine">
-        <meta property="og:image" content="https://gdg.org.ua/img/pattern.png">
+{% block title %}Google Developer Groups in Ukraine{% endblock title %}
 
-        <!-- Twitter meta tags -->
-        <meta name="twitter:card" content="summary">
-        <meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
-        <meta name="twitter:title" content="Google Developer Groups in Ukraine">
-        <meta name="twitter:description" content="Think global. Hack local. Enjoy">
-        <meta name="twitter:image" content="https://gdg.org.ua/img/pattern.png">
-        <!-- End opengraph meta-->
-
-        <title>Google Developer Groups in Ukraine</title>
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <style type="text/css">
+{% block head_extra -%}
+<style type="text/css">
 html{color:#000;background:#FFF}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,button,caption,cite,code,dfn,em,input,optgroup,option,select,strong,textarea,th,var{font:inherit}del,ins{text-decoration:none}li{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:baseline}sub{vertical-align:baseline}legend{color:#000}
 html {background-color: white;}
 body {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;  color: #222222;}
@@ -38,63 +19,54 @@ a:hover, a:active {text-decoration: none;}
 img.logo {width:202px;height: 74px;}
 div.footer {margin-top:5em;font-size: xx-small;}
 div#mapa {width:100%;height:600px;border:1px solid #ccc;}
-        </style>
-    </head>
-    <body>
-    <div class="wrap">
-        <div class="en">
-            <h2>Google Developer Groups in Ukraine</h2>
-            <ul>
-            {% for place in places %}
-                <li><a href="{{ place.url }}" title="GDG {{ place.name | e }} ">{{ place.city }}</a>{% if not loop.last %} •{% endif %}</li>
-            {% endfor %}
-            </ul>
-        </div>
-        <div id='mapa'></div>
-        <div class='footer'>Developed by <a href="https://mrgall.com/" title="Oleg Bozhenko">Oleg Bozhenko</a></div>
+</style>
+{%- endblock head_extra %}
+
+{% block body -%}
+<div class="wrap">
+    <div class="en">
+        <h2>Google Developer Groups in Ukraine</h2>
+        <ul>
+        {% for place in places %}
+            <li><a href="{{ place.url }}" title="GDG {{ place.name | e }} ">{{ place.city }}</a>{% if not loop.last %} •{% endif %}</li>
+        {% endfor %}
+        </ul>
     </div>
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-12683430-2']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;language=en"> </script>
-    <script type='text/javascript'>
-    //<![CDATA[
-    var ukraine = new google.maps.LatLng(48.4, 30.9);
+    <div id='mapa'></div>
+    <div class='footer'>Developed by <a href="https://mrgall.com/" title="Oleg Bozhenko">Oleg Bozhenko</a></div>
+</div>
+{% include 'ga.html' %}
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;language=en"> </script>
+<script type='text/javascript'>
+//<![CDATA[
+var ukraine = new google.maps.LatLng(48.4, 30.9);
 
-    var myOptions = {
-      zoom:6,
-      center: ukraine,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-    }
-    var map = new google.maps.Map(document.getElementById('mapa'), myOptions);
-    {% for place in places %}
-        var contentString{{ place.id }} = '<div style="text-align:center;padding:10px;"><a href="{{ place.url }}">GDG {{ place.name }}</a></div>';
+var myOptions = {
+  zoom:6,
+  center: ukraine,
+  mapTypeId: google.maps.MapTypeId.ROADMAP
+}
+var map = new google.maps.Map(document.getElementById('mapa'), myOptions);
+{% for place in places %}
+    var contentString{{ place.id }} = '<div style="text-align:center;padding:10px;"><a href="{{ place.url }}">GDG {{ place.name }}</a></div>';
 
-        var infowindow{{ place.id }} = new google.maps.InfoWindow({
-            content: contentString{{ place.id }}
-        });
-        var myLatLng{{ place.id }}= new google.maps.LatLng({{ place.geo }});
-        var marker{{ place.id }} = new google.maps.Marker({
-            position: myLatLng{{ place.id }},
-            map: map,
-            title: "{{ place.city }}",
-            icon: "/img/red_marker.png"
-        });
-        google.maps.event.addListener(marker{{ place.id }}, "click", function() {
-          infowindow{{ place.id }}.open(map,marker{{ place.id }});
-        });
-        google.maps.event.addListener(map, "click", function(){
-                    infowindow{{ place.id }}.close();
-        });
-    {% endfor %}
-    //]]>
-    </script>
-    </body>
-</html>
+    var infowindow{{ place.id }} = new google.maps.InfoWindow({
+        content: contentString{{ place.id }}
+    });
+    var myLatLng{{ place.id }}= new google.maps.LatLng({{ place.geo }});
+    var marker{{ place.id }} = new google.maps.Marker({
+        position: myLatLng{{ place.id }},
+        map: map,
+        title: "{{ place.city }}",
+        icon: "/img/red_marker.png"
+    });
+    google.maps.event.addListener(marker{{ place.id }}, "click", function() {
+      infowindow{{ place.id }}.open(map,marker{{ place.id }});
+    });
+    google.maps.event.addListener(map, "click", function(){
+                infowindow{{ place.id }}.close();
+    });
+{% endfor %}
+//]]>
+</script>
+{%- endblock body %}

@@ -1,0 +1,20 @@
+<meta name="author" content="Oleh Zasadnyy">
+<meta name="author" content="Svyatoslav Sydorenko">
+<meta name="author" content="Valentyn Shybanov">
+
+<!-- Start opengraph meta -->
+<!-- Override author, cause opengraph picks last author meta -->
+<meta name="author" content="{{ event.host_gdg.name|e or 'GDG Ukraine' if event is defined and event.host_gdg_id else 'GDG Ukraine' }}">
+<!-- Actually opengraph meta -->
+<meta property="og:title" content="Google Developer Groups in Ukraine">
+<meta property="og:description" content="Think global. Hack local. Enjoy.">
+<meta property="og:site_name" content="GDG Ukraine">
+<meta property="og:image" content="https://gdg.org.ua/img/pattern.png">
+
+<!-- Twitter meta tags -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@KyivGTUG"><!-- TODO: group specific twitter -->
+<meta name="twitter:title" content="Google Developer Groups in Ukraine">
+<meta name="twitter:description" content="Think global. Hack local. Enjoy">
+<meta name="twitter:image" content="https://gdg.org.ua/img/pattern.png">
+<!-- End opengraph meta-->

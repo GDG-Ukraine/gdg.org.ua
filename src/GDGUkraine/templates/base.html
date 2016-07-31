@@ -8,13 +8,18 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
+    {% include 'og.html' %}
+
     <title>GDG Ukraine - {% block title %}{% endblock title %}</title>
 
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    {% block head_extra -%}
     <link type="text/css" rel="stylesheet" href="/css/screen.css" media="screen, projection">
+    {%- endblock head_extra %}
     {%- endblock head %}
   </head>
   <body>
+    {% block body -%}
     <div id="container">
       <header>
         <h1>GDG Ukraine</h1>
@@ -26,5 +31,7 @@
         <p>&copy; GDG Ukraine 2012</p>
       </footer>
     </div>
+    {% include 'ga.html' %}
+    {%- endblock body %}
   </body>
 </html>

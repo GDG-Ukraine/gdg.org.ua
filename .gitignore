@@ -36,16 +36,17 @@ nosetests.xml
 .pydevproject
 
 # added by webknjaz
-.cache/*.cache
+/.cache/v/cache
+/.cache/*.cache
 __pycache__
 *.pyc
-env/
-.env/
-log/*.log
-log/*.log.*
+/env/
+/.env/
+/log/*.log
+/log/*.log.*
 *.py.bak
 .hidden
-bower_components
-.exports*
-.sessions/
-coverage.xml
+/static/libs/bower_components
+/.exports*
+/.sessions/
+/coverage.xml

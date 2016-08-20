@@ -3,7 +3,7 @@ PENV_BIN_PATH=
 ifdef $(PENV)
 PENV_BIN_PATH=./$(PENV)/bin/
 endif
-PINST=$(PENV_BIN_PATH)pip install --no-binary :all: -U
+PINST=$(PENV_BIN_PATH)pip install --no-use-wheel -U
 PINSTR=$(PINST) -r
 WSGI=$(PENV_BIN_PATH)gunicorn
 REQ_DIR=requirements

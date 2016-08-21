@@ -65,9 +65,9 @@ def get_all_gdg_places(session, filtered=False):
     return q.order_by(Place.city).all()
 
 
-def find_event_by_id(session, id):
-    id = int(id)
-    return session.query(Event).get(id)
+def find_event_by_id(session, id_):
+    # correctness of id_ is a matter of the caller
+    return session.query(Event).get(id_)
 
 
 def find_host_gdg_by_event(session, event):

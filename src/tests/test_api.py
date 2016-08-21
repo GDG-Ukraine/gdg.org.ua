@@ -92,6 +92,12 @@ class APITest(DBTestFixture, unittest.TestCase):
         self.assertEquals(con.host_gdg.city, 'Gotham')
 
     @orm_session
+    def test_find_event_by_wrong_id(self):
+        session = Session()
+        event = api.find_event_by_id(session, 2048)
+        self.assertIsNone(event)
+
+    @orm_session
     def test_get_all_users(self):
         session = Session()
         usrs = api.get_all_users(session)

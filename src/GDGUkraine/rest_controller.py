@@ -1,6 +1,7 @@
 import logging
 import re
 
+from copy import deepcopy
 from datetime import date
 from uuid import uuid4
 
@@ -22,7 +23,10 @@ from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
-from .lib.validation import regform_validator
+from .lib.forms import (
+    RegistrationForm, get_additional_fields_form_cls,
+    InputDict,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -109,54 +113,72 @@ class Participants(APIBase):
         req = cherrypy.request
         orm_session = req.orm_session
 
+        try:
+            event_id = int(req.json['event'])
+        except (ValueError, TypeError, KeyError):
+            raise HTTPError(400, 'Invalid `event` param')
+
+        event = api.find_event_by_id(orm_session, event_id)
+        if not event:
+            raise HTTPError(404, 'Event not found')
+
+        # Get request data
         u = req.json.get('user', {})
+        fields = req.json.get('fields')
 
-        if not regform_validator.validate(u):
-            raise InvalidFormDataError(regform_validator.errors)
+        # Validate form data
+        regform = RegistrationForm(hidden=None, formdata=InputDict(u))
+        fieldsform_cls = get_additional_fields_form_cls(event.fields)
+        fieldsform = fieldsform_cls(InputDict(fields))
+        if not all([regform.validate(), fieldsform.validate()]):
+            errors = deepcopy(regform.errors)
+            errors.update(fieldsform.errors)
+            raise InvalidFormDataError(errors)
 
-        logger.debug(req.json)
-        logger.debug(u)
+        # Registration BL
         user = User(**u)
+
+        invitation = None
+        if req.json.get('invite_code'):
+            invitation = api.find_invitation_by_code(
+                orm_session, req.json['invite_code']
+            )
+
+            # check if the invitation is valid
+            if (
+                invitation is None or invitation.used or
+                (invitation.event and invitation.event.id != event.id) or
+                (invitation.email is not None and invitation.email != user.email)
+            ):
+                raise HTTPError(403, 'Invalid invite code.')
+
         eu = api.find_user_by_email(orm_session, user.email)
         if eu:
             user.id = eu.id
             orm_session.merge(user)
         else:
             orm_session.add(user)
+        orm_session.flush()
+
+        eep = api.get_event_registration(orm_session, user.id, event.id)
+        ep = EventParticipant(
+            id=eep.id if eep else None,
+            event_id=event.id,
+            googler_id=user.id,
+            register_date=date.today(),
+            fields=fields,
+        )
+
+        if eep:
+            orm_session.merge(ep)
+        else:
+            orm_session.add(ep)
+        if invitation is not None:
+            invitation.email = user.email
+            invitation.used = True
+            orm_session.merge(invitation)
         orm_session.commit()
-        if req.json.get('event'):
-            eid = int(req.json['event'])
-            # check if the invitation is valid
-            i = None
-            if req.json.get('invite_code'):
-                i = api.find_invitation_by_code(orm_session,
-                                                req.json['invite_code'])
-                if i is None or i.used or \
-                        (i.event is not None and
-                            i.event != api.find_event_by_id(
-                                orm_session,
-                                req.json['event'])) or \
-                        (i.email is not None and i.email != user.email):
-                    raise HTTPError(403, 'Invalid invite code.')
-            logger.debug(type(req.json.get('fields')))
-            logger.debug(req.json.get('fields'))
-            eep = api.get_event_registration(orm_session, user.id, eid)
-            ep = EventParticipant(
-                id=eep.id if eep else None, event_id=eid, googler_id=user.id,
-                register_date=date.today(),
-                fields=req.json['fields'] if req.json.get('fields') else None)
-            logger.debug(ep.fields)
-            if eep:
-                orm_session.merge(ep)
-            else:
-                orm_session.add(ep)
-            if i is not None:
-                i.email = user.email
-                i.used = True
-                orm_session.merge(i)
-            orm_session.commit()
-            logger.debug(ep.fields)
-            logger.debug(type(ep.fields))
+
         return to_collection(user, sort_keys=True)
 
     @cherrypy.tools.json_out()

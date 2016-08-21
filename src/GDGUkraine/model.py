@@ -1,4 +1,5 @@
 import json
+from datetime import date
 
 from sqlalchemy import (
     Column, UnicodeText, Date, String,
@@ -41,7 +42,19 @@ __all__ = [
     'WPPost', 'Admin',
     'User', 'Event', 'EventParticipant',
     'Place', 'Invite',
+    'EXPERIENCE_CHOICES', 'ENGLISH_CHOICES', 'TSHIRT_CHOICES',
+    'GENDER_CHOICES',
 ]
+
+
+EXPERIENCE_CHOICES = [
+    'newbie', 'elementary', 'intermediate', 'advanced', 'jedi',
+]
+ENGLISH_CHOICES = [
+    'elementary', 'intermediate', 'upper intermediate', 'advanced', 'native',
+]
+TSHIRT_CHOICES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
+GENDER_CHOICES = ['male', 'female']
 
 
 class WPPost(Base):
@@ -149,8 +162,7 @@ class User(Base):
     www = Column(String(100), default=None, unique=True)
 
     experience_level = Column(
-        Enum('newbie', 'elementary', 'intermediate', 'advanced', 'jedi',
-             name='experience_level'),
+        Enum(*EXPERIENCE_CHOICES, name='experience_level'),
         default=None)
     experience_desc = Column(UnicodeText)
     interests = Column(UnicodeText)
@@ -159,13 +171,12 @@ class User(Base):
     # now it is JSON field.
     events_visited = Column(UnicodeText)
     english_knowledge = Column(
-        Enum('elementary', 'intermediate', 'upper intermediate', 'advanced',
-             'native', name='english_knowledge'),
+        Enum(*ENGLISH_CHOICES, name='english_knowledge'),
         default=None)
     t_shirt_size = Column(
-        Enum('XS', 'S', 'M', 'L', 'XL', 'XXL', name='t_shirt_size'),
+        Enum(*TSHIRT_CHOICES, name='t_shirt_size'),
         default=None)
-    gender = Column(Enum('male', 'female', name='gender'), nullable=False)
+    gender = Column(Enum(*GENDER_CHOICES, name='gender'), nullable=False)
 
     additional_info = deferred(Column(UnicodeText))
     local_gdg_id = Column(Integer, index=True)
@@ -222,6 +233,36 @@ class Event(Base):
 
     participants = relationship('EventParticipant', backref='events')
     host_gdg = relationship('Place', backref='events')
+
+    def has_spots(self):
+        """ Checks whether an event has free spots
+
+        Returns:
+            (bool): True if there are free spots at event otherwise False
+        """
+        return self.max_regs is None or self.max_regs > len(self.participants)
+
+    def is_registration_overdue(self):
+        """ Checks whether the event registration is overdue
+        Event registration is considered overdue when at least one of
+        the following conditions are truthy
+            - event happens today or has already took place
+            - there is an event registration deadline set and it is either
+              today or earlier
+
+        Returns:
+            (bool): True if event registration is overdue otherwise Flase
+        """
+        return (
+           self.date <= date.today() or
+           self.closereg is not None and self.closereg <= date.today()
+        )
+
+    def is_registration_open(self):
+        """ Event registration is open when there are spots at event and
+        event registration is not overdue.
+        """
+        return self.has_spots() and not self.is_registration_overdue()
 
 
 class Invite(Base):

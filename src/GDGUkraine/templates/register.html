@@ -216,204 +216,67 @@
                     </label>
                 </div>
                 {% endif %}
-                {% if 'name' not in event.hidden %}
+
+
+                {% for field in registration_form %}
                 <div>
-                    <label>
-                        <span>Name*</span>
-                        <input placeholder="e.g. Sergey" type="text" tabindex="1" pattern="[A-Za-z]{2,16}" required autofocus ng-model="user.name" ng-disabled="fromGoogle">
-                        <span ng-show="_errors.name">{{ '{{_errors.name}}' }}</span>
+                    <label for="{{ field.name }}">
+                        <span>{{ field.label }}{% if field.flags.required %}*{% endif %}</span>
                     </label>
+                    {# Crutch to support angular options properly #}
+                    {% if field.name in ['name', 'surname', 'gplus'] %}
+                        {{
+                            field(**{
+                                "ng-model": "user.{}".format(field.name),
+                                "tabindex": loop.index,
+                                "ng-disabled": "fromGoogle",
+                                "required": field.flags.required,
+                            })
+                        }}
+                    {% elif field.name == "email" %}
+                        {{
+                            field(**{
+                                "ng-model": "user.{}".format(field.name),
+                                "tabindex": loop.index,
+                                "ng-disabled": "'true'" if invite and invite.email else "fromGoogle",
+                                "ng-init": "user.{} = '{}'".format((field.name, invite.email)) if invite and invite.email else "",
+                                "required": field.flags.required,
+                            })
+                        }}
+                    {% else %}
+                        {{
+                            field(**{
+                                "ng-model": "user.{}".format(field.name),
+                                "tabindex": loop.index,
+                                "required": field.flags.required,
+                            })
+                        }}
+                    {% endif %}
+                    <span class="errors" ng-show="_errors.{{ field.name }}">{{ '{{{{  _errors.{} }}}}'.format(field.name) }}</span>
                 </div>
-                {% endif %}
-                {% if 'surname' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Surname*</span>
-                        <input placeholder="e.g. Brin" type="text" tabindex="2" pattern="[A-Za-z]{2,16}" required ng-model="user.surname" ng-disabled="fromGoogle">
-                        <span ng-show="_errors.surname">{{ '{{_errors.surname}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'nickname' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Nickname</span>
-                        <input placeholder="e.g. SuperBrin" type="text" tabindex="3" ng-model="user.nickname">
-                        <span ng-show="_errors.nickname">{{ '{{_errors.nickname}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'email' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Email*</span>
-                        <input placeholder="anything@example.com" type="email" tabindex="4" required ng-model="user.email"{% if invite is not none and invite.email is not none and invite.email != '' %} ng-init="user.email = '{{invite.email}}'" ng-disabled="'true'" value="{{ invite.email }}"{% else %} ng-disabled="fromGoogle"{% endif %}>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'phone' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Telephone</span>
-                        <input placeholder="0930000042" type="tel" tabindex="5" ng-model="user.phone">
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'gplus' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Google+ *</span>
-                        <input placeholder="e.g. 1000000000042" type="text" tabindex="6" ng-model="user.gplus" ng-disabled="fromGoogle" required>
-                        <span ng-show="_errors.gplus">{{ '{{_errors.gplus}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'www' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Website</span>
-                        <input placeholder="Start with http://" type="url" tabindex="7" ng-model="user.www">
-                        <span ng-show="_errors.www">{{ '{{_errors.www}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'hometown' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>City*</span>
-                        <input placeholder="e.g. Mountain View" type="text" tabindex="8" required ng-model="user.hometown">
-                        <span ng-show="_errors.city">{{ '{{_errors.city}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'company' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Company</span>
-                        <input placeholder="e.g. Google" type="text" tabindex="9" ng-model="user.company">
-                    </label>
-                    <span ng-show="_errors.company">{{ '{{_errors.company}}' }}</span>
-                </div>
-                {% endif %}
-                {% if 'position' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Position</span>
-                        <input placeholder="e.g. Cofounder" type="text" tabindex="10" ng-model="user.position">
-                        <span ng-show="_errors.position">{{ '{{_errors.position}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'experience_level' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Experience level</span>
-                        <select name="expereence_level" tabindex="11" ng-model="user.experience_level">
-                            <option value="newbie">Newbie</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="intermediate" selected>Intermediate</option>
-                            <option value="advanced">Advanced</option>
-                            <option value="jedi">Jedi</option>
-                        </select>
-                        <span ng-show="_errors.experience_level">{{ '{{_errors.experience_level}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'experience_desc' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Experience description</span>
-                        <textarea placeholder="e.g. Software developer particularly interested in Java technologies and Google applications. Worked in various countries: Ukraine, USA, Poland. Have great ability to work remotely, high mobility, sense of humor." tabindex="12" ng-model="user.experience_desc"></textarea>
-                        <span ng-show="_errors.experience_desc">{{ '{{_errors.experience_desc}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'interests' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Interests</span>
-                        <textarea placeholder="e.g. Google, Android, Chrome" tabindex="13" ng-model="user.interests"></textarea>
-                        <span ng-show="_errors.interests">{{ '{{_errors.interests}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'events_visited' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Events visited</span>
-                        <input placeholder="e.g. IO Extended 2012, GDG DevFest, hackathons, code labs, dev courses or WTM events" type="text" tabindex="14" ng-model="user.events_visited">
-                        <span ng-show="_errors.events_visited">{{ '{{_errors.events_visited}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'english_knowledge' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>English knowledge</span>
-                        <select name="english_knowledge" tabindex="15" ng-model="user.english_knowledge">
-                            <option value="elementary">Elementary</option>
-                            <option value="intermediate">Intermediate</option>
-                            <option value="upper intermediate" selected>Upper intermediate</option>
-                            <option value="advanced">Advanced</option>
-                            <option value="native">Native</option>
-                        </select>
-                        <span ng-show="_errors.english_knowledge">{{ '{{_errors.english_knowledge}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 't_shirt_size' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>T-Shirt size</span>
-                        <select name="t_shirt_size" tabindex="16" ng-model="user.t_shirt_size">
-                            <option value="xs">XS</option>
-                            <option value="s">S</option>
-                            <option value="m" selected>M</option>
-                            <option value="l">L</option>
-                            <option value="xl">XL</option>
-                            <option value="xxl">XXL</option>
-                        </select>
-                        <span ng-show="_errors.t_shirt_size">{{ '{{_errors.t_shirt_size}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'gender' not in event.hidden %}
-                <div>
-                    <label>
-                        <span>Gender</span>
-                        <input type="radio" name="sex" id="male" value="male" tabindex="17" ng-model="user.gender" ng-disabled="fromGoogle">
-                        <label for="male">Male</label>
-                        <input type="radio" name="sex" id="female" value="female" ng-model="user.gender" ng-disabled="fromGoogle">
-                        <label for="female">Female</label>
-                        <span ng-show="_errors.gender">{{ '{{_errors.gender}}' }}</span>
-                    </label>
-                </div>
-                {% endif %}
-                {% if 'additional_info' not in event.hidden %}
-                <div>
-                   <label>
-                       <span>Comments</span>
-                       <textarea placeholder="Some comments" tabindex="18" ng-model="user.additional_info"></textarea>
-                   </label>
-                </div>
-                {% endif %}
+                {% endfor %}
+
                 {% for f in event.fields %}
                     {% if f.type == 'select' %}
-                <div ng-init="options = {{ f.options }}">
-                    <label>
-                        <span>{{ f.title }}</span>
-                    </label>
-                    <selectable custom="{{ f.allow_custom | lower }}" source="options" model="fields.{{ f.name }}" multiple="{{ f.multiple | lower }}"></selectable>
-                </div>
+                        <div ng-init="options = {{ f.options }}">
+                            <label>
+                                <span>{{ f.title }}{% if f.required %}*{% endif %}</span>
+                            </label>
+                            <selectable custom="{{ f.allow_custom | lower }}" source="options" model="fields.{{ f.name }}" multiple="{{ f.multiple | lower }}"></selectable>
+
+                            <span class="errors" ng-show="_errors.{{ f.name }}">{{ '{{{{  _errors.{} }}}}'.format(f.name) }}</span>
+                        </div>
                     {% else %}
-                <div>
-                    <label>
-                        <span>{{ f.title }}</span>
-                        <input type="{{ f.type }}" ng-model="fields.{{ f.name }}">
-                    </label>
-                </div>
+                        <div>
+                            <label>
+                                <span>{{ f.title }}{% if f.required %}*{% endif %}</span>
+                                <input type="{{ f.type }}" ng-model="fields.{{ f.name }}" {% if f.required %}required{% endif %}>
+                            </label>
+                            <span class="errors" ng-show="_errors.{{ f.name }}">{{ '{{{{  _errors.{} }}}}'.format(f.name) }}</span>
+                        </div>
                     {% endif %}
                 {% endfor %}
+
                 <div ng-show="showOk" class="alert alert-success">
                     Your application was saved. See you on event!
                 </div>

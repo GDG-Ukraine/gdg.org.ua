@@ -9,6 +9,7 @@ from traceback import (
 
 import cherrypy
 from cherrypy.lib import httputil as _httputil
+from cherrypy.lib.encoding import UTF8StreamEncoder
 from cherrypy._cpcompat import tonative
 
 from .lib.utils import json
@@ -130,8 +131,6 @@ def get_error_page(status, errors=None, **kwargs):
     status should be an int or a str.
     kwargs will be interpolated into the page template.
     """
-    import cherrypy
-
     try:
         code, reason, message = _httputil.valid_status(status)
     except ValueError:
@@ -170,12 +169,11 @@ def get_error_page(status, errors=None, **kwargs):
                 # We *must* make sure any content is not unicode.
                 result = error_page(errors=errors, **kwargs)
                 if cherrypy.lib.is_iterator(result):
-                    from cherrypy.lib.encoding import UTF8StreamEncoder
                     return UTF8StreamEncoder(result)
-                elif isinstance(result, cherrypy._cpcompat.unicodestr):
+                elif isinstance(result, str):  # str is OK for Python3
                     return result.encode('utf-8')
                 else:
-                    if not isinstance(result, cherrypy._cpcompat.bytestr):
+                    if not isinstance(result, bytes):
                         raise ValueError(
                             'error page function did not '
                             'return a bytestring, unicodestring or an '

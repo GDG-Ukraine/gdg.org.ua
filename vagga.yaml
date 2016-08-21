@@ -1,5 +1,24 @@
 containers:
-  base:
+  mysql:
+    setup:
+      - !Alpine v3.4
+      - !Install
+        - mariadb
+        - mariadb-client
+      - !EnsureDir /data
+    environ: &db_config
+      DB_DATABASE: gdg
+      DB_USERNAME: mysql
+      DB_PASSWORD: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3307
+      DB_DATA_DIR: /data
+    volumes:
+      /data: !Tmpfs
+        size: 200M
+        mode: 0o700
+
+  app:
     setup:
       - !Ubuntu xenial
       - !UbuntuUniverse
@@ -7,10 +26,6 @@ containers:
         - python3.5
         - python3.5-dev
         - ca-certificates
-
-  gdg-devel:
-    setup:
-      - !Container base
       - !BuildDeps
         - git
         - mercurial
@@ -20,15 +35,25 @@ containers:
       - !Depends requirements/common.txt  # As to https://github.com/tailhook/vagga/issues/236
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
+      - !Sh bower install --allow-root
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
+      DATABASE_URL: "mysql+mysqlconnector://mysql:mysql@localhost:3308/gdg"
 
-  gdg-test:
+  test:
     setup:
-      - !Container base
+      - !Ubuntu xenial
+      - !UbuntuUniverse
+      - !Install
+        - python3.5
+        - python3.5-dev
+        - ca-certificates
       - !BuildDeps
         - git
         - mercurial
+      - !PipConfig
+        dependencies: true
+        python-exe: python3.5
       - !Depends requirements/common.txt
       - !Depends requirements/dev.txt
       - !Py3Requirements requirements/test.txt
@@ -42,11 +67,31 @@ commands:
     description: Run application in development mode
     children:
       run-app: !Command
-        container: gdg-devel
-        run:
-          if test -f ./.exports; then . ./.exports; fi &&
+        container: app
+        run: |
+          touch /work/.dbcreation # Create lock file
+          if test -f ./.exports; then . ./.exports; fi
+          while  [ -f /work/.dbcreation ]; do sleep 0.2; done # Acquire lock
+          alembic -c config/alembic.ini -x environment=dev upgrade head
           blueberrypy serve -b 0.0.0.0:8080
+
+      run-db: !Command
+        container: mysql
+        run: |
+            mysql_install_db --datadir=$DB_DATA_DIR
+            mkdir /run/mysqld
+            mysqld_safe --user=root --datadir=$DB_DATA_DIR \
+              --bind-address=$DB_HOST --port=$DB_PORT \
+              --no-auto-restart --no-watch
+            while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
+            mysqladmin create $DB_DATABASE
+            mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+            mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
+            mysql -e "FLUSH PRIVILEGES;"
+            rm /work/.dbcreation # Release lock
+            while :; do sleep 1d; done # Emulate infinite sleep
+
   test: !Command
     description: Run tests for gdg.org.ua project
-    container: gdg-test
-    run: nosetests -w src/tests --tests=test_utils
+    container: test
+    run: nosetests -w src/tests --tests=test_utils,test_api

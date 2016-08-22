@@ -38,7 +38,7 @@ containers:
       - !Sh bower install --allow-root
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
-      DATABASE_URL: "mysql+mysqlconnector://mysql:mysql@localhost:3308/gdg"
+      DATABASE_URL: "mysql+mysqlconnector://mysql:mysql@localhost:3307/gdg"
 
   test:
     setup:

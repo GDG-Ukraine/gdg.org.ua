@@ -32,6 +32,7 @@ containers:
       - !PipConfig
         dependencies: true
         python-exe: python3.5
+      - !Depends setup.py
       - !Depends requirements/common.txt  # As to https://github.com/tailhook/vagga/issues/236
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
@@ -54,6 +55,7 @@ containers:
       - !PipConfig
         dependencies: true
         python-exe: python3.5
+      - !Depends setup.py
       - !Depends requirements/common.txt
       - !Depends requirements/dev.txt
       - !Py3Requirements requirements/test.txt

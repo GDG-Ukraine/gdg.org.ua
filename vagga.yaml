@@ -75,7 +75,7 @@ commands:
           if test -f ./.exports; then . ./.exports; fi
           while  [ -f /work/.dbcreation ]; do sleep 0.2; done # Acquire lock
           alembic -c config/alembic.ini -x environment=dev upgrade head
-          fixtures/loader.py $DATABASE_URL fixtures/fixtures.yaml || exit 1
+          fixtures/loader.py "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
           blueberrypy serve -b 0.0.0.0:8080
 
       run-db: !Command

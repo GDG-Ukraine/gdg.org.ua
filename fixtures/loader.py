@@ -29,7 +29,7 @@ def load_fixtures(filepath):
     """
     models = []
     with open(filepath, 'r') as data_file:
-        data = yaml.load(data_file)
+        data = yaml.safe_load(data_file)
         for cls, descriptions in data.items():
             model_cls = import_class(cls)
             for description in descriptions:

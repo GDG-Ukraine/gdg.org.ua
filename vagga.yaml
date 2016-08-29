@@ -39,6 +39,7 @@ containers:
       - !Sh bower install --allow-root
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
+      OAUTHLIB_INSECURE_TRANSPORT: 1  # Needed for auth to work on localhost without https
       DATABASE_URL: "mysql+mysqlconnector://mysql:mysql@localhost:3307/gdg"
 
   test:

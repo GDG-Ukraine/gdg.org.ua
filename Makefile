@@ -108,7 +108,11 @@ test-envs: test-env
 
 test-nose: test-deps
 	@$(ACTIVATE_ENV) ; \
-	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_api,test_utils,test_validation
+	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_api,test_utils,test_validation --with-coverage --cover-package=GDGUkraine --cover-xml
+
+test-pytest: test-deps
+	@$(ACTIVATE_ENV) ; \
+    BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml py.test -v src/tests/test_{utils,api,validation}.py --cov
 
 test-style: test-deps
 	@$(ACTIVATE_ENV) ; \

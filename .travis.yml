@@ -14,8 +14,8 @@ env:
 
     # At least one build per one of the following variable
     matrix:
-        - TOX_ENV=py34-codestyle,py34-nosetests
-        - TOX_ENV=py35-codestyle,py35-nosetests
+        - TOX_ENV=py34-codestyle,py34-pytest
+        - TOX_ENV=py35-codestyle,py35-pytest
 
 # Run tests
 script:

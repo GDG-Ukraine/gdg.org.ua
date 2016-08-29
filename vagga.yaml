@@ -37,10 +37,15 @@ containers:
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
       - !Sh bower install --allow-root
+      - !EnsureDir /mnt/db_host
+    environ-file: .env  # https://vagga.readthedocs.io/en/latest/container_params.html#opt-environ-file
     environ:
       APP_ROOT: /work  # Make sure this is not overriden by .exports
+      APP_PACKAGE: GDGUkraine
+      TEMPLATES_ROOT: $APP_ROOT/src/$APP_PACKAGE/templates
+      CACHE_ROOT: $APP_ROOT/.cache
       OAUTHLIB_INSECURE_TRANSPORT: 1  # Needed for auth to work on localhost without https
-      DATABASE_URL: "mysql+mysqlconnector://mysql:mysql@localhost:3307/gdg"
+      DATABASE_URL: mysql+mysqlconnector://mysql:mysql@/gdg?unix_socket=/mnt/db_host/var/run/mysqld/mysqld.sock
 
   test:
     setup:

@@ -8,6 +8,9 @@ install:
 
 # Environmental variables
 env:
+    # Marks build successful regardless of whether allowed-failures finished
+    fast_finish: true
+
     # Will be set always
     global:
         - BLUEBERRYPY_CONFIG='{}'

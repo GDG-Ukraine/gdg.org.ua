@@ -4,16 +4,16 @@ except ImportError:
     import unittest
 
 import cherrypy
-from blueberrypy.testing import ControllerTestCase
 
 from openpyxl import load_workbook
 
+from GDGUkraine.lib.testing import TestCase
 from GDGUkraine.lib.utils.table_exporter import TableExporter
 from GDGUkraine.lib.utils.url import base_url, url_for
 from GDGUkraine.lib.utils.vcard import pad
 
 
-class UtilTest(ControllerTestCase):
+class UtilTest(TestCase):
     """Test for Utils"""
     urls_testset = (
         {'inp': {'handler': 'Controller.Root', 'type_': 'class-based'},

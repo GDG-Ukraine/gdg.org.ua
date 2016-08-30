@@ -1,10 +1,10 @@
 from datetime import date
 
+from GDGUkraine.lib.testing import TestCase
 from GDGUkraine.model import User
 from GDGUkraine.model import metadata
 
 from tests.helper import orm_session, Session
-from blueberrypy.testing import ControllerTestCase
 
 
 @orm_session
@@ -30,7 +30,7 @@ def populate_db():
     session.commit()
 
 
-class UserRESTAPITest(ControllerTestCase):
+class UserRESTAPITest(TestCase):
     @orm_session
     def setUp(self):
         metadata.create_all()

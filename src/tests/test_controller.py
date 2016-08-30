@@ -1,7 +1,7 @@
-from blueberrypy.testing import ControllerTestCase
+from GDGUkraine.lib.testing import TestCase
 
 
-class RootTest(ControllerTestCase):
+class RootTest(TestCase):
 
     def test_index(self):
         self.getPage('/')

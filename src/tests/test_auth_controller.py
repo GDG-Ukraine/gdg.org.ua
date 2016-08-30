@@ -1,13 +1,10 @@
-import json
+from unittest.mock import MagicMock
 
-from unittest.mock import patch, MagicMock
-
-from cherrypy.lib.sessions import RamSession
-
-from blueberrypy.testing import ControllerTestCase
-
-from GDGUkraine.model import Admin, Place
-from GDGUkraine.model import metadata
+from GDGUkraine.lib.testing import TestCase, SessionMock, mock_session
+from GDGUkraine.model import (
+        Admin, Place,
+        metadata
+)
 
 from tests.helper import orm_session, Session
 
@@ -26,32 +23,7 @@ def populate_db():
     session.commit()
 
 
-class UserRESTAPITest(ControllerTestCase):
-    def getJSON(self, *args, **kwargs):
-        status, headers, body = self.getPage(*args, **kwargs)
-        self.json_result = json.loads(body.decode('utf-8'))
-        return status, headers, self.json_result
-
-    def assertJSON(self, value, tmp_resp=None):
-        assert isinstance(
-            value, (dict, list)) or isinstance(
-                value, type(tmp_resp)), ('This test is meant to test '
-                                         'JSON against dict or list')
-
-        if tmp_resp is None:
-            tmp_resp = self.json_result
-
-        if isinstance(value, dict):
-            assert len(value) == len(tmp_resp)
-            for k, v in value.items():
-                self.assertJSON(v, tmp_resp[k])
-        elif isinstance(value, list):
-            assert len(value) == len(tmp_resp)
-            for i, v in enumerate(value):
-                self.assertJSON(v, tmp_resp[i])
-        else:
-            assert value == tmp_resp
-
+class UserRESTAPITest(TestCase):
     @orm_session
     def setUp(self):
         metadata.create_all()
@@ -67,7 +39,7 @@ class UserRESTAPITest(ControllerTestCase):
         self.assertJSON({'reason': 'Unauthorized', 'code': 401,
                          'message': 'Please authorize'})
 
-        sess_mock = RamSession()
+        sess_mock = SessionMock()
         sess_mock['admin_user'] = {'email': 'test@gdg.org.ua', 'filter_place': None,
                                    'googler_id': 777, 'godmode': True, 'place': None}
         sess_mock['google_oauth_token'] = MagicMock()
@@ -86,8 +58,7 @@ class UserRESTAPITest(ControllerTestCase):
             'verified_email': True,
             'family_name': 'Piatochkin'
         }
-
-        with patch('cherrypy.session', sess_mock, create=True):
+        with mock_session(session=sess_mock):
             status, headers, json_res = self.getJSON('/api/info')
         self.assertStatus(200)
         json_user = json_res['user']

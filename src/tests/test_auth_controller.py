@@ -1,10 +1,15 @@
 import json
 
+from unittest.mock import patch, MagicMock
+
+from cherrypy.lib.sessions import RamSession
+
+from blueberrypy.testing import ControllerTestCase
+
 from GDGUkraine.model import Admin, Place
 from GDGUkraine.model import metadata
 
 from tests.helper import orm_session, Session
-from blueberrypy.testing import ControllerTestCase
 
 
 @orm_session
@@ -57,17 +62,37 @@ class UserRESTAPITest(ControllerTestCase):
         metadata.drop_all()
 
     def test_authenticate_user(self):
-        # Authenticate as a fake user
         self.getJSON('/api/info')
         self.assertStatus(401)
-        print('401 asserted, start checking json')
         self.assertJSON({'reason': 'Unauthorized', 'code': 401,
                          'message': 'Please authorize'})
-        self.getPage('/auth/fake-login')
+
+        sess_mock = RamSession()
+        sess_mock['admin_user'] = {'email': 'test@gdg.org.ua', 'filter_place': None,
+                                   'googler_id': 777, 'godmode': True, 'place': None}
+        sess_mock['google_oauth_token'] = MagicMock()
+        sess_mock['google_user'] = {
+            'given_name': 'Petryk',
+            'gender': 'male',
+            'link': 'https://plus.google.com/+SvyatoslavSydorenko',
+            'picture': 'https://www.wired.com/wp-content/uploads/blogs'
+                       '/wiredenterprise/wp-content/uploads/2012/06'
+                       '/Screen-shot-2012-06-18-at-10.32.45-AM.png',
+            'name': 'Petryk Piatochkin',
+            'hd': 'gdg.org.ua',
+            'email': 'test@gdg.org.ua',
+            'id': '133555540822907599802',
+            'locale': 'uk',
+            'verified_email': True,
+            'family_name': 'Piatochkin'
+        }
+
+        with patch('cherrypy.session', sess_mock, create=True):
+            status, headers, json_res = self.getJSON('/api/info')
         self.assertStatus(200)
-        status, headers, json_res = self.getJSON('/api/info')
-        self.assertStatus(200)
-        assert json_res['user']['name'] == 'Vasia Pupkin'
-        assert json_res['user']['email'] == 'test@gdg.org.ua'
-        assert json_res['user']['godmode'] is True
-        assert json_res['user']['admin'] is True
+        json_user = json_res['user']
+        self.assertEquals(json_user['name'], 'Petryk Piatochkin')
+        self.assertEquals(json_user['email'], 'test@gdg.org.ua')
+        self.assertTrue(json_user['godmode'])
+        self.assertTrue(json_user['admin'])
+        # self.assertJSON({'user': sess_mock['google_user']})

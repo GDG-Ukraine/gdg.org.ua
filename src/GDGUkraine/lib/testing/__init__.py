@@ -98,4 +98,3 @@ def mock_session(session=None):
         session = SessionMock()
 
     return patch('cherrypy.session', session, create=True)
-

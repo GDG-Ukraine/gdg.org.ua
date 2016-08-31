@@ -54,4 +54,3 @@ class UserRESTAPITest(TestCase):
         self.assertTrue(json_user['godmode'])
         self.assertTrue(json_user['admin'])
         # self.assertJSON({'user': sess_mock['google_user']})
-

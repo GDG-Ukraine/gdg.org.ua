@@ -7,8 +7,8 @@ This is the event registration system for GDG Ukraine events.
 
 ## Requirements:
 
-    Python 3.5.0 (it is recommended to use pyenv for dev environment)
-    NodeJS 5.0.0 (it is recommended to use nvm for dev environment)
+    Python 3.5+  (it is recommended to use pyenv for dev environment)
+    NodeJS 5.0+  (it is recommended to use nvm for dev environment)
     MySQL        (MariaDB works well)
     Mercurial    (because there's some `hg+` dependencies)
 
@@ -83,10 +83,6 @@ We have `bin/update_gdg` script for this
 You can use [`tox`](https://tox.readthedocs.org) to run tests as well. Unfortunately, due to some bug in tox itself some special steps are required.
 
     $ make test-envs
-
-You can also run only specific set of tests. To do that, add `-e toxenv[,toxenv]` to tox comand. For example, to run tests only for python3.5, use the following command:
-
-    $ make TOX_ARGS="-e py35-codestyle,py35-nosetests" test-envs
 
 ## Enabling env
 If you for some reason need to run shell with env activated, run this:

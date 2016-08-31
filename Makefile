@@ -16,7 +16,6 @@ NPM=npm
 PRECOMMIT=$(PENV_BIN_PATH)pre-commit
 BLUEBERRY=$(PENV_BIN_PATH)blueberrypy serve -b
 TOX=$(PENV_BIN_PATH)tox
-NOSE=$(PENV_BIN_PATH)nosetests
 USER_SHELL=/bin/zsh
 ACTIVATE_ENV=if test -d ./$(PENV); then . ./$(PENV)/bin/activate; fi; if test -f ./.exports; then . ./.exports; fi
 USE_NVM=if test -d ~/.nvm; then . ~/.nvm/nvm.sh; nvm use 5.0.0 ; fi
@@ -98,17 +97,13 @@ migration:
 	git add src/db/versions && \
 	git commit -m "$(COMMIT_MSG)"
 
-test: test-nose test-style
+test: test-pytest test-style
 	@$(ACTIVATE_ENV) ; \
 	python --version
 
 test-envs: test-env
 	@$(ACTIVATE_ENV) ; \
 	BLUEBERRYPY_CONFIG='{}' $(TOX) $(TOX_ARGS)
-
-test-nose: test-deps
-	@$(ACTIVATE_ENV) ; \
-	BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml $(NOSE) -w src/tests --tests=test_api,test_utils,test_validation,test_auth_controller --with-coverage --cover-package=GDGUkraine --cover-xml
 
 test-pytest: test-deps
 	@$(ACTIVATE_ENV) ; \

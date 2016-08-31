@@ -15,17 +15,10 @@ env:
     global:
         - BLUEBERRYPY_CONFIG='{}'
 
-    # At least one build per one of the following variable
-    matrix:
-        - TOX_ENV=py34-codestyle,py34-pytest
-        - TOX_ENV=py35-codestyle,py35-pytest
-
 # Run tests
-script:
-    - make TOX_ARGS="-e $TOX_ENV" test-envs
+script: make test-envs
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+after_success: bash <(curl -s https://codecov.io/bash)
 
 notifications:
   webhooks:

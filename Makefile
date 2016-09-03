@@ -139,10 +139,6 @@ reload-prod:
 stop-prod:
 	@kill -SIGTERM `cat $PROD_PID`
 
-.env:
-	echo "BASE_URL='http://localhost:8080'" > .env
-	echo "SA_URL='mysql+mysqlconnector://<REPLACE_THIS>:<REPLACE_THIS>@localhost:3307/gdg'" >> .env
-	echo "G_CLIENT_ID='<REPLACE_THIS>.apps.googleusercontent.com'" >> .env
-	echo "G_CLIENT_SECRET='<REPLACE_THIS>'" >> .env
-	echo 'BLUEBERRYPY_CONFIG='"'"'{ "global": { "base_app_url": "'${BASE_URL}'", "key":"sadsadsadasdsadasadsadsadasdsada", "google_oauth": { "id": "'${G_CLIENT_ID}'", "secret": "'${G_CLIENT_SECRET}'" }, "alembic": {"sqlalchemy.url": "'${SA_URL}'"} }, "sqlalchemy_engine": { "url": "'${SA_URL}'" } }'"'" >> .env
-
+.PHONY: environ
+environ:
+	bash -c scripts/mk-environ-file.sh

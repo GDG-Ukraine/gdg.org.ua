@@ -57,3 +57,6 @@ bower_components
 
 # vagrant files
 .vagrant/
+
+# environ configuration
+/environ

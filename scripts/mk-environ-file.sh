@@ -37,9 +37,13 @@ _main() {
     # Combine all into config
     local config='{ "global": { "base_app_url": "'${hostname}'", "key":"sadsadsadasdsadasadsadsadasdsada", "google_oauth": { "id": "'${google_client_id}'", "secret": "'${google_client_secret}'" }, "alembic": {"sqlalchemy.url": "'${db_url}'"} }, "sqlalchemy_engine": { "url": "'${db_url}'" } }'
 
-
     echo "BASE_URL=$hostname" > "$config_file"
-    echo "OAUTHLIB_INSECURE_TRANSPORT=1  # Change to zero if you use https" >> "$config_file"
+    # use insecure transport if basename is not https://
+    case $hostname in
+        https://* ) echo "Not setting OAUTHLIB_INSECURE_TRANSPORT as HTTPS is used" ;;
+        * )  echo "OAUTHLIB_INSECURE_TRANSPORT=1" >> "$config_file" ;;
+    esac
+
     echo "DATABASE_URL=$db_url" >> "$config_file"
     echo "BLUEBERRYPY_CONFIG=$config" >> "$config_file"
 }

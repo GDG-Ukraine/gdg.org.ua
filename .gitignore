@@ -60,3 +60,6 @@ bower_components
 
 # environ configuration
 /environ
+
+# database creation lock
+.dbcreation

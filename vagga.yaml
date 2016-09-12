@@ -40,10 +40,8 @@ containers:
       - !EnsureDir /mnt/db_host
     environ-file: /work/environ  # https://vagga.readthedocs.io/en/latest/container_params.html#opt-environ-file
     environ:
-      APP_ROOT: /work  # Make sure this is not overriden by .exports
+      APP_ROOT: /work
       APP_PACKAGE: GDGUkraine
-      TEMPLATES_ROOT: $APP_ROOT/src/$APP_PACKAGE/templates
-      CACHE_ROOT: $APP_ROOT/.cache
 
   test:
     setup:
@@ -69,6 +67,7 @@ containers:
       NOSE_TESTCONFIG_AUTOLOAD_YAML: "config/test/app.yml"
 
 commands:
+
   run: !Supervise
     description: Run application in development mode
     children:

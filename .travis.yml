@@ -27,6 +27,7 @@ install:
   - sudo apt-get install uidmap -y
   - curl http://files.zerogw.com/vagga/vagga-install-testing.sh | sh
   - vagga _build test
+  # I did not find a way to run pre-commit inside vagga
   - pip install pre-commit
 
 # Run tests

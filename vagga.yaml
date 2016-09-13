@@ -96,4 +96,4 @@ commands:
   test: !Command
     description: Run tests for gdg.org.ua project
     container: test
-    run: nosetests -w src/tests --tests=test_utils,test_api
+    run: [nosetests, -w, src/tests, '--tests=test_utils,test_api,test_validation']

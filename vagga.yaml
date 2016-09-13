@@ -39,9 +39,6 @@ containers:
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
     environ-file: /work/environ  # https://vagga.readthedocs.io/en/latest/container_params.html#opt-environ-file
-    environ:
-      APP_ROOT: /work
-      APP_PACKAGE: GDGUkraine
 
   test:
     setup:

@@ -1,24 +1,26 @@
 language: python
-python:
-  - 3.5
-  - 3.6-dev
+python: 3.5
 
-# Scripts to install dependencies
-install:
-    - make env
-    - make test-env
+# Run in ubuntu-trusty environment
+dist: trusty
+sudo: required
 
 # Environmental variables
 env:
     # Marks build successful regardless of whether allowed-failures finished
     fast_finish: true
 
-    # Will be set always
-    global:
-        - BLUEBERRYPY_CONFIG='{}'
+# Scripts to install dependencies
+install:
+  - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
+  - echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
+  - sudo apt-get install uidmap -y
+  - curl http://files.zerogw.com/vagga/vagga-install-testing.sh | sh
+  - vagga _build test
 
 # Run tests
-script: make test-envs
+script:
+  - vagga test
 
 after_success: bash <(curl -s https://codecov.io/bash)
 

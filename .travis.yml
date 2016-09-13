@@ -1,14 +1,24 @@
 language: python
 python: 3.5
 
-# Run in ubuntu-trusty environment
-dist: trusty
-sudo: required
-
 # Environmental variables
 env:
     # Marks build successful regardless of whether allowed-failures finished
     fast_finish: true
+
+# Run in ubuntu-trusty environment
+dist: trusty
+sudo: required
+
+# Cache .vagga images to speedup sequential builds
+cache:
+  timeout: 21600 # 6 hours
+  pip: true
+  directories:
+    .vagga/.roots
+    .vagga/test
+    .vagga/.mnt
+    .vagga/.transient
 
 # Scripts to install dependencies
 # These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml

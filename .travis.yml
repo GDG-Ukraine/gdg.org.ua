@@ -13,16 +13,17 @@ env:
 # Scripts to install dependencies
 # These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml
 install:
-  - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
-  - echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
-  - sudo apt-get install uidmap -y
-  - curl http://files.zerogw.com/vagga/vagga-install-testing.sh | sh
-  - vagga _build test
-  - curl https://bootstrap.pypa.io/get-pip.py | sudo python - pre-commit
+    #  - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
+    #  - echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
+    #  - sudo apt-get install uidmap -y
+    #  - curl http://files.zerogw.com/vagga/vagga-install-testing.sh | sh
+    #  - vagga _build test
+  - pip install pre-commit
 
 # Run tests
 script:
-  - vagga test --with-coverage --cover-package=GDGUkraine --cover-xml
+    # - vagga test --with-coverage --cover-package=GDGUkraine --cover-xml
+  - python --version
   - pre-commit run --all-files
 
 after_success: bash <(curl -s https://codecov.io/bash)

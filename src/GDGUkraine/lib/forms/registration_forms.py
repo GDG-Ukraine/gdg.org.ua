@@ -163,7 +163,7 @@ class RegistrationForm(Form):
         widget=InlineWidget(prefix_label=False),
         option_widget=RadioInput(),
     )
-    comments = TextAreaField(
+    additional_info = TextAreaField(
         label='Comments',
         render_kw={
             'placeholder': 'If you have something to say us, leave it here =)',

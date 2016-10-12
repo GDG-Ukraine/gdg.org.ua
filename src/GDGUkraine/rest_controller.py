@@ -124,7 +124,7 @@ class Participants(APIBase):
 
         # Get request data
         u = req.json.get('user', {})
-        fields = req.json.get('fields')
+        fields = req.json.get('fields', {})
 
         # Validate form data
         regform = RegistrationForm(hidden=None, formdata=InputDict(u))

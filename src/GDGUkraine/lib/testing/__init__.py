@@ -32,9 +32,14 @@ DUMMY_GOOGLE_USER = {
 class TestCase(ControllerTestCase):
     """Implements extended test case with json testing enabled"""
     def postJSON(self, url, payload, *args, **kwargs):
+        req_body = json.dumps(payload)
+        req_headers = [
+           ('Content-Length', str(len(req_body))),
+           ('Content-Type', 'application/json'),
+        ]
         status, headers, body = self.getPage(
-            url, method='POST', body=json.dumps(payload),
-            headers=[('Content-Type', 'application/json'), ], *args, **kwargs)
+            url, method='POST', body=req_body,
+            headers=req_headers, *args, **kwargs)
         self.json_result = json.loads(body.decode('utf-8'))
         return status, headers, self.json_result
 

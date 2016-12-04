@@ -6,7 +6,7 @@ containers:
         - mariadb
         - mariadb-client
       - !EnsureDir /data
-    environ: &db_config
+    environ: 
       DB_DATABASE: gdg
       DB_USERNAME: mysql
       DB_PASSWORD: mysql
@@ -14,9 +14,9 @@ containers:
       DB_PORT: 3307
       DB_DATA_DIR: /data
     volumes:
-      /data: !Tmpfs
-        size: 200M
-        mode: 0o700
+      /data: !Persistent
+        name: mysql-data
+        init-command: _init-mysql
 
   app:
     setup:
@@ -26,37 +26,21 @@ containers:
         - python3.5
         - python3.5-dev
         - ca-certificates
-      - !BuildDeps
         - git
         - mercurial
       - !PipConfig
         dependencies: true
         python-exe: python3.5
       - !Depends setup.py
-      - !Depends requirements/common.txt  # As to https://github.com/tailhook/vagga/issues/236
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
-    environ-file: /work/environ  # https://vagga.readthedocs.io/en/latest/container_params.html#opt-environ-file
+    environ-file: /work/environ
 
   test:
     setup:
-      - !Ubuntu xenial
-      - !UbuntuUniverse
-      - !Install
-        - python3.5
-        - python3.5-dev
-        - ca-certificates
-      - !BuildDeps
-        - git
-        - mercurial
-      - !PipConfig
-        dependencies: true
-        python-exe: python3.5
-      - !Depends setup.py
-      - !Depends requirements/common.txt
-      - !Depends requirements/dev.txt
+      - !Container app
       - !Py3Requirements requirements/test.txt
       - !Py3Requirements requirements/test-env.txt
     environ:
@@ -64,6 +48,37 @@ containers:
       NOSE_TESTCONFIG_AUTOLOAD_YAML: "config/test/app.yml"
 
 commands:
+  _init-mysql: !Command
+    description: Initialize mysql database
+    container: mysql
+    run: |
+      mysql_install_db --datadir=$DB_DATA_DIR
+      mkdir /run/mysqld
+      mysqld_safe --user=root --datadir=$DB_DATA_DIR \
+        --bind-address=$DB_HOST --port=$DB_PORT \
+        --no-auto-restart --no-watch
+      while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
+      mysqladmin create $DB_DATABASE
+      mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
+      mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
+      mysql -e "FLUSH PRIVILEGES;"
+
+  blueberrypy: !Command
+    description: |
+      Run blueberrypy command (you have to provide command and arguments by yourself)
+    container: app
+    run: [ blueberrypy ]
+
+  mysql: !Command
+    description: Run RDBMS shell
+    container: mysql
+    run: |
+      mkdir /run/mysqld
+      mysqld_safe --user=root --datadir=$DB_DATA_DIR \
+        --bind-address=$DB_HOST --port=$DB_PORT \
+        --no-auto-restart --no-watch
+      while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done
+      mysql -D gdg
 
   run: !Supervise
     description: Run application in development mode
@@ -73,27 +88,28 @@ commands:
         run: |
           touch /work/.dbcreation # Create lock file
           while  [ -f /work/.dbcreation ]; do sleep 0.2; done # Acquire lock
-          alembic -c config/alembic.ini -x environment=dev upgrade head
-          fixtures/loader.py "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
+          current_version=$(alembic -c config/alembic.ini -x environment=dev current)
+          head_version=$(alembic -c config/alembic.ini -x environment=dev heads)
+          if [ "$current_version"=="$head_version" ] ; then
+            alembic -c config/alembic.ini -x environment=dev upgrade head
+            fixtures/loader.py "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
+          fi;
           blueberrypy serve -b 0.0.0.0:8080
 
       run-db: !Command
         container: mysql
         run: |
-            mysql_install_db --datadir=$DB_DATA_DIR
-            mkdir /run/mysqld
-            mysqld_safe --user=root --datadir=$DB_DATA_DIR \
-              --bind-address=$DB_HOST --port=$DB_PORT \
-              --no-auto-restart --no-watch
-            while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
-            mysqladmin create $DB_DATABASE
-            mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
-            mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
-            mysql -e "FLUSH PRIVILEGES;"
-            rm /work/.dbcreation # Release lock
-            while :; do sleep 1d; done # Emulate infinite sleep
+          mkdir /run/mysqld
+          mysqld_safe --user=root --datadir=$DB_DATA_DIR \
+            --bind-address=$DB_HOST --port=$DB_PORT \
+            --no-auto-restart --no-watch
+          while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
+          rm -rf /work/.dbcreation # Release lock
+          while :; do sleep 1d; done # Emulate infinite sleep
 
   test: !Command
     description: Run tests for gdg.org.ua project
     container: test
-    run: [nosetests, -w, src/tests, '--tests=test_utils,test_api,test_validation']
+    run: |
+     nosetests -w src/tests \
+       --tests=test_utils,test_api,test_validation

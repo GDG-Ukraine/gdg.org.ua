@@ -564,6 +564,7 @@ class Places(APIBase):
             return [to_collection(p, sort_keys=True) for p in places]
         raise HTTPError(404)
 
+
 rest_api = cherrypy.dispatch.RoutesDispatcher()
 rest_api.mapper.explicit = False
 rest_api.connect('add_participant', '/participants', Participants,

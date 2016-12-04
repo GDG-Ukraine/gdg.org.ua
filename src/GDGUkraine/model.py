@@ -38,6 +38,7 @@ class JSONEncodedDict(TypeDecorator):
     def process_result_value(self, value, dialect):
         return json.loads(value) if value is not None else []
 
+
 __all__ = [
     'WPPost', 'Admin',
     'User', 'Event', 'EventParticipant',

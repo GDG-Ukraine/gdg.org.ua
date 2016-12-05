@@ -107,7 +107,7 @@ test-envs: test-env
 
 test-pytest: test-deps
 	@$(ACTIVATE_ENV) ; \
-    BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml py.test -v src/tests/test_{utils,api,validation,auth_controller}.py --cov
+    BLUEBERRYPY_CONFIG='{}' NOSE_TESTCONFIG_AUTOLOAD_YAML=config/test/app.yml py.test -v src/tests/test_{utils,api,validation,{auth,rest}_controller}.py --cov
 
 test-style: test-deps
 	@$(ACTIVATE_ENV) ; \

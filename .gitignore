@@ -55,9 +55,6 @@ bower_components
 # vagga files
 .vagga/
 
-# vagrant files
-.vagrant/
-
 # environ configuration
 /environ
 

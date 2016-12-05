@@ -121,5 +121,9 @@ commands:
     description: Run tests for gdg.org.ua project
     container: test
     run: |
-     nosetests -w src/tests \
-       --tests=test_utils,test_api,test_validation
+      py.test --cov -v \
+        src/tests/test_api.py \
+        src/tests/test_utils.py \
+        src/tests/test_validation.py \
+        src/tests/test_auth_controller.py \
+        src/tests/test_rest_controller.py

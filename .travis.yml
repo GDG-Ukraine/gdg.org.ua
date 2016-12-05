@@ -34,7 +34,7 @@ install:
 
 # Run tests
 script:
-  - vagga test --with-coverage --cover-package=GDGUkraine --cover-xml
+  - vagga test
   - pre-commit run --all-files
 
 after_success: bash <(curl -s https://codecov.io/bash)

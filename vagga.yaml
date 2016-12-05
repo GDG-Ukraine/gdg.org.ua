@@ -6,7 +6,7 @@ containers:
         - mariadb
         - mariadb-client
       - !EnsureDir /data
-    environ: 
+    environ:
       DB_DATABASE: gdg
       DB_USERNAME: mysql
       DB_PASSWORD: mysql
@@ -57,7 +57,9 @@ commands:
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
         --bind-address=$DB_HOST --port=$DB_PORT \
         --no-auto-restart --no-watch
-      while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
+      while [ ! -S /run/mysqld/mysqld.sock ]; do
+        sleep 0.2
+      done  # wait for server to be ready
       mysqladmin create $DB_DATABASE
       mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
       mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
@@ -77,8 +79,10 @@ commands:
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
         --bind-address=$DB_HOST --port=$DB_PORT \
         --no-auto-restart --no-watch
-      while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done
-      mysql -D gdg
+      while [ ! -S /run/mysqld/mysqld.sock ]; do
+        sleep 0.2
+      done
+      mysql -D $DB_DATABASE
 
   run: !Supervise
     description: Run application in development mode
@@ -86,14 +90,16 @@ commands:
       run-app: !Command
         container: app
         run: |
-          touch /work/.dbcreation # Create lock file
-          while  [ -f /work/.dbcreation ]; do sleep 0.2; done # Acquire lock
+          touch /work/.dbcreation  # Create lock file
+          while  [ -f /work/.dbcreation ]; do  # Acquire lock
+            sleep 0.2
+          done
           current_version=$(alembic -c config/alembic.ini -x environment=dev current)
           head_version=$(alembic -c config/alembic.ini -x environment=dev heads)
           if [ "$current_version"=="$head_version" ] ; then
             alembic -c config/alembic.ini -x environment=dev upgrade head
             fixtures/loader.py "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
-          fi;
+          fi
           blueberrypy serve -b 0.0.0.0:8080
 
       run-db: !Command
@@ -103,9 +109,13 @@ commands:
           mysqld_safe --user=root --datadir=$DB_DATA_DIR \
             --bind-address=$DB_HOST --port=$DB_PORT \
             --no-auto-restart --no-watch
-          while [ ! -S /run/mysqld/mysqld.sock ]; do sleep 0.2; done # wait for server to be ready
-          rm -rf /work/.dbcreation # Release lock
-          while :; do sleep 1d; done # Emulate infinite sleep
+          while [ ! -S /run/mysqld/mysqld.sock ]; do  # wait for server to be ready
+            sleep 0.2
+          done
+          rm -f /work/.dbcreation  # Release lock
+          while :; do  # Emulate infinite sleep
+            sleep 1d;
+          done
 
   test: !Command
     description: Run tests for gdg.org.ua project

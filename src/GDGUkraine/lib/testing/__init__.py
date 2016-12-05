@@ -106,7 +106,7 @@ def mock_session(session=None):
     """
     assert session is None or isinstance(session, Session)
 
-    if not session:
+    if session is None:
         session = SessionMock()
 
     return patch('cherrypy.session', session, create=True)

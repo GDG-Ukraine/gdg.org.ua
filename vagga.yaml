@@ -96,8 +96,10 @@ commands:
           done
           current_version=$(alembic -c config/alembic.ini -x environment=dev current)
           head_version=$(alembic -c config/alembic.ini -x environment=dev heads)
-          if [ "$current_version"=="$head_version" ] ; then
+          if [ "${current_version}" != "${head_version}" ]; then
             alembic -c config/alembic.ini -x environment=dev upgrade head
+          fi
+          if [ -z "${current_version}" ]; then
             fixtures/loader.py "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
           fi
           blueberrypy serve -b 0.0.0.0:8080

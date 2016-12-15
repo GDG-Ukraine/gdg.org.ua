@@ -6,6 +6,7 @@ containers:
         - mariadb
         - mariadb-client
       - !EnsureDir /data
+      - !EnsureDir /run/mysqld
     environ:
       DB_DATABASE: gdg
       DB_USERNAME: mysql
@@ -53,7 +54,6 @@ commands:
     container: mysql
     run: |
       mysql_install_db --datadir=$DB_DATA_DIR
-      mkdir /run/mysqld
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
         --bind-address=$DB_HOST --port=$DB_PORT \
         --no-auto-restart --no-watch
@@ -75,7 +75,6 @@ commands:
     description: Run RDBMS shell
     container: mysql
     run: |
-      mkdir /run/mysqld
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
         --bind-address=$DB_HOST --port=$DB_PORT \
         --no-auto-restart --no-watch
@@ -107,7 +106,6 @@ commands:
       run-db: !Command
         container: mysql
         run: |
-          mkdir /run/mysqld
           mysqld_safe --user=root --datadir=$DB_DATA_DIR \
             --bind-address=$DB_HOST --port=$DB_PORT \
             --no-auto-restart --no-watch

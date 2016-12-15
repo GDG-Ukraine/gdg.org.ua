@@ -55,10 +55,10 @@ commands:
     run: |
       mysql_install_db --datadir=$DB_DATA_DIR
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
-        --bind-address=$DB_HOST --port=$DB_PORT \
-        --no-auto-restart --no-watch
+                  --bind-address=$DB_HOST --port=$DB_PORT \
+                  --no-auto-restart --no-watch
       while [ ! -S /run/mysqld/mysqld.sock ]; do
-        sleep 0.2
+        sleep .2
       done  # wait for server to be ready
       mysqladmin create $DB_DATABASE
       mysql -e "CREATE USER '$DB_USERNAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';"
@@ -76,10 +76,10 @@ commands:
     container: mysql
     run: |
       mysqld_safe --user=root --datadir=$DB_DATA_DIR \
-        --bind-address=$DB_HOST --port=$DB_PORT \
-        --no-auto-restart --no-watch
+                  --bind-address=$DB_HOST --port=$DB_PORT \
+                  --no-auto-restart --no-watch
       while [ ! -S /run/mysqld/mysqld.sock ]; do
-        sleep 0.2
+        sleep .2
       done
       mysql -D $DB_DATABASE
 
@@ -91,7 +91,7 @@ commands:
         run: |
           touch /work/.dbcreation  # Create lock file
           while  [ -f /work/.dbcreation ]; do  # Acquire lock
-            sleep 0.2
+            sleep .2
           done
           current_version=$(alembic -c config/alembic.ini -x environment=dev current)
           head_version=$(alembic -c config/alembic.ini -x environment=dev heads)
@@ -107,13 +107,13 @@ commands:
         container: mysql
         run: |
           mysqld_safe --user=root --datadir=$DB_DATA_DIR \
-            --bind-address=$DB_HOST --port=$DB_PORT \
-            --no-auto-restart --no-watch
-          while [ ! -S /run/mysqld/mysqld.sock ]; do  # wait for server to be ready
-            sleep 0.2
-          done
+                      --bind-address=$DB_HOST --port=$DB_PORT \
+                      --no-auto-restart --no-watch
+          while [ ! -S /run/mysqld/mysqld.sock ]; do
+            sleep .2
+          done  # wait for server to be ready
           rm -f /work/.dbcreation  # Release lock
-          while :; do  # Emulate infinite sleep
+          while :; do  # Emulate infinite loop
             sleep 1d;
           done
 

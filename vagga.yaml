@@ -6,7 +6,7 @@ containers:
         - mariadb
         - mariadb-client
       - !EnsureDir /data
-      - !EnsureDir /run/mysqld
+      - !EnsureDir /run
     environ:
       DB_DATABASE: gdg
       DB_USERNAME: mysql
@@ -18,6 +18,10 @@ containers:
       /data: !Persistent
         name: mysql-data
         init-command: _init-mysql
+      /run: !Tmpfs
+        mode: 0o766
+        subdirs:
+          mysqld:
 
   app:
     setup:

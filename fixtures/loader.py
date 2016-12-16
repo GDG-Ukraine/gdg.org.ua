@@ -3,9 +3,10 @@
 import importlib
 import sys
 
+import yaml
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import yaml
 
 
 def import_class(what):

@@ -29,8 +29,7 @@ before_install:
   # I did not find a way to run pre-commit inside vagga
   - pip install pre-commit
 
-install:
-  - vagga _build test
+install: vagga _build test
 
 # Run tests
 script:

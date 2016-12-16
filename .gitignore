@@ -56,7 +56,7 @@ bower_components
 .vagga/
 
 # environ configuration
-/environ
+/.env
 
 # database creation lock
 .dbcreation

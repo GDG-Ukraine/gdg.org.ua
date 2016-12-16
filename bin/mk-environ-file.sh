@@ -26,7 +26,7 @@ _get_user_input() {
 
 
 _main() {
-    local config_file='environ'
+    local config_file='.env'
 
     # Get variables
     local app_root=`_get_user_input 'Enter full path to your app root dir (use /work to run in vagga)' "$(pwd)"`

@@ -42,7 +42,7 @@ containers:
       - !NpmInstall [bower]
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
-    environ-file: /work/environ
+    environ-file: /work/.env
 
   test:
     setup:

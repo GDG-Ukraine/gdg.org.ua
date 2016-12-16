@@ -139,6 +139,8 @@ reload-prod:
 stop-prod:
 	@kill -SIGTERM `cat $PROD_PID`
 
+.env: environ
+
 .PHONY: environ
 environ:
 	bin/mk-environ-file.sh

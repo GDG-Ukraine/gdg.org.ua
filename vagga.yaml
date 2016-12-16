@@ -27,12 +27,13 @@ containers:
     setup:
       - !Ubuntu xenial
       - !UbuntuUniverse
-      - !Install
-        - python3.5
-        - python3.5-dev
-        - ca-certificates
+      - &app-build-deps !BuildDeps
         - git
         - mercurial
+        - python3.5-dev
+      - !Install
+        - ca-certificates
+        - python3.5
       - !PipConfig
         dependencies: true
         python-exe: python3.5
@@ -46,6 +47,7 @@ containers:
   test:
     setup:
       - !Container app
+      - !BuildDeps *app-build-deps
       - !Py3Requirements requirements/test.txt
       - !Py3Requirements requirements/test-env.txt
     environ:

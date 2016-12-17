@@ -107,6 +107,7 @@ commands:
 
   run: !Supervise
     description: Run application in development mode
+    mode: stop-on-failure
     children:
       run-app: !Command
         container: app

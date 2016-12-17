@@ -7,11 +7,18 @@ install_requires = [
     'python-social-auth==0.2.13', 'alembic==0.8.4', 'openpyxl==2.3.2',
 ]
 
+entry_points = {
+    'console_scripts': [
+        'load_gdg_fixtures = fixtures.loader:main',
+    ],
+}
+
 setup(name='GDGUkraine',
       version='1.0',
       author='Svyatoslav Sydorenko',
       author_email='svyatoslav@sydorenko.org.ua',
       package_dir={'': 'src'},
       packages=find_packages('src', exclude=['test**']),
+      entry_points=entry_points,
       install_requires=install_requires,
       zip_safe=False)

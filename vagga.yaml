@@ -71,6 +71,22 @@ commands:
       mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
       mysql -e "FLUSH PRIVILEGES;"
 
+  clean-db: !Command
+    description: Cleanup mysql database
+    container: mysql
+    run: |
+      mysql_install_db --datadir=$DB_DATA_DIR
+      mysqld_safe --user=root --datadir=$DB_DATA_DIR \
+                  --bind-address=$DB_HOST --port=$DB_PORT \
+                  --no-auto-restart --no-watch
+      while [ ! -S /run/mysqld/mysqld.sock ]; do
+        sleep .2
+      done  # wait for server to be ready
+      mysqladmin -f drop "$DB_DATABASE"
+      mysqladmin create "$DB_DATABASE"
+      mysql -e "GRANT ALL PRIVILEGES ON $DB_DATABASE.* TO '$DB_USERNAME'@'localhost';"
+      mysql -e "FLUSH PRIVILEGES;"
+
   blueberrypy: !Command
     description: |
       Run blueberrypy command (you have to provide command and arguments by yourself)

@@ -9,7 +9,7 @@ install_requires = [
 
 entry_points = {
     'console_scripts': [
-        'load_gdg_fixtures = fixtures.loader:main',
+        'load_gdg_fixtures = GDGUkraine.fixtures.loader:main',
     ],
 }
 

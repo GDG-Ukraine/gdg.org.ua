@@ -50,3 +50,13 @@ __pycache__
 /.exports*
 /.sessions/
 /coverage.xml
+bower_components
+
+# vagga files
+.vagga/
+
+# environ configuration
+/.env
+
+# database creation lock
+.dbcreation

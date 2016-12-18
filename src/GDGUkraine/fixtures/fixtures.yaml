@@ -1,0 +1,45 @@
+GDGUkraine.model.Event:
+  - id: 1
+    url: http://example.com/
+    title: Testing event
+    desc: This one is used for development and testing purposes
+    gplus_event_id: null
+    host_gdg_id: 1
+    date: 2048-07-27
+    closereg: 2048-07-27
+    fields:
+      - title: Required field
+        type: text
+        name: text_required
+        required: true
+      - title: Select with custom choice
+        allow_custom: true
+        options: ["Choice 1", "Choice 2", "Choice 3"]
+        type: select
+        multiple: false
+        name: select_custom
+      - title: Multi select
+        allow_custom: false
+        options: ["Choice 1", "Choice 2", "Choice 3"]
+        type: select
+        multiple: true
+        name: select_multiple
+      - title: Checkbox
+        type: checkbox
+        name: boolean
+    background: null
+    max_regs: null
+    google_map_iframe: null
+    hidden: ["position"]
+    testing: 0
+    require_confirmation: 1
+
+GDGUkraine.model.Place:
+  - id: 1
+    city: Lviv
+    name: Lviv
+    url: http://lviv.gdg.org.ua/
+    geo: 49.839683, 24.029717
+    show: 1
+    logo: /img/logos/gdg_lviv.png
+    master_id: null

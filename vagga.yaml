@@ -122,7 +122,7 @@ commands:
             alembic -c config/alembic.ini -x environment=dev upgrade head
           fi
           if [ -z "${current_version}" ]; then
-            load_gdg_fixtures "$DATABASE_URL" fixtures/fixtures.yaml || exit 1
+            load_gdg_fixtures "$DATABASE_URL" src/GDGUkraine/fixtures/fixtures.yaml || exit 1
           fi
           blueberrypy serve -b 0.0.0.0:8080
 

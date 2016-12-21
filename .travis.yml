@@ -27,19 +27,15 @@ cache:
    - .vagga/.mnt
    - .vagga/.transient
 
-# Scripts to install dependencies
-# These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml
-before_install:
-  - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
-  # I did not find a way to run pre-commit inside vagga
-  - pip install pre-commit
+# Tell vagga to fetch ubuntu images from certain location
+before_install: 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
 
 install: vagga _build test
 
-# Run tests
+# Run tests and linters
 script:
+  - vagga lint
   - vagga test
-  - pre-commit run --all-files
 
 after_success: bash <(curl -s https://codecov.io/bash)
 

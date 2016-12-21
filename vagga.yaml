@@ -48,8 +48,14 @@ containers:
     setup:
       - !Container app
       - !BuildDeps *app-build-deps
+      - !Depends .pre-commit-config.yaml
       - !Py3Requirements requirements/test.txt
       - !Py3Requirements requirements/test-env.txt
+      # Git is needed for pre-commit in runtime. Ref:
+      # github.com/pre-commit/pre-commit/issues/456#issuecomment-269653630
+      - !Install [git]
+      - !EnsureDir /pre-commit
+      - !Sh HOME=/pre-commit pre-commit install --install-hooks
     environ:
       # Ref:
       # github.com/pre-commit/pre-commit-hooks/pull/161#issuecomment-269662841
@@ -142,6 +148,13 @@ commands:
           while :; do  # Emulate infinite loop
             sleep 1d;
           done
+
+  lint: !Command
+    description: Run linters for gdg.org.ua project
+    container: test
+    environ:
+      HOME: /pre-commit
+    run: pre-commit run --all-files
 
   test: !Command
     description: Run tests for gdg.org.ua project

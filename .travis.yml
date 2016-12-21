@@ -10,6 +10,14 @@ matrix:
 dist: trusty
 sudo: required
 
+# OS packages
+addons:
+  apt:
+    packages: [vagga]
+    sources:
+      - sourceline: >-
+          deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
+
 # Cache .vagga images to speedup sequential builds
 cache:
   timeout: 21600 # 6 hours
@@ -23,9 +31,6 @@ cache:
 # These are mostly honestly borrowed from https://github.com/tailhook/vagga/tree/master/.travis.yml
 before_install:
   - 'echo ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/ > ~/.vagga.yaml'
-  - echo "$(id -un):100000:65536" | sudo tee /etc/subuid | sudo tee /etc/subgid
-  - sudo apt-get install uidmap -y
-  - curl http://files.zerogw.com/vagga/vagga-install-testing.sh | sh
   # I did not find a way to run pre-commit inside vagga
   - pip install pre-commit
 

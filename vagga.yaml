@@ -51,6 +51,9 @@ containers:
       - !Py3Requirements requirements/test.txt
       - !Py3Requirements requirements/test-env.txt
     environ:
+      # Ref:
+      # github.com/pre-commit/pre-commit-hooks/pull/161#issuecomment-269662841
+      LANG: en_US.UTF-8
       BLUEBERRYPY_CONFIG: "{}"
       NOSE_TESTCONFIG_AUTOLOAD_YAML: "config/test/app.yml"
 

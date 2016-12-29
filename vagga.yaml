@@ -56,11 +56,7 @@ containers:
       - !Install [git]
       - !Sh |
             HOME=/root pre-commit install --install-hooks
-            rm -f /work/.git/hooks/pre-commit
-            if test -f '/work/.git/hooks/pre-commit.legacy' ; then
-              echo "Restore the original pre-commit hook"
-              mv /work/.git/hooks/pre-commit.legacy /work/.git/hooks/pre-commit
-            fi
+            HOME=/root pre-commit uninstall
     environ:
       # Ref:
       # github.com/pre-commit/pre-commit-hooks/pull/161#issuecomment-269662841

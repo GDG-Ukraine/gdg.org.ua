@@ -54,8 +54,13 @@ containers:
       # Git is needed for pre-commit in runtime. Ref:
       # github.com/pre-commit/pre-commit/issues/456#issuecomment-269653630
       - !Install [git]
-      - !EnsureDir /pre-commit
-      - !Sh HOME=/pre-commit pre-commit install --install-hooks
+      - !Sh |
+            HOME=/root pre-commit install --install-hooks
+            rm -f /work/.git/hooks/pre-commit
+            if test -f '/work/.git/hooks/pre-commit.legacy' ; then
+              echo "Restore the original pre-commit hook"
+              mv /work/.git/hooks/pre-commit.legacy /work/.git/hooks/pre-commit
+            fi
     environ:
       # Ref:
       # github.com/pre-commit/pre-commit-hooks/pull/161#issuecomment-269662841
@@ -152,8 +157,6 @@ commands:
   lint: !Command
     description: Run linters for gdg.org.ua project
     container: test
-    environ:
-      HOME: /pre-commit
     run: pre-commit run --all-files
 
   test: !Command

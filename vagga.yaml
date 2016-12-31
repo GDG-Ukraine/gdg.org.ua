@@ -55,6 +55,9 @@ containers:
       # github.com/pre-commit/pre-commit/issues/456#issuecomment-269653630
       - !Install [git]
       - !EnsureDir /pre-commit
+      # Shadow git-hooks dir, so that pre-commit won't break git hooks in host
+      # Ref: github.com/pre-commit/pre-commit/issues/456#issuecomment-269856503
+      - !Sh mount -t tmpfs none /work/.git/hooks
       - !Sh HOME=/pre-commit pre-commit install --install-hooks
     environ:
       # Ref:

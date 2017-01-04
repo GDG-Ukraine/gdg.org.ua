@@ -156,7 +156,7 @@ commands:
     container: test
     run: pre-commit run --all-files
 
-  'py.test': !Command
+  py.test: !Command
     description: Run tests for gdg.org.ua project
     container: test
     run: [py.test, --cov, -v]

@@ -10,7 +10,6 @@ This is the event registration system for GDG Ukraine events.
     Python 3.5+  (it is recommended to use pyenv for dev environment)
     NodeJS 5.0+  (it is recommended to use nvm for dev environment)
     MySQL        (MariaDB works well)
-    Mercurial    (because there's some `hg+` dependencies)
 
 ## Prerequisites:
 

@@ -15,6 +15,18 @@ entry_points = {
 
 setup(name='GDGUkraine',
       version='1.0',
+      classifiers=[
+          'Environment :: Web Environment',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: MIT License',
+          'Topic :: Internet :: WWW/HTTP',
+          'Operating System :: OS Independent',
+          'Programming Language :: Python :: Implementation :: CPython',
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+      ],
       author='Svyatoslav Sydorenko',
       author_email='svyatoslav@sydorenko.org.ua',
       package_dir={'': 'src'},

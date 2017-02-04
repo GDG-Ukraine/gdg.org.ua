@@ -44,7 +44,7 @@ class AuthController:
                 logger.debug('redirect after auth')
                 raise HTTPRedirect(cherrypy.session['auth_redirect'])
             else:
-                raise HTTPRedirect(url_for_class('controller.Root'))
+                raise HTTPRedirect(url_for_class('controller.Root.admin'))
 
             return cherrypy.session['admin_user']
         except MissingCodeError as mce:

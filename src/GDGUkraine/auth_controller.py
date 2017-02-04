@@ -40,13 +40,11 @@ class AuthController:
             cherrypy.session['google_oauth'] = kwargs
 
             if cherrypy.session.get('auth_redirect'):
-                print('redirect after auth')
                 logger.debug('redirect after auth')
                 raise HTTPRedirect(cherrypy.session['auth_redirect'])
-            else:
-                raise HTTPRedirect(url_for_class('controller.Root.admin'))
 
-            return cherrypy.session['admin_user']
+            raise HTTPRedirect(url_for_class('controller.Root.admin'))
+
         except MissingCodeError as mce:
             raise HTTPError(401,
                             'Error: {}'.format(kwargs.get('error'))) from mce

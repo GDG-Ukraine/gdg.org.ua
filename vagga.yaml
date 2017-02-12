@@ -101,6 +101,12 @@ commands:
     container: app
     run: [ blueberrypy ]
 
+
+  ishell: !Command
+    description: Run iPython REPL within project directory
+    container: app
+    run: [ipython]
+
   mysql: !Command
     description: Run RDBMS shell
     container: mysql

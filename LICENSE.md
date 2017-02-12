@@ -1,5 +1,5 @@
 # The MIT License (MIT)
-**Copyright &copy; 2012 GDG-Ukraine dev team** 
+**Copyright &copy; 2012 GDG-Ukraine dev team**
 
 * * *
 

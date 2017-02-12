@@ -109,13 +109,13 @@
         {% for field_name in ['name', 'surname', 'nickname', 'phone', 'gplus', 'www', 'experience_level', 'experienc_desc', 'interests', 'events_visited', 'english_knowledge', 't_shirt_size', 'gender', 'additional_info'] %}
             <tr>
                 <td><b>{{ field_name }}</b></td>
-                <td>{{ registration.user[field_name] }}</td>
+                <td>{{ registration.user[field_name] | e }}</td>
             </tr>
         {% endfor %}
         {% for field_name in registration.fields %}
             <tr>
                 <td><b>{{ field_name }}</b></td>
-                <td>{{ registration.fields[field_name] }}</td>
+                <td>{{ registration.fields[field_name] | e }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -28,11 +28,13 @@ cache:
    - .vagga/.transient
 
 # Tell vagga to fetch ubuntu images from certain location
-before_install: |
-  cat > ~/.vagga.yaml <<-" VAGGA_CONFIG"
-  alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
-  ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
-  VAGGA_CONFIG
+before_install:
+  - |
+    cat > ~/.vagga.yaml <<-" VAGGA_CONFIG"
+    alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
+    ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
+    VAGGA_CONFIG
+  - cat ~/.vagga.yaml
 
 install: vagga _build test
 

@@ -420,7 +420,8 @@ class Events(APIBase):
             gmail_send_html(
                 template=email_template,
                 payload={'event': event, 'user': user,
-                         'registration': user_reg},
+                         'registration': user_reg,
+                         'qrdata': make_vcard(user_reg)},
                 sbj=subject.format(event_title=event.title),
                 to_email=to_email.format(full_name=user.full_name,
                                          email=user.email),

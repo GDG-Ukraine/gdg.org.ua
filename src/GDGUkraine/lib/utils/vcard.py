@@ -5,7 +5,7 @@ import urllib
 from Crypto import Random
 from Crypto.Cipher import AES
 
-from .url import base_url
+from .url import base_url, url_for_class
 
 # TODO: make this stuff normal
 card_secret_key = os.getenv('CARD_SECRET_KEY',
@@ -42,7 +42,7 @@ def aes_encrypt(message):
 
 def make_vcard(user_reg, url=None):
     if url is None:
-        url = '/card/{}'.format(aes_encrypt(user_reg.id))
+        url = url_for_class('controller.Root.card', [aes_encrypt(user_reg.id)])
 
     if not url.startswith('http'):
         url = ('' if url.startswith('/') else '/').join([base_url(), url])

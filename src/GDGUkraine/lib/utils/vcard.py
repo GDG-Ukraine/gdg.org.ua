@@ -42,7 +42,7 @@ def aes_encrypt(message):
 
 def make_vcard(user_reg, url=None):
     if url is None:
-        url = '/card/{}'.format(aes_encrypt(user_reg.user.id))
+        url = '/card/{}'.format(aes_encrypt(user_reg.id))
 
     if not url.startswith('http'):
         url = ('' if url.startswith('/') else '/').join([base_url(), url])

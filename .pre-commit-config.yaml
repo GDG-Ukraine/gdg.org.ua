@@ -23,7 +23,7 @@
         exclude: bower.json
     -   id: check-symlinks
     -   id: check-yaml
-        exclude: vagga.yaml
+        exclude: config/|vagga.yaml
     -   id: detect-private-key
     # -   id: requirements-txt-fixer
 # -   repo: git://github.com/FalconSocial/pre-commit-mirrors-pep257

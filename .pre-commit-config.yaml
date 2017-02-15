@@ -1,14 +1,16 @@
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: 96fb7fa10f2f4c11ed33482a9ad7474251e5e97f
+    sha: e626cd57090d8df0be21e4df0f4e55cc3511d6ab
     hooks:
     -   id: trailing-whitespace
     -   id: flake8
-        args: [--max-line-length=120]
+        args:
+        - --max-line-length=120
     -   id: check-merge-conflict
     -   id: double-quote-string-fixer
     -   id: end-of-file-fixer
     -   id: name-tests-test
-        args: [--django]
+        args:
+        - --django
         exclude: src/tests/helper.py
     -   id: debug-statements
     -   id: check-added-large-files
@@ -29,7 +31,7 @@
 #     hooks:
 #     -   id: pep257
 -   repo: git://github.com/Lucas-C/pre-commit-hooks
-    sha: c25201a00e6b0514370501050cf2a8538ac12270
+    sha: v1.0.1
     hooks:
     -   id: remove-tabs
 # -   repo: git://github.com/Lucas-C/pre-commit-hooks-lxml

@@ -167,7 +167,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="p in e.registrations | filter:filterEvent | filter:search | orderBy:'participant.surname'" class="clickable">
+        <tr ng-repeat="p in e.registrations | filter:filterEvent | filter:search | orderBy:'participant.surname'" class="clickable" ng-class="{'alert-success': p.visited}">
             <td>
                 <input type="checkbox" ng-model='toAccept[p.id]' ng-hide='p.accepted' ng-disabled="approving">
                 <i class="icon-ok" ng-show='p.accepted'></i>

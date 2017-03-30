@@ -9,7 +9,7 @@
     </h2>
     <h2 ng-hide="editing">Creating event</h2>
     <div ng-show='editing' class="alert alert-success" >
-        Registration form: <a href='http://gdg.org.ua/events/{{e.id}}/register' target='_blank'>Link</a> <span class="muted">(local <a href='/events/{{e.id}}/register' target='_blank'>link</a>)</span>
+        Registration form: <a href="/events/{{e.id}}/register" target="_blank">Open in a new tab</a>
     </div>
 
     <ul class="nav nav-tabs" ng-show="editing">

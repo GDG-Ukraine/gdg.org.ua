@@ -23,6 +23,7 @@ from .lib.utils.mail import gmail_send_html
 from .lib.utils.table_exporter import gen_participants_xlsx
 from .lib.utils.signals import pub
 from .lib.utils.vcard import make_vcard, aes_encrypt
+from .lib.utils.url import url_for_class
 from .lib.forms import (
     RegistrationForm, get_additional_fields_form_cls,
     InputDict,
@@ -377,7 +378,10 @@ class Events(APIBase):
                 secure_id = aes_encrypt(str(user_reg.id))
 
                 confirm_data = {
-                    'url': '/confirm/{id}'.format(id=secure_id)
+                    'url': url_for_class(
+                        handler='controller.Root.confirm',
+                        url_args=[secure_id],
+                    ),
                 }
                 logger.debug(confirm_data)
 

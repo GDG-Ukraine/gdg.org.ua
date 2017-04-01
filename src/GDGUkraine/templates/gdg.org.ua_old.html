@@ -51,8 +51,9 @@ var ukraine = new google.maps.LatLng(48.4, 30.9);
 var myOptions = {
   zoom:6,
   center: ukraine,
-  mapTypeId: google.maps.MapTypeId.ROADMAP
-}
+  mapTypeId: google.maps.MapTypeId.ROADMAP,
+  scrollwheel: false
+};
 var map = new google.maps.Map(document.getElementById('mapa'), myOptions);
 {% for place in places %}
     var contentString{{ place.id }} = '<div style="text-align:center;padding:10px;"><a href="{{ place.url }}">GDG {{ place.name }}</a></div>';

@@ -1,8 +1,10 @@
 import logging
 
-from GDGUkraine.model import (Admin, User,
-                              Event, EventParticipant,
-                              Place, Invite, WPPost)
+from GDGUkraine.model import (
+    Admin, User,
+    Event, EventParticipant,
+    Place, Invite, WPPost,
+)
 from datetime import date
 
 

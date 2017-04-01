@@ -4,9 +4,11 @@ import logging
 from cherrypy import HTTPError  # , HTTPRedirect
 from blueberrypy.template_engine import get_template
 
-from .api import (get_all_events,  # delete_event_by_id,
-                  find_invitation_by_code, find_user_by_email,
-                  find_event_by_id, find_host_gdg_by_event)
+from .api import (
+    get_all_events,  # delete_event_by_id,
+    find_invitation_by_code, find_user_by_email,
+    find_event_by_id, find_host_gdg_by_event
+)
 from .lib.forms import RegistrationForm
 
 

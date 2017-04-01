@@ -23,9 +23,7 @@ cache:
   timeout: 21600 # 6 hours
   pip: true
   directories:
-   - .vagga/.roots
-   - .vagga/.mnt
-   - .vagga/.transient
+   - .vagga/.cache
 
 # Tell vagga to fetch ubuntu images from certain location
 before_install: |-

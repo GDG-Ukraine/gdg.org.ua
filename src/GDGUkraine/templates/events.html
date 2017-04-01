@@ -29,40 +29,64 @@
 
     <link href="{{ url_for_static('favicon.ico') }}" rel="icon" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
-    <link href="{{ url_for_static('css/style.css') }}" rel="stylesheet">
+    <link href="{{ url_for_static('css/style-eventlist.css') }}" rel="stylesheet">
 </head>
 
 <body>
 
-    <div class="wrapper">
-        <div id="main" role="main">
-            {% for event in events[-10:]|reverse if not event.testing %}
-            <div id="contact-form">
+    <div class="e-container">
+        {% for event in events[-10:]|reverse if not event.testing %}
+        <div id="contact-form" class="e-card">
+            <div class="e-card-content">
                 {% if event.host_gdg_id and event.host_gdg %}
-                <a href="{{ event.host_gdg.url }}"><img id="logo" src="{{ event.host_gdg.logo }}" alt="{{ event.host_gdg.name | e }}" title="{{ event.host_gdg.name | e }}"></a>
+                <a href="{{ event.host_gdg.url }}">
+                    <img class="e-card-logo"
+                         src="{{ event.host_gdg.logo }}"
+                         alt="{{ event.host_gdg.name | e }}"
+                         title="{{ event.host_gdg.name | e }}">
+                </a>
                 {% else %}
-                <img id="logo" src="{{ url_for_static('img/logo.png') }}" alt="GDG Ukraine" title="GDG Ukraine">
+                <img id="e-card-logo"
+                     src="{{ url_for_static('img/logo.png') }}"
+                     alt="GDG Ukraine"
+                     title="GDG Ukraine">
                 {% endif %}
-                <h1>{{ event.title }}</h1>
-                <div>
-                    <label><span>Date:</span>{{ event.date.isoformat() }}</label>
+                <h1 class="e-card-title">{{ event.title }}</h1>
+                <div class="e-card-info">
+                    <span class="e-card-info-title">Date:</span>
+                    <span class="e-card-info-data">{{ event.date.isoformat() }}</span>
                 </div>
-                <div id="desc">
-                    <label><span>Description:</span> {{ event.desc }}</label>
-                    {% if event.url %}
-                    <label><span>Find more detail at</span> <a href="{{ event.url }}">{{ event.url }}</a></label>
-                    {% endif %}
+                <div class="e-card-info">
+                    <span class="e-card-info-title e-card-info-title__line">Description:</span>
+                    <span class="e-card-info-data">{{ event.desc }}</span>
                 </div>
-                <div id="host_gdg">
-                    <label><span>Organizer:</span> {{ event.host_gdg.name }}</label>
+                {% if event.url %}
+                    <div class="e-card-info">
+                        <span class="e-card-info-title">Find more detail at:</span>
+                        <span class="e-card-info-data"><a href="{{ event.url }}">{{ event.url }}</a></span>
+                    </div>
+                {% endif %}
+                <div class="e-card-info">
+                    <span class="e-card-info-title">Organizer:</span>
+                    <span class="e-card-info-data">{{ event.host_gdg.name }}</span>
                 </div>
                 {% if event.gplus_event_id %}
-                <div>
-                    <label><span>Google+:</span> <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">Go!</a></label>
-                </div>
+                    <div>
+                    <span class="e-card-info-title">Google+:</span>
+                    <span class="e-card-info-data">
+                        <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">
+                            Go!
+                        </a>
+                    </span>
+                    </div>
                 {% endif %}
-                <div>
-                    <center><strong><a href="{{ url_for_routes('event_register', id=event.id) }}">Participate!</a></strong></center>
+
+                <div class="e-card-info">
+                    <a class="e-card-action_link"
+                       href="{{ url_for_routes('event_register', id=event.id) }}"
+                    >
+                        Participate!
+                    </a>
                 </div>
                 {% if event.google_map_iframe %}
                 <div>
@@ -73,9 +97,8 @@
                 </div>
                 {% endif %}
             </div>
-            {{ '<hr>' if not loop.last }}
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
     {% include 'ga.html' %}
 </body>

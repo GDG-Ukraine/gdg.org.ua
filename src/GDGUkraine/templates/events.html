@@ -43,7 +43,10 @@
                 {% else %}
                 <img id="logo" src="{{ url_for_static('img/logo.png') }}" alt="GDG Ukraine" title="GDG Ukraine">
                 {% endif %}
-                <h1>{{ event.title }}</h2>
+                <h1>{{ event.title }}</h1>
+                <div>
+                    <label><span>Date:</span>{{ event.date.isoformat() }}</label>
+                </div>
                 <div id="desc">
                     <label><span>Description:</span> {{ event.desc }}</label>
                     {% if event.url %}

@@ -5,35 +5,42 @@
 {% block head_extra -%}
 <style type="text/css">
 html{color:#000;background:#FFF}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,select,p,blockquote,th,td{margin:0;padding:0}table{border-collapse:collapse;border-spacing:0}fieldset,img{border:0}address,button,caption,cite,code,dfn,em,input,optgroup,option,select,strong,textarea,th,var{font:inherit}del,ins{text-decoration:none}li{list-style:none}caption,th{text-align:left}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}q:before,q:after{content:''}abbr,acronym{border:0;font-variant:normal}sup{vertical-align:baseline}sub{vertical-align:baseline}legend{color:#000}
-html {background-color: white;}
-body {font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;  color: #222222;}
-h2 {font-size:1.5em;margin:1em;}
-div.wrap {margin:1.5em auto 1em auto;width:900px;text-align: center;background: url("/img/gdg.png") 50% 0% no-repeat;padding-top: 3.5em;}
-div.en {padding-bottom:1em;margin-top: 2em;font-size:1.3em;}
-div.uk {padding-top: 0.4em;font-size:1.3em;}
-hr {border:0px;color: #ccc;  background-color: #ccc;height: 1px;}
-ul {margin:1em;color:#999;}
-ul li {display: inline;}
-a:link, a:visited {color: #3366CC;}
-a:hover, a:active {text-decoration: none;}
-img.logo {width:202px;height: 74px;}
-div.footer {margin-top:5em;font-size: xx-small;}
-div#mapa {width:100%;height:600px;border:1px solid #ccc;}
+html{background-color: white;}
+body{font-family:"HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif;color:#222222;}
+.s-container{margin:1.5em auto 1em auto;width:900px;text-align:center;}
+.s-logo{margin:0 auto;width:50%;}
+.s-title{font-size:1.5em;margin:1em;}
+.s-header{margin-top:2em;padding-bottom:1em;}
+.s-group_list{color:#999;font-size:1.3em;margin:1em;}
+.s-group_list-item{display:inline;}
+.s-group_list-item:before{content:" • ";display:inline;}
+.s-group_list-item:first-child:before{content:"";display:none;}
+a:link,a:visited{color:#3366CC;}
+a:hover,a:active{text-decoration:none;}
+.s-footer{margin-top:5em;font-size:xx-small;}
+.s-map{width:100%;height:600px;border:1px solid #ccc;}
 </style>
 {%- endblock head_extra %}
 
 {% block body -%}
-<div class="wrap">
-    <div class="en">
-        <h2>Google Developer Groups in Ukraine</h2>
-        <ul>
+<div class="s-container">
+    <header class="s-header">
+        <img src="/img/gdg.png" class="s-logo">
+        <h2 class="s-title">Google Developer Groups in Ukraine</h2>
+        <ul class="s-group_list">
         {% for place in places %}
-            <li><a href="{{ place.url }}" title="GDG {{ place.name | e }} ">{{ place.city }}</a>{% if not loop.last %} •{% endif %}</li>
+            <li class="s-group_list-item">
+                <a href="{{ place.url }}" title="GDG {{ place.name | e }} ">{{ place.city }}</a>
+            </li>
         {% endfor %}
         </ul>
-    </div>
-    <div id='mapa'></div>
-    <div class='footer'>Developed by <a href="https://mrgall.com/" title="Oleg Bozhenko">Oleg Bozhenko</a></div>
+    </header>
+    <main>
+        <div class="s-map" id='mapa'>&nbsp;</div>
+    </main>
+    <footer class='s-footer'>
+        Developed by <a href="https://mrgall.com/" title="Oleg Bozhenko">Oleg Bozhenko</a>
+    </footer>
 </div>
 {% include 'ga.html' %}
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;language=en"> </script>

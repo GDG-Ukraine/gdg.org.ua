@@ -7,6 +7,8 @@ from GDGUkraine.model import (
 )
 from datetime import date
 
+from sqlalchemy.sql.expression import false
+
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +88,18 @@ def get_all_events(session, lim=None, hide_closed=False):
         q = q.filter(Event.closereg > date.today())
     if lim:
         q = q.limit(lim)
+    return q.all()
+
+
+def get_n_upcoming_events(session, limit=None):
+    q = (
+        session.query(Event)
+        .filter(Event.testing == false())
+        .filter(Event.date >= date.today())
+        .order_by(Event.date.asc())
+    )
+    if limit:
+        q = q.limit(limit)
     return q.all()
 
 

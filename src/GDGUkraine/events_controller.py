@@ -6,6 +6,7 @@ from blueberrypy.template_engine import get_template
 
 from .api import (
     get_all_events,  # delete_event_by_id,
+    get_n_upcoming_events,
     find_invitation_by_code, find_user_by_email,
     find_event_by_id, find_host_gdg_by_event
 )
@@ -83,8 +84,11 @@ class Events:
             registration_form=registration_form,
         )
 
-    def list_all(self, **kwargs):
-        events = get_all_events(cherrypy.request.orm_session)
+    def list_upcoming(self, **kwargs):
+        events = get_n_upcoming_events(
+            session=cherrypy.request.orm_session,
+            limit=20,
+        )
         if events:
             tmpl = get_template('events.html')
             return tmpl.render(events=events)
@@ -114,9 +118,9 @@ events = cherrypy.dispatch.RoutesDispatcher()
 events.mapper.explicit = False
 # events.connect("add", "/", Events, action="create",
 #                conditions={"method": ["POST"]})
-events.connect('list_events', '', Events, action='list_all',
+events.connect('list_events', '', Events, action='list_upcoming',
                conditions={'method': ['GET']})
-events.connect('list_events', '/', Events, action='list_all',
+events.connect('list_events', '/', Events, action='list_upcoming',
                conditions={'method': ['GET']})
 events.connect('get_event', '/{id}', Events, action='show',
                conditions={'method': ['GET']})

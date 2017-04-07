@@ -35,7 +35,7 @@
 <body>
 
     <div class="e-container">
-        {% for event in events[-10:]|reverse if not event.testing %}
+        {% for event in events %}
         <div id="contact-form" class="e-card">
             <div class="e-card-content">
                 {% if event.host_gdg_id and event.host_gdg %}

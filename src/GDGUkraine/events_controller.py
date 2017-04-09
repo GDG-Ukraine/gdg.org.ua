@@ -89,10 +89,8 @@ class Events:
             session=cherrypy.request.orm_session,
             limit=20,
         )
-        if events:
-            tmpl = get_template('events.html')
-            return tmpl.render(events=events)
-        raise HTTPError(404)
+        tmpl = get_template('events.html')
+        return tmpl.render(events=events)
 
     def update(self, id, **kwargs):
         id = int(id)

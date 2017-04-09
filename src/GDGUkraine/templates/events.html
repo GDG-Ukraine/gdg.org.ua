@@ -35,70 +35,81 @@
 <body>
 
     <div class="e-container">
-        {% for event in events %}
-        <div id="contact-form" class="e-card">
-            <div class="e-card-content">
-                {% if event.host_gdg_id and event.host_gdg %}
-                <a href="{{ event.host_gdg.url }}">
-                    <img class="e-card-logo"
-                         src="{{ event.host_gdg.logo }}"
-                         alt="{{ event.host_gdg.name | e }}"
-                         title="{{ event.host_gdg.name | e }}">
-                </a>
-                {% else %}
-                <img id="e-card-logo"
-                     src="{{ url_for_static('img/logo.png') }}"
-                     alt="GDG Ukraine"
-                     title="GDG Ukraine">
-                {% endif %}
-                <h1 class="e-card-title">{{ event.title }}</h1>
-                <div class="e-card-info">
-                    <span class="e-card-info-title">Date:</span>
-                    <span class="e-card-info-data">{{ event.date.isoformat() }}</span>
-                </div>
-                <div class="e-card-info">
-                    <span class="e-card-info-title e-card-info-title__line">Description:</span>
-                    <span class="e-card-info-data">{{ event.desc }}</span>
-                </div>
-                {% if event.url %}
-                    <div class="e-card-info">
-                        <span class="e-card-info-title">Find more detail at:</span>
-                        <span class="e-card-info-data"><a href="{{ event.url }}">{{ event.url }}</a></span>
-                    </div>
-                {% endif %}
-                <div class="e-card-info">
-                    <span class="e-card-info-title">Organizer:</span>
-                    <span class="e-card-info-data">{{ event.host_gdg.name }}</span>
-                </div>
-                {% if event.gplus_event_id %}
-                    <div>
-                    <span class="e-card-info-title">Google+:</span>
-                    <span class="e-card-info-data">
-                        <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">
-                            Go!
-                        </a>
-                    </span>
-                    </div>
-                {% endif %}
+        {% if events %}
+          {% for event in events %}
+          <div id="contact-form" class="e-card">
+              <div class="e-card-content">
+                  {% if event.host_gdg_id and event.host_gdg %}
+                  <a href="{{ event.host_gdg.url }}">
+                      <img class="e-card-logo"
+                           src="{{ event.host_gdg.logo }}"
+                           alt="{{ event.host_gdg.name | e }}"
+                           title="{{ event.host_gdg.name | e }}">
+                  </a>
+                  {% else %}
+                  <img id="e-card-logo"
+                       src="{{ url_for_static('img/logo.png') }}"
+                       alt="GDG Ukraine"
+                       title="GDG Ukraine">
+                  {% endif %}
+                  <h1 class="e-card-title">{{ event.title }}</h1>
+                  <div class="e-card-info">
+                      <span class="e-card-info-title">Date:</span>
+                      <span class="e-card-info-data">{{ event.date.isoformat() }}</span>
+                  </div>
+                  <div class="e-card-info">
+                      <span class="e-card-info-title e-card-info-title__line">Description:</span>
+                      <span class="e-card-info-data">{{ event.desc }}</span>
+                  </div>
+                  {% if event.url %}
+                      <div class="e-card-info">
+                          <span class="e-card-info-title">Find more detail at:</span>
+                          <span class="e-card-info-data"><a href="{{ event.url }}">{{ event.url }}</a></span>
+                      </div>
+                  {% endif %}
+                  <div class="e-card-info">
+                      <span class="e-card-info-title">Organizer:</span>
+                      <span class="e-card-info-data">{{ event.host_gdg.name }}</span>
+                  </div>
+                  {% if event.gplus_event_id %}
+                      <div>
+                      <span class="e-card-info-title">Google+:</span>
+                      <span class="e-card-info-data">
+                          <a href="https://plus.google.com/events/{{ event.gplus_event_id }}">
+                              Go!
+                          </a>
+                      </span>
+                      </div>
+                  {% endif %}
 
-                <div class="e-card-info">
-                    <a class="e-card-action_link"
-                       href="{{ url_for_routes('event_register', id=event.id) }}"
-                    >
-                        Participate!
-                    </a>
-                </div>
-                {% if event.google_map_iframe %}
-                <div>
-                    <label>
-                        <span>Please find the location below:</span>
-                        <iframe style="text-align: center;" width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="{{ event.google_map_iframe }}output=embed"></iframe><br /><small><a href="{{ event.google_map_iframe }}source=embed" style="color:#0000FF;text-align:left">Переглянути більшу мапу</a></small>
-                    </label>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
+                  <div class="e-card-info">
+                      <a class="e-card-action_link"
+                         href="{{ url_for_routes('event_register', id=event.id) }}"
+                      >
+                          Participate!
+                      </a>
+                  </div>
+                  {% if event.google_map_iframe %}
+                  <div>
+                      <label>
+                          <span>Please find the location below:</span>
+                          <iframe style="text-align: center;" width="100%" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="{{ event.google_map_iframe }}output=embed"></iframe><br /><small><a href="{{ event.google_map_iframe }}source=embed" style="color:#0000FF;text-align:left">Переглянути більшу мапу</a></small>
+                      </label>
+                  </div>
+                  {% endif %}
+              </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="e-card">
+              <div class="e-card-content">
+                  <h1 class="e-card-title">oops ┐(´•_•`)┌</h1>
+                  <div class="e-card-info">
+                      No upcoming events yet. Stay tuned
+                  </div>
+              </div>
+          </div>
+        {% endif %}
     </div>
     {% include 'ga.html' %}
 </body>

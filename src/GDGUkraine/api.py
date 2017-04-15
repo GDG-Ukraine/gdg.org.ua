@@ -91,13 +91,15 @@ def get_all_events(session, lim=None, hide_closed=False):
     return q.all()
 
 
-def get_n_upcoming_events(session, limit=None):
+def get_n_upcoming_events(session, limit=None, hide_closed=False):
     q = (
         session.query(Event)
         .filter(Event.testing == false())
         .filter(Event.date >= date.today())
         .order_by(Event.date.asc())
     )
+    if hide_closed:
+        q = q.filter(Event.closereg > date.today())
     if limit:
         q = q.limit(limit)
     return q.all()

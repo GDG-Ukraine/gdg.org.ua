@@ -5,7 +5,6 @@ from cherrypy import HTTPError  # , HTTPRedirect
 from blueberrypy.template_engine import get_template
 
 from .api import (
-    get_all_events,  # delete_event_by_id,
     get_n_upcoming_events,
     find_invitation_by_code, find_user_by_email,
     find_event_by_id, find_host_gdg_by_event
@@ -75,7 +74,11 @@ class Events:
             # fully support select with custom answer
         else:
             tmpl = get_template('regclosed.html')
-            events_list = get_all_events(orm_session, 5, hide_closed=True)
+            events_list = get_n_upcoming_events(
+                session=orm_session,
+                limit=5,
+                hide_closed=True,
+            )
 
         return tmpl.render(
             host_gdg=find_host_gdg_by_event(orm_session, event),

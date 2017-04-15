@@ -10,35 +10,46 @@
     <meta name="author" content="Valentyn Shybanov">
     <link href="/favicon.ico" rel="icon" type="image/x-icon" />
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css" />
-    <link href="/css/style.css" rel="stylesheet" />
-    <style>
-        p, ul {
-            padding: 20px;
-            font-size: 2em;
-        }
-    </style>
+    <link href="{{ url_for_static('css/style-eventlist.css') }}" rel="stylesheet">
 </head>
 
 <body>
 
-<div class="wrapper">
-    <div id="main" role="main">
-            <div id="contact-form">
-                {% include 'logo.html' %}
+<div class="e-container">
+  <div class="e-card">
+    <div class="e-card-content">
+        {% if event.host_gdg_id and event.host_gdg %}
+        <a href="{{ event.host_gdg.url }}">
+          <img class="e-card-logo"
+               src="{{ event.host_gdg.logo }}"
+               alt="{{ event.host_gdg.name | e }}"
+               title="{{ event.host_gdg.name | e }}">
+        </a>
+        {% else %}
+        <img id="e-card-logo"
+             src="{{ url_for_static('img/logo.png') }}"
+             alt="GDG Ukraine"
+             title="GDG Ukraine">
+        {% endif %}
+        <h1 class="e-card-title">Registration is closed</h1>
 
-                <h1>Registration to {{ event.title }} is closed</h1>
-
-                <h2>Sorry, but registration to this event is already closed. You can <a href="{{ event.url }}">check event details</a></h2>
-                <p>
-                    Please consider visiting our next events:
-                    <ul>
-                    {% for e in events if not e.testing %}
-                        <li><a href="{{ e.url }}" target="_blank">{{ e.title }}</a> {{ e.date }}</li>
-                    {% endfor %}
-                    </ul>
-                </p>
-            </div>
+        <div class="e-card-info e-card-info__large">
+          <p>
+            Unfortunately registration to {{ event.title }} is already closed.
+            If you wish you can <a href="{{ event.url }}" >check event details</a>.
+          </p>
+          {% if events %}
+          <p>
+            Please consider visiting our next events:
+            <ul>
+              {% for e in events %}
+              <li><a href="{{ e.url }}" target="_blank">{{ e.title }}</a> {{ e.date }}</li>
+              {% endfor %}
+            </ul>
+          </p>
+          {% endif %}
      </div>
+   </div>
  </div>
  {% include 'ga.html' %}
 </body>

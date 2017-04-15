@@ -51,6 +51,10 @@ body {
     margin: 1em auto;
 }
 
+.e-card-info {
+    font-size: 1.3em;
+}
+
 .e-card-info-title {
     font-weight: bold;
 }

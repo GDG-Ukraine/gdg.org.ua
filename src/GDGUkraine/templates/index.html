@@ -33,6 +33,10 @@
   position: absolute;
   bottom: 0;
 }
+.full-size {
+  width: 100%;
+  height: 100%;
+}
     </style>
   </head>
 
@@ -45,7 +49,7 @@
       </div>
     </nav>
 
-    <div id="index-banner" class="parallax-container">
+    <div class="parallax-container">
       <div class="parallax"><img src="https://lh3.googleusercontent.com/C6gcaGiL4q5gvF21NL-9CTVu2XznoTevpB-9polMOJXdA-Pm_Xha4KbTZv2X7cxQg3Ik7MoV-2ReCn93RAw9Ne3i7_tYSBMuUuEKLiUqPckUtwMUORuGHTJUuKW3Dy-x0IJI2pmNOOI29mg-vzC7CPuAnc7ZW9xs6U_zBNOcfDrBaRpFtz_FyIEGHmvT48wQAFx4cFCR4uFno5XOt-SdwnB_35kmp02628O5bKhsMZaWmnz2iMYI7yNiKF9epnYO5DCDCGNL6-22HIMtzSxfhdVHf9jH-8ehsrEqjiO7KdT6RnYSdOmMB1nuJMwzSzLEdRw53gtM-ssnk-MSOld8z3R4a_lK2Y6HHHjDs8lpHigYUsljyJ02i0JWk-kmbwYxOF_sYKnKSGkV7LBw7_SdIgTdZsZfCLughYex-hKnbypJO7Ki5I2depmpkvLOT3X4JNhmtlI96n_-ceNZvlsKe6aLYfYbqJ2pIvPJKHzq5irY3Yv6wilW6LK_lCkcHq0Q9GIJNXecMdkrwjKzZPGD5kQTTKRlBAZAGm3cV_K9I7olI1qqosuMprqsiEM5HYwzPXg_3VjE6RDPyjQl4kv0yAkHB4bbEPvRUvdtIon0QPEtXdCF6zfnUQ9_vTjcEkztlvxEKPVoOb5HZTVncPKznaOQqZ941apaJFYKPmxmoA=w1022-h681-no" alt="#dfua16" style="display: block; transform: translate3d(-50%, 261px, 0px);"></div>
     </div>
 
@@ -69,6 +73,18 @@
             </div>
             {% endfor %}
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="parallax-container">
+      <div class="section no-pad-bot">
+        <div style="width: 100%; height: 500px;"
+             data-extends="map"
+             data-clat="49.5"
+             data-clng="30.9"
+             data-zoom="5"
+             data-places='{{ places | tojson }}'>
         </div>
       </div>
     </div>
@@ -98,6 +114,8 @@
         </div>
       </div>
     </footer>
+    <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false&amp;language=en"> </script>
+    <script src="{{ url_for_static('js/map.js') }}"></script>
     {% include 'ga.html' %}
   </body>
 </html>

@@ -35,13 +35,23 @@ def render(template=None, page_id=None, menu=None):
 class Root:
 
     @cherrypy.expose
-    # @render(template = 'gdg.org.ua_old.html', page_id = 'about')
     def index(self, **kwargs):
-        # tmpl = get_template('gdg.org.ua_old.html')
         tmpl = get_template('index.html')
         return tmpl.render(
-            places=api.get_all_gdg_places(cherrypy.request.orm_session,
-                                          filtered=True))
+            places=[
+                {
+                    'name': place.name,
+                    'lat': place.geo.split(',')[0],
+                    'lng': place.geo.split(',')[1],
+                    'url': place.url,
+                }
+                for place in api.get_all_gdg_places(
+                    cherrypy.request.orm_session,
+                    filtered=True,
+                )
+
+            ]
+        )
 
     @cherrypy.expose
     def admin(self, **kwargs):

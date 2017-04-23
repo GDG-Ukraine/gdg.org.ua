@@ -1,17 +1,103 @@
-{% extends "base.html" %}
-{% block title %}Welcome{% endblock title %}
-{% block head -%}
-    {{ super() }}
-    <script src="https://code.jquery.com/jquery-latest.js"></script>
-    <script src="https://jquery-json.googlecode.com/files/jquery.json-2.4.min.js"></script>
-    <script>
-        $.postJSON = function(url, data, callback) {
-            $.ajaxSetup({ scriptCharset:"utf-8",
-                            contentType:"application/json; charset=utf-8" });
-            $.post(url, $.toJSON(data), callback, "json");
-        }
-    </script>
-{%- endblock head %}
-{% block content -%}
-    Hello World!
-{%- endblock content %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="GDG,Ukraine,Developers">
+    <meta name="description" content="Google Developers Group in Ukraine">
+    <meta name="author" content="GDG Ukraine dev team">
+
+    {% include "og.html" %}
+
+    <title>GDG in Ukraine</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+
+    <style>
+.brand-logo.brand-logo {
+  color: #444;
+}
+.parallax-container {
+  min-height: 380px;
+  line-height: 0;
+  height: auto;
+  color: rgba(255,255,255,.9);
+}
+.parallax-container .section {
+  width: 100%;
+}
+.no-pad-bot {
+  position: absolute;
+  bottom: 0;
+}
+    </style>
+  </head>
+
+  <body>
+    <nav class="white" role="navigation">
+      <div class="nav-wrapper container">
+        <a id="logo-container" href="#" class="brand-logo">
+          GDG in Ukraine
+        </a>
+      </div>
+    </nav>
+
+    <div id="index-banner" class="parallax-container">
+      <div class="parallax"><img src="https://lh3.googleusercontent.com/C6gcaGiL4q5gvF21NL-9CTVu2XznoTevpB-9polMOJXdA-Pm_Xha4KbTZv2X7cxQg3Ik7MoV-2ReCn93RAw9Ne3i7_tYSBMuUuEKLiUqPckUtwMUORuGHTJUuKW3Dy-x0IJI2pmNOOI29mg-vzC7CPuAnc7ZW9xs6U_zBNOcfDrBaRpFtz_FyIEGHmvT48wQAFx4cFCR4uFno5XOt-SdwnB_35kmp02628O5bKhsMZaWmnz2iMYI7yNiKF9epnYO5DCDCGNL6-22HIMtzSxfhdVHf9jH-8ehsrEqjiO7KdT6RnYSdOmMB1nuJMwzSzLEdRw53gtM-ssnk-MSOld8z3R4a_lK2Y6HHHjDs8lpHigYUsljyJ02i0JWk-kmbwYxOF_sYKnKSGkV7LBw7_SdIgTdZsZfCLughYex-hKnbypJO7Ki5I2depmpkvLOT3X4JNhmtlI96n_-ceNZvlsKe6aLYfYbqJ2pIvPJKHzq5irY3Yv6wilW6LK_lCkcHq0Q9GIJNXecMdkrwjKzZPGD5kQTTKRlBAZAGm3cV_K9I7olI1qqosuMprqsiEM5HYwzPXg_3VjE6RDPyjQl4kv0yAkHB4bbEPvRUvdtIon0QPEtXdCF6zfnUQ9_vTjcEkztlvxEKPVoOb5HZTVncPKznaOQqZ941apaJFYKPmxmoA=w1022-h681-no" alt="#dfua16" style="display: block; transform: translate3d(-50%, 261px, 0px);"></div>
+    </div>
+
+    <div class="container">
+      <div class="section">
+
+        <div class="row">
+          <div class="col s12 center">
+            <h3><i class="mdi-content-send brown-text"></i></h3>
+            <h4>Chapters</h4>
+            {% for place in places %}
+            <div class="col s6 m4 l3">
+              <div class="card-panel">
+                <span>
+                  <a href="{{place.url}}">
+                    <img src="{{ url_for_static('img/local-icon.png') }}">
+                    <p>{{ place.name }}</p>
+                  </a>
+                </span>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="page-footer teal">
+      <div class="container">
+        <div class="row">
+          <div class="col l9 s12">
+            <h5 class="white-text">What is GDG?</h5>
+            <p class="grey-text text-lighten-4">Google Developer Groups (GDGs) are for developers who are interested in Google's developer technology; everything from the Android, Chrome, Drive, and Google Cloud platforms, to product APIs like the Cast API, Maps API, and YouTube API.</p>
+
+
+          </div>
+          <div class="col l3 s12">
+            <h5 class="white-text">Connect</h5>
+            <ul>
+              <li><a class="white-text" href="https://devfest.gdg.org.ua">DevFest Ukraine</a></li>
+              <li><a class="white-text" href="/events">Our Events</a></li>
+              <li><a class="white-text" href="https://developers.google.com/groups/directory/Ukraine">We are on Google Developers</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+          Made by <a class="brown-text text-lighten-3" href="https://github.com/GDG-Ukraine">GDG Ukraine</a>
+        </div>
+      </div>
+    </footer>
+    {% include 'ga.html' %}
+  </body>
+</html>

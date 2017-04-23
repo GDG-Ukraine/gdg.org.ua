@@ -37,7 +37,8 @@ class Root:
     @cherrypy.expose
     # @render(template = 'gdg.org.ua_old.html', page_id = 'about')
     def index(self, **kwargs):
-        tmpl = get_template('gdg.org.ua_old.html')
+        # tmpl = get_template('gdg.org.ua_old.html')
+        tmpl = get_template('index.html')
         return tmpl.render(
             places=api.get_all_gdg_places(cherrypy.request.orm_session,
                                           filtered=True))

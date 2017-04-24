@@ -36,22 +36,19 @@ class Root:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        tmpl = get_template('index.html')
-        return tmpl.render(
-            places=[
-                {
-                    'name': place.name,
-                    'lat': place.geo.split(',')[0],
-                    'lng': place.geo.split(',')[1],
-                    'url': place.url,
-                }
-                for place in api.get_all_gdg_places(
-                    cherrypy.request.orm_session,
-                    filtered=True,
-                )
+        req = cherrypy.request
+        places = []
+        for place in api.get_all_gdg_places(req.orm_session, filtered=True):
+            lat, lng = place.geo.split(',')
+            places.append({
+                'name': place.name,
+                'lat': lat,
+                'lng': lng,
+                'url': place.url,
+            })
 
-            ]
-        )
+        tmpl = get_template('index.html')
+        return tmpl.render(places=places)
 
     @cherrypy.expose
     def admin(self, **kwargs):

@@ -68,7 +68,7 @@
             <div class="col s6 m4 l3">
               <div class="card-panel">
                 <span>
-                  <a href="{{place.url}}">
+                  <a href="{{ place.url }}">
                     <img src="{{ url_for_static('img/local-icon.png') }}">
                     <p>{{ place.name }}</p>
                   </a>
@@ -106,7 +106,7 @@
             <h5 class="white-text">Connect</h5>
             <ul>
               <li><a class="white-text" href="//devfest.gdg.org.ua">DevFest Ukraine</a></li>
-              <li><a class="white-text" href="/events">Our Events</a></li>
+              <li><a class="white-text" href="{{ url_for_routes('list_upcoming') }}/events">Our Events</a></li>
               <li><a class="white-text" href="//developers.google.com/groups/directory/Ukraine">We are on Google Developers</a></li>
             </ul>
           </div>

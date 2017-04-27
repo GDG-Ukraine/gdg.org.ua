@@ -1,31 +1,38 @@
-# gdg.org.ua
+gdg.org.ua
+==========
 This is the event registration system for GDG Ukraine events.
 
 [![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=Stage: Ready For Dev&title=Ready for dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
 
 [![`master` branch status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=master)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua) [![codecov](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua/branch/master/graph/badge.svg)](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua) [![Requirements Status](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements.svg?branch=master)](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements/?branch=master) [![Code Health](https://landscape.io/github/GDG-Ukraine/gdg.org.ua/master/landscape.svg?style=flat)](https://landscape.io/github/GDG-Ukraine/gdg.org.ua/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc32c09ed3404bb1b35d94e75d7acc13)](https://www.codacy.com/app/wk-org/gdg-org-ua?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=GDG-Ukraine/gdg.org.ua&amp;utm_campaign=Badge_Grade)
 
-## Requirements:
+Requirements:
+-------------
 
     Python 3.5+  (it is recommended to use pyenv for dev environment)
     NodeJS 5.0+  (it is recommended to use nvm for dev environment)
     MySQL        (MariaDB works well)
 
-## Prerequisites:
+Prerequisites:
+--------------
 
     $ cd gdg.org.ua
 
-### Create DB and user, with smth like:
+Create DB and user, with smth like:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     $ mysql -uroot -e "CREATE DATABASE <dbname>; GRANT ALL PRIVILEGES ON <dbname>.* TO <username>@'localhost' IDENTIFIED BY '<userpassword>'; FLUSH HOSTS; FLUSH PRIVILEGES;"
 
-### Create `.exports` file with following contents:
+Create `.exports` file with following contents:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
 
-### For dev add following line as well:
+For dev add following line as well:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     export OAUTHLIB_INSECURE_TRANSPORT=1
 
-## How to run it on localhost
+How to run it on localhost
+--------------------------
 
 * First, prepare the environment:
 
@@ -50,7 +57,8 @@ This is the event registration system for GDG Ukraine events.
 
 P.S. `make dev` (or just `make`) combines steps above except db target
 
-## How to run it in production
+How to run it in production
+---------------------------
 
 * Prepare the environment:
 
@@ -71,11 +79,13 @@ P.S. `make dev` (or just `make`) combines steps above except db target
     $ make run-prod
 ```
 
-## How to upgrade production
+How to upgrade production (DEPRECATED!)
+---------------------------------------
 
 We have `bin/update_gdg` script for this
 
-## Running tests
+Running tests
+-------------
 
     $ make test
 
@@ -83,20 +93,24 @@ You can use [`tox`](https://tox.readthedocs.org) to run tests as well. Unfortuna
 
     $ make test-envs
 
-## Enabling env
+Enabling env
+------------
 If you for some reason need to run shell with env activated, run this:
 
     $ make activate-env
     [gdg.org.ua][py3.5] $ _
 
-## Troubleshooting
+Troubleshooting
+---------------
 
-### Converting packages to python3
+Converting packages to python3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 You may need to use 2to3 utility to convert 2nd python version code into py3k, i.e.:
 
     $ 2to3 -w path/to/gdg.org.ua/env/lib/python*/site-packages/package
 
-### Errors with installing mysql-connector-python
+Errors with installing mysql-connector-python
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 If you are getting errors about pip cannot find `mysql-connector-python` you can use the following workaround:
 
     $ make activate-env

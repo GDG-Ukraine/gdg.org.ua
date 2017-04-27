@@ -48,7 +48,7 @@ Create `.exports` file with following contents:
     export BLUEBERRYPY_CONFIG='{ "global": { "key":"<32-byte-str-for-aes>", "google_oauth": { "id": "<google_app_id>", "secret": "<google_app_secret>" }, "alembic": {"sqlalchemy.url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock"} }, "sqlalchemy_engine": { "url": "mysql+mysqlconnector://<username>:<userpassword>@/<dbname>?unix_socket=/var/run/mysqld/mysqld.sock" } }'
 
 For dev add following line as well:
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: shell
    :number-lines:

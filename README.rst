@@ -1,10 +1,21 @@
+.. image:: https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=Stage: Ready For Dev&title=Ready for dev
+   :target: http://waffle.io/GDG-Ukraine/gdg.org.ua
+   :alt: Stories in Ready
+
+.. image:: https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=master
+   :target: https://travis-ci.org/GDG-Ukraine/gdg.org.ua
+   :alt: `master` branch status
+
+.. image:: https://codecov.io/gh/GDG-Ukraine/gdg.org.ua/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/GDG-Ukraine/gdg.org.ua
+   :alt: codecov
+
+.. image:: https://img.shields.io/pypi/dm/aio_manager.svg
+
 gdg.org.ua
 ==========
 This is the event registration system for GDG Ukraine events.
 
-[![Stories in Ready](https://badge.waffle.io/GDG-Ukraine/gdg.org.ua.svg?label=Stage: Ready For Dev&title=Ready for dev)](http://waffle.io/GDG-Ukraine/gdg.org.ua)
-
-[![`master` branch status](https://api.travis-ci.org/GDG-Ukraine/gdg.org.ua.svg?branch=master)](https://travis-ci.org/GDG-Ukraine/gdg.org.ua) [![codecov](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua/branch/master/graph/badge.svg)](https://codecov.io/gh/GDG-Ukraine/gdg.org.ua) [![Requirements Status](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements.svg?branch=master)](https://requires.io/github/GDG-Ukraine/gdg.org.ua/requirements/?branch=master) [![Code Health](https://landscape.io/github/GDG-Ukraine/gdg.org.ua/master/landscape.svg?style=flat)](https://landscape.io/github/GDG-Ukraine/gdg.org.ua/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/bc32c09ed3404bb1b35d94e75d7acc13)](https://www.codacy.com/app/wk-org/gdg-org-ua?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=GDG-Ukraine/gdg.org.ua&amp;utm_campaign=Badge_Grade)
 
 Requirements:
 -------------

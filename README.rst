@@ -10,8 +10,6 @@
    :target: https://codecov.io/gh/GDG-Ukraine/gdg.org.ua
    :alt: codecov
 
-.. image:: https://img.shields.io/pypi/dm/aio_manager.svg
-
 gdg.org.ua
 ==========
 This is the event registration system for GDG Ukraine events.

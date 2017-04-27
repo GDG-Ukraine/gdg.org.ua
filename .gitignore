@@ -40,6 +40,7 @@ nosetests.xml
 /.cache/*.cache
 __pycache__
 *.pyc
+/.eggs
 /env/
 /.env/
 /log/*.log

@@ -1,0 +1,10 @@
+# these deps are being embedded into the package by ``pbr``; see ``setup.py``
+CherryPy==10.1.0
+SQLAlchemy==1.0.11
+yuicompressor==2.4.8
+webassets==0.11.1
+Routes==2.3.1
+WTForms==2.1
+python-social-auth==0.2.13
+alembic==0.8.4
+openpyxl==2.3.2

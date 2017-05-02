@@ -68,12 +68,14 @@ class UtilTest(TestCase):
 
     def test_url_for(self):
         for test_url in self.urls_testset:
-            self.assertEqual(url_for(
-                **test_url['inp']), '/'.join([base_url(), test_url['res']]))
+            with self.subTest(test_type='positive', test_url=test_url):
+                self.assertEqual(url_for(
+                    **test_url['inp']), '/'.join([base_url(), test_url['res']]))
 
         for test_url in self.urls_exc_testset:
-            with self.assertRaises(test_url['res']):
-                url_for(**test_url['inp'])
+            with self.subTest(test_type='negative', test_url=test_url):
+                with self.assertRaises(test_url['res']):
+                    url_for(**test_url['inp'])
 
 
 class TableExporterTest(unittest.TestCase):
@@ -99,12 +101,16 @@ class TableExporterTest(unittest.TestCase):
         ws = load_workbook(self.xlsx_bytes).active
 
         for col_num, (col_name, _) in enumerate(self.getters):
-            self.assertEqual(ws.rows[0][col_num].value, col_name)
+            with self.subTest(
+                    test_type='getters', col_num=col_num, col_name=col_name):
+                self.assertEqual(ws.rows[0][col_num].value, col_name)
 
         for row_num, entry in enumerate(ws.rows[1:]):
             test_entry = self.testset[row_num]
-            for col_num, (_, getter) in enumerate(self.getters):
-                self.assertEqual(entry[col_num].value, getter(test_entry))
+            with self.subTest(
+                    test_type='rows', row_num=row_num, entry=entry):
+                for col_num, (_, getter) in enumerate(self.getters):
+                    self.assertEqual(entry[col_num].value, getter(test_entry))
 
 
 class VCardTest(unittest.TestCase):
@@ -119,7 +125,10 @@ class VCardTest(unittest.TestCase):
 
     def test_pad(self):
         for inp, outp in self.testset:
-            self.assertEqual(pad(inp), outp)
+            with self.subTest(test_type='positive', inp=inp):
+                self.assertEqual(pad(inp), outp)
 
         for inp in self.negative_testset:
-            self.assertRaises(AssertionError, pad, inp)
+            with self.subTest(test_type='negative', inp=inp):
+                with self.assertRaises(AssertionError):
+                    pad(inp)

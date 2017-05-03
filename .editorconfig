@@ -1,5 +1,6 @@
 # http://editorconfig.org
 
+# top-most EditorConfig file
 root = true
 
 [*]
@@ -13,3 +14,12 @@ trim_trailing_whitespace = true
 [*.md]
 insert_final_newline = false
 trim_trailing_whitespace = false
+
+# Tab indentation (no size specified)
+[Makefile]
+indent_style = tab
+
+# .json and *.y(a)ml
+[*.{y{,a}ml,json}]
+indent_style = space
+indent_size = 2

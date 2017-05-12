@@ -95,6 +95,8 @@ controllers:
   '':
     controller: !!python/name:GDGUkraine.controller.Root
     /:
+      request.error_response: !!python/name:GDGUkraine.errors.unexpected_html_error_handler
+      error_page.default: !!python/name:GDGUkraine.errors.generic_html_error_handler
       tools.orm_session.on: true
       tools.sessions.on: true
       tools.staticdir.root: static

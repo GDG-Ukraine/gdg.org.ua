@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Page Not Found :(</title>
+    <title>{{ status }} Page Not Found :(</title>
     <style>
       body { text-align: center;}
       h1 { font-size: 50px; text-align: center }
@@ -18,7 +18,7 @@
   </head>
   <body>
     <article>
-    <h1>Not found <span frown>:(</span></h1>
+    <h1>{{ status }} Not found <span frown>:(</span></h1>
     <div>
       <p>Sorry, but the page you were trying to view does not exist.</p>
       <p>It looks like this was the result of either:</p>
@@ -26,6 +26,8 @@
         <li>a mistyped address</li>
         <li>an out-of-date link</li>
       </ul>
+      <p>{{ message }}</p>
+      <pre>{{ traceback }}</pre>
     </div>
     <script>
       var GOOG_FIXURL_LANG = (navigator.language || '').slice(0,2),

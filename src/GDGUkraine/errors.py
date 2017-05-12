@@ -90,6 +90,49 @@ def unexpected_json_error_handler():
         response.body = json.dumps(content).encode('utf-8')
 
 
+def generic_html_error_handler(status, message, traceback, version,
+                               errors=None):
+    """error_page.default"""
+
+    response = cherrypy.response
+    response.headers['Content-Type'] = 'text/html'
+    response.headers.pop('Content-Length', None)
+
+    code, reason, _ = _httputil.valid_status(status)
+    result = {'code': code, 'status': status, 'reason': reason, 'message': message}
+    if errors is not None:
+        result['errors'] = errors
+    if cherrypy.serving.request.show_tracebacks:
+        result['traceback'] = traceback
+    from blueberrypy.template_engine import get_template
+    tmpl = get_template('404.html')
+    return tmpl.render(**result)
+
+
+def unexpected_html_error_handler():
+    """request.error_response"""
+
+    (typ, value, tb) = _exc_info()
+    if typ:
+        response = cherrypy.response
+        response.headers['Content-Type'] = 'text/html'
+        response.headers.pop('Content-Length', None)
+        content = {}
+        if isinstance(typ, cherrypy.HTTPError):
+            cherrypy._cperror.clean_headers(value.code)
+            response.status = value.status
+            content.update({'code': value.code, 'reason': value.reason,
+                            'message': value._message, 'status': value.status})
+
+        if cherrypy.serving.request.show_tracebacks:
+            tb = _format_exc()
+            content['traceback'] = tb
+
+        from blueberrypy.template_engine import get_template
+        tmpl = get_template('404.html')
+        response.body = tmpl.render(**content).encode('utf-8')
+
+
 # Copy-pasted stuff
 
 _HTTPErrorTemplate = '''<!DOCTYPE html PUBLIC
@@ -159,6 +202,8 @@ def get_error_page(status, errors=None, **kwargs):
 
     # Default template, can be overridden below.
     template = _HTTPErrorTemplate
+    from blueberrypy.template_engine import get_template
+    tmpl = get_template('404.html')
     if error_page:
         try:
             if hasattr(error_page, '__call__'):
@@ -193,5 +238,6 @@ def get_error_page(status, errors=None, **kwargs):
 
     response = cherrypy.serving.response
     response.headers['Content-Type'] = 'text/html;charset=utf-8'
+    tmpl.render(**kwargs)
     result = template % kwargs
     return result.encode('utf-8')

@@ -3,13 +3,13 @@ matrix:
   # Marks build successful regardless of whether allowed-failures finished
   fast_finish: true
 
-# Run in ubuntu-trusty environment
-dist: trusty
-sudo: required
-
 _base_job: &_base_job
     language: python
     python: 3.6
+
+    # Run in ubuntu-trusty environment
+    dist: trusty
+    sudo: required
 
     # OS packages
     addons:

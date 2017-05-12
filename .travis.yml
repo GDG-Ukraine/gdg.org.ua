@@ -22,12 +22,15 @@ _base_job: &_base_job
     install: skip
     script: skip
 
+# Cleanup useless stuff: unused containers and all persistent volumes
+before_cache: vagga _clean --unused --volumes
+
 # Cache .vagga images to speedup sequential builds
 cache:
   timeout: 21600 # 6 hours
   pip: true
   directories:
-   - .vagga/.cache
+   - .vagga
 
 jobs:
   include:

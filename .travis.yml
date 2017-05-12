@@ -25,20 +25,20 @@ cache:
   directories:
    - .vagga/.cache
 
-# Tell vagga to fetch ubuntu images from certain location
-before_install: |-
-  cat > ~/.vagga.yaml <<-" VAGGA_CONFIG"
-  alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
-  ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
-
-install: vagga _build test
-
-# Run tests and linters
-script:
-  - vagga lint
-  - vagga test
-
-after_success: bash <(curl -s https://codecov.io/bash)
+jobs:
+  include:
+  - stage: build Vagga test container
+    # Tell vagga to fetch ubuntu images from certain location
+    before_install: |-
+      cat > ~/.vagga.yaml <<-" VAGGA_CONFIG"
+      alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
+      ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
+    install: vagga _build test
+  - stage: &tests_label tests and linters
+    script: vagga lint
+  - stage: *tests_label
+    script: vagga test
+    after_success: bash <(curl -s https://codecov.io/bash)
 
 notifications:
   webhooks:

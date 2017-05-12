@@ -1,11 +1,11 @@
-# Multienv testing
-matrix:
-  # Marks build successful regardless of whether allowed-failures finished
-  fast_finish: true
-
 _base_job: &_base_job
     language: python
     python: 3.6
+
+    # Multienv testing
+    matrix:
+      # Marks build successful regardless of whether allowed-failures finished
+      fast_finish: true
 
     # Run in ubuntu-trusty environment
     dist: trusty

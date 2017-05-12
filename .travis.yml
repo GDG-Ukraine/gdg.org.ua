@@ -1,6 +1,3 @@
-language: python
-python: 3.6
-
 # Multienv testing
 matrix:
   # Marks build successful regardless of whether allowed-failures finished
@@ -28,12 +25,15 @@ cache:
 jobs:
   include:
   - stage: build Vagga test container
+    language: python
+    python: 3.6
     # Tell vagga to fetch ubuntu images from certain location
     before_install: |-
       cat > ~/.vagga.yaml <<-" VAGGA_CONFIG"
       alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
       ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
     install: vagga _build test
+    script: skip
   - stage: &tests_label tests and linters
     script: vagga lint
   - stage: *tests_label

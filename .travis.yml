@@ -19,6 +19,9 @@ _base_job: &_base_job
           - sourceline: >-
               deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
 
+    install: skip
+    script: skip
+
 # Cache .vagga images to speedup sequential builds
 cache:
   timeout: 21600 # 6 hours

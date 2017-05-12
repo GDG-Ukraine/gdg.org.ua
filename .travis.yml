@@ -23,7 +23,10 @@ _base_job: &_base_job
     script: skip
 
 # Cleanup useless stuff: unused containers and all persistent volumes
-before_cache: vagga _clean --unused --volumes
+before_cache:
+- vagga _clean --unused --volumes
+# Remove problematic folder, it's empty anyway:
+- rm -rf .vagga/.cache/apt-cache/archives/partial
 
 # Cache .vagga images to speedup sequential builds
 cache:

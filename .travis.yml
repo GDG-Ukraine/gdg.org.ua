@@ -42,10 +42,10 @@ jobs:
     script: skip
   - stage: &tests_label tests and linters
     <<: *_base_job
-    script: vagga lint
+    script: vagga lint --no-version-check
   - stage: *tests_label
     <<: *_base_job
-    script: vagga test
+    script: vagga test --no-version-check
     after_success: bash <(curl -s https://codecov.io/bash)
 
 notifications:

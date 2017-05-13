@@ -52,6 +52,14 @@ jobs:
     install: pip install codecov
     script: vagga --no-version-check test
     after_success: bash <(curl -s https://codecov.io/bash)
+  - stage: deploy
+    deploy:
+      provider: script
+      script: .travis/deploy.sh
+      on:
+        all_branches: true
+        python: 3.6
+        tags: true
 
 notifications:
   webhooks:

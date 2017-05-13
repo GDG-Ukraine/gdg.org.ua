@@ -52,6 +52,7 @@ jobs:
     script: vagga --no-version-check lint
   - stage: *tests_label
     <<: *_base_job
+    install: pip install codecov
     script: vagga --no-version-check test
     after_success: bash <(curl -s https://codecov.io/bash)
 

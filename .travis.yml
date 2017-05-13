@@ -20,6 +20,7 @@ _base_job: &_base_job
               deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
 
     install: skip
+    before_script: vagga --version
     script: skip
 
 # Cleanup useless stuff: unused containers and all persistent volumes

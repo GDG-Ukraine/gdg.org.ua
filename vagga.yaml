@@ -27,7 +27,6 @@ containers:
     setup:
       - !Ubuntu xenial
       - !UbuntuUniverse
-        image-cache-url: ./.travis/.vagga-cache
       - &app-build-deps !BuildDeps
         - git
         - mercurial
@@ -44,6 +43,7 @@ containers:
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
     environ-file: /work/.env
+    image-cache-url: ./.travis/.vagga-cache
 
   test:
     setup:

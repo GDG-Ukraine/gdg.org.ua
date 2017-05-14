@@ -44,7 +44,10 @@ jobs:
     # Tell vagga to fetch ubuntu images from certain location
     before_install: cp -v .travis/.vagga.yaml ~/
     install: vagga _build test
-    script: vagga _push_image test
+    script: |
+      vagga _push_image app &
+      vagga _push_image test &
+      wait
   - stage: &tests_label tests and linters
     <<: *_base_job
     script: vagga lint

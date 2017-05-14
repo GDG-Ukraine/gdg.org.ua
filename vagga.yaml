@@ -27,6 +27,7 @@ containers:
     setup:
       - !Ubuntu xenial
       - !UbuntuUniverse
+        image-cache-url: ./.travis/.vagga-cache
       - &app-build-deps !BuildDeps
         - git
         - mercurial

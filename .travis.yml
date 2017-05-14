@@ -19,7 +19,7 @@ _base_job: &_base_job
       - sourceline: >-
           deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
 
-  before_install: &_base_before_install_cmd tar Pzxfh .travis/.cache/.vagga-cache.tgz
+  before_install: &_base_before_install_cmd tar Pzxfh .vagga-cache.tgz
   install: skip
   before_script: vagga --version
   script: skip
@@ -29,14 +29,14 @@ before_cache:
 - vagga _clean --unused --volumes
 # Remove problematic folder, it's empty anyway:
 - rm -rf .vagga/.cache/apt-cache/archives/partial
-- tar Pzcfh .travis/.cache/.vagga-cache.tgz .vagga
+- tar Pzcfh .vagga-cache.tgz .vagga
 
 # Cache .vagga images to speedup sequential builds
 cache:
   timeout: 21600 # 6 hours
   pip: true
   directories:
-  - .travis/.cache
+  - .vagga-cache.tgz
 
 jobs:
   include:

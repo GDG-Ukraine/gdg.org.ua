@@ -34,7 +34,7 @@ cache:
   timeout: 21600 # 6 hours
   pip: true
   directories:
-  - .vagga
+  - .vagga/.cache
 
 jobs:
   include:

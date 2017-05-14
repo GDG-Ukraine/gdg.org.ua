@@ -19,11 +19,8 @@ _base_job: &_base_job
       - sourceline: >-
           deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
 
-  before_install: &_base_before_install_cmd |
-    if [ -f .travis/.cache/.vagga-cache.tgz ]
-    then
-      tar Pzxfh .travis/.cache/.vagga-cache.tgz
-    fi
+  before_install: &_base_before_install_cmd >-
+    [ -f .travis/.cache/.vagga-cache.tgz ] && tar Pzxfh .travis/.cache/.vagga-cache.tgz
   install: skip
   before_script: vagga --version
   script: skip

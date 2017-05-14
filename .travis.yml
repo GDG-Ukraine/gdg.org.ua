@@ -53,6 +53,7 @@ jobs:
     script: vagga --no-version-check test
     after_success: bash <(curl -s https://codecov.io/bash)
   - stage: deploy
+    <<: *_base_job
     deploy:
       provider: script
       script: .travis/deploy.sh

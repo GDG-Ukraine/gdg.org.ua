@@ -43,7 +43,7 @@ containers:
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
     environ-file: /work/.env
-    image-cache-url: ./.travis/.vagga-cache
+    image-cache-url: .travis/.vagga-cache/${container_name}.${short_hash}.tar.xz
 
   test:
     setup:

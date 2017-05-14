@@ -34,6 +34,7 @@ cache:
   timeout: 21600 # 6 hours
   pip: true
   directories:
+  - .travis/.vagga-cache
   - .vagga/.cache
 
 jobs:
@@ -43,7 +44,7 @@ jobs:
     # Tell vagga to fetch ubuntu images from certain location
     before_install: cp -v .travis/.vagga.yaml ~/
     install: vagga _build test
-    script: skip
+    script: vagga _push_image test
   - stage: &tests_label tests and linters
     <<: *_base_job
     script: vagga --no-version-check lint

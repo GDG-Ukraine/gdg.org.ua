@@ -1,2 +1,4 @@
 alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
 ubuntu-mirror: http://mirrors.us.kernel.org/ubuntu/
+image-cache-url: ./.travis/.vagga-cache
+push-image-script: cp -v ${image_path} .travis/.vagga-cache/${container_name}.${short_hash}.tar.xz

@@ -2,6 +2,7 @@
 
 BASEDIR=$(dirname "$0")
 DEPLOYMENT_KEY="$BASEDIR/deploy_key"
+KNOWN_HOSTS="$BASEDIR/known_hosts"
 
 function clean_up {
     # Perform program exit housekeeping
@@ -18,6 +19,9 @@ chmod 600 "$DEPLOYMENT_KEY"
 
 echo Adding a deployment repo remote...
 git remote add dokku dokku@linode.mrgall.com:gdg.org.ua
+
+echo Adding known hosts to trusted list
+cat "$KNOWN_HOSTS" | tee -a ~/.ssh/known_hosts
 
 echo Pushing the app to production...
 # Ref: http://stackoverflow.com/a/41612988/595220

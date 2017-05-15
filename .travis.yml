@@ -2,13 +2,23 @@ _base_job: &_base_job
   language: python
   python: 3.6
 
+  # Run in ubuntu-trusty docker container
+  dist: trusty
+  sudo: false
+
   # Multienv testing
   matrix:
     # Marks build successful regardless of whether allowed-failures finished
     fast_finish: true
 
-  # Run in ubuntu-trusty environment
-  dist: trusty
+  install: skip
+  before_script: skip
+  script: skip
+
+_base_vagga_job: &_base_vagga_job
+  <<: *_base_job
+
+  # Run in VM
   sudo: required
 
   # OS packages
@@ -19,9 +29,7 @@ _base_job: &_base_job
       - sourceline: >-
           deb [arch=amd64 trusted=yes] http://ubuntu.zerogw.com vagga-testing main
 
-  install: skip
   before_script: vagga --version
-  script: skip
 
 # Cleanup useless stuff: unused containers and all persistent volumes
 before_cache:
@@ -40,7 +48,7 @@ cache:
 jobs:
   include:
   - stage: build Vagga test container
-    <<: *_base_job
+    <<: *_base_vagga_job
     # Tell vagga to fetch ubuntu images from certain location
     before_install:
     - export APP_SHASH=`vagga _version_hash --short app`
@@ -67,17 +75,15 @@ jobs:
         wait
       fi
   - stage: &tests_label tests and linters
-    <<: *_base_job
+    <<: *_base_vagga_job
     script: vagga lint
   - stage: *tests_label
-    <<: *_base_job
+    <<: *_base_vagga_job
     install: pip install codecov
     script: vagga test
     after_success: bash <(curl -s https://codecov.io/bash)
   - stage: deploy
     <<: *_base_job
-    sudo: false
-    before_script: skip
     deploy:
       provider: script
       script: .travis/deploy.sh

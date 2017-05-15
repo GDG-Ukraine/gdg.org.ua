@@ -54,8 +54,11 @@ jobs:
         echo Building containers for reuse in subsequent stages
         cp -v .travis/.vagga.yaml ~/
       fi
-    install: >-
-      [ "$SKIP_VAGGA_BUILD" != true ] && vagga _build test
+    install: |
+      if [ "$SKIP_VAGGA_BUILD" != true ]
+      then
+        vagga _build test
+      fi
     script: |
       if [ "$SKIP_VAGGA_BUILD" != true ]
       then

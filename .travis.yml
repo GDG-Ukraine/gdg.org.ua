@@ -62,9 +62,10 @@ jobs:
       provider: script
       script: .travis/deploy.sh
       on:
-        all_branches: true
+        #all_branches: true
+        branch: master
         python: 3.6
-        tags: true
+        #tags: true
 
 notifications:
   webhooks:

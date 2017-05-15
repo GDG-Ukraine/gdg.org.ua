@@ -1,7 +1,15 @@
 #! /usr/bin/env bash
 
 BASEDIR=$(dirname "$0")
+DEPLOYMENT_KEY="$BASEDIR/deploy_key"
 
-echo This is a temporary placeholder for the deploymet scenario
-exit 0
-openssl aes-256-cbc -K "$encrypted_237af1bf8448_key" -iv "$encrypted_237af1bf8448_iv" -in "$BASEDIR/deploy_key.enc" -out "$BASEDIR/deploy_key" -d
+echo Decrypting a deployment key...
+openssl aes-256-cbc -K "$encrypted_237af1bf8448_key" -iv "$encrypted_237af1bf8448_iv" -in "${DEPLOYMENT_KEY}.enc" -out "$DEPLOYMENT_KEY" -d
+
+echo Adding a deployment repo remote...
+git remote add dokku dokku@linode.mrgall.com:gdg.org.ua
+
+echo Pushing the app to production...
+# Ref: http://stackoverflow.com/a/41612988/595220
+#GIT_SSH_COMMAND="ssh -i $DEPLOYMENT_KEY -F /dev/null" git push dokku master
+GIT_SSH_COMMAND="ssh -i $DEPLOYMENT_KEY" git push dokku master

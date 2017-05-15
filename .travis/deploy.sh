@@ -5,6 +5,7 @@ DEPLOYMENT_KEY="$BASEDIR/deploy_key"
 
 echo Decrypting a deployment key...
 openssl aes-256-cbc -K "$encrypted_237af1bf8448_key" -iv "$encrypted_237af1bf8448_iv" -in "${DEPLOYMENT_KEY}.enc" -out "$DEPLOYMENT_KEY" -d
+chmod 600 "$DEPLOYMENT_KEY"
 
 echo Adding a deployment repo remote...
 git remote add dokku dokku@linode.mrgall.com:gdg.org.ua

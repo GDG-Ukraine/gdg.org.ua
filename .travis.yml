@@ -42,12 +42,27 @@ jobs:
   - stage: build Vagga test container
     <<: *_base_job
     # Tell vagga to fetch ubuntu images from certain location
-    before_install: cp -v .travis/.vagga.yaml ~/
-    install: vagga _build test
+    before_install:
+    - export APP_SHASH=`vagga _version_hash --short app`
+    - export TEST_SHASH=`vagga _version_hash --short test`
+    - |
+      if [ -f ".travis/.vagga-cache/app.${APP_SHASH}.tar.xz" -a -f ".travis/.vagga-cache/app.${TEST_SHASH}.tar.xz" ]
+      then
+        export SKIP_VAGGA_BUILD=true
+        echo Skipping containers build stage since they already exist in cache
+      else
+        echo Building containers for reuse in subsequent stages
+        cp -v .travis/.vagga.yaml ~/
+      fi
+    install: >-
+      [ "$SKIP_VAGGA_BUILD" != true ] && vagga _build test
     script: |
-      vagga _push_image app &
-      vagga _push_image test &
-      wait
+      if [ "$SKIP_VAGGA_BUILD" != true ]
+      then
+        vagga _push_image app &
+        vagga _push_image test &
+        wait
+      fi
   - stage: &tests_label tests and linters
     <<: *_base_job
     script: vagga lint

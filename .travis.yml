@@ -46,7 +46,7 @@ jobs:
     - export APP_SHASH=`vagga _version_hash --short app`
     - export TEST_SHASH=`vagga _version_hash --short test`
     - |
-      if [ -f ".travis/.vagga-cache/app.${APP_SHASH}.tar.xz" -a -f ".travis/.vagga-cache/app.${TEST_SHASH}.tar.xz" ]
+      if [ -f ".travis/.vagga-cache/app.${APP_SHASH}.tar.xz" -a -f ".travis/.vagga-cache/test.${TEST_SHASH}.tar.xz" ]
       then
         export SKIP_VAGGA_BUILD=true
         echo Skipping containers build stage since they already exist in cache

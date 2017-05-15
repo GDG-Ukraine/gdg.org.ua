@@ -61,3 +61,6 @@ bower_components
 
 # database creation lock
 .dbcreation
+
+# Deployment key full path
+/.travis/deploy_key

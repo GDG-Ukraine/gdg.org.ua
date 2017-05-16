@@ -31,7 +31,6 @@ containers:
       - !UbuntuUniverse
       - &app-build-deps !BuildDeps
         - git
-        - mercurial
         - python3.5-dev
       - !Install
         - ca-certificates

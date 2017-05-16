@@ -29,15 +29,26 @@ containers:
     setup:
       - !Ubuntu xenial
       - !UbuntuUniverse
+      # Add PPA exposing Python 3.6
+      - !AptTrust keys: [F06FC659]
+      # Ref: ubuntumaniac.com/2016/12/python-360-is-released-install-on.html
+      - !UbuntuPPA jonathonf/python-3.6
       - &app-build-deps !BuildDeps
         - git
-        - python3.5-dev
+        - python3.6-dev
       - !Install
         - ca-certificates
-        - python3.5
+        - mysql-client
+        - &python_ver python3.6
+      - !Sh ln -sf /usr/bin/python3.6m /usr/bin/python3m
+      - !Sh ln -sf /usr/bin/python3.6 /usr/bin/python3
+      - !Sh ln -sf /usr/bin/python3 /usr/bin/python
       - !PipConfig
+        # Don't install python3.5
+        install-python: false
         dependencies: true
-        python-exe: python3.5
+        # It doesn't seem to locate python3.6 if python-exe isn't specified
+        python-exe: *python_ver
       - !Depends setup.py
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]

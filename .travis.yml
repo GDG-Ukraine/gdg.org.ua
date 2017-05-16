@@ -2,9 +2,9 @@ _base_job: &_base_job
   language: python
   python: 3.6
 
-  # Run in ubuntu-trusty docker container
+  # Run in ubuntu-trusty VM
   dist: trusty
-  sudo: false
+  sudo: required
 
   # Multienv testing
   matrix:
@@ -17,9 +17,6 @@ _base_job: &_base_job
 
 _base_vagga_job: &_base_vagga_job
   <<: *_base_job
-
-  # Run in VM
-  sudo: required
 
   # OS packages
   addons:
@@ -84,7 +81,6 @@ jobs:
     after_success: bash <(curl -s https://codecov.io/bash)
   - stage: deploy
     <<: *_base_job
-    sudo: required
     deploy:
       provider: script
       script: .travis/deploy.sh

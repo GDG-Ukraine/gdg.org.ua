@@ -2,7 +2,7 @@ minimum-vagga: v0.7.2
 containers:
   mysql:
     setup:
-      - !Alpine v3.4
+      - !Alpine v3.5
       - !Install
         - mariadb
         - mariadb-client

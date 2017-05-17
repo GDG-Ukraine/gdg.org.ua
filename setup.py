@@ -4,7 +4,6 @@ from setuptools import setup
 
 
 params = dict(
-    version='1.0.0',
     dependency_links=[
         'https://cdn.mysql.com/Downloads/Connector-Python/'
         'mysql-connector-python-2.0.4.zip'

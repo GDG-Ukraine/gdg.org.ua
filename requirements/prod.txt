@@ -1,3 +1,2 @@
 -r common.txt
 python-memcached==1.57
--e git+git://github.com/open-craft-guild/blueberrypy@e594477#egg=blueberrypy[speedups]

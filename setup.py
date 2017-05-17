@@ -10,7 +10,7 @@ params = dict(
         '#md5=3df394d89300db95163f17c843ef49df',
         '-e git+git://github.com/'
         'open-craft-guild/blueberrypy@d41104c'
-        '#egg=blueberrypy[speedups]'
+        '#egg=blueberrypy-0.6.0.dev[speedups]'
     ],
     pbr=True,
     package_dir={'': 'src'},

@@ -1,3 +1,5 @@
+# Temporary depend on nose, since testconfig imports from it
+nose
 nose-testconfig==0.10
 pre-commit==0.10.1
 tox==2.3.1

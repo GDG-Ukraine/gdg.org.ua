@@ -1,6 +1,6 @@
 # Do not remove as dependency links are deprecated and not installed by default
 https://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df
--e git+https://github.com/open-craft-guild/blueberrypy.git@d41104c#egg=blueberrypy-0.6.0.dev[speedups]
+git+https://github.com/open-craft-guild/blueberrypy.git@b29fd8d#egg=blueberrypy-0.6.0.dev[speedups]
 
 -e .
 html2text==2015.11.4

@@ -50,6 +50,7 @@ containers:
         # It doesn't seem to locate python3.6 if python-exe isn't specified
         python-exe: *python_ver
       - !Depends setup.py
+      - !Depends setup.cfg
       - !Py3Requirements requirements/dev.txt
       - !NpmInstall [bower]
       - !Sh bower install --allow-root

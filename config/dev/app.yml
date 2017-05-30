@@ -45,7 +45,9 @@ global:
     # the output encoding used when revision files
     # are written from script.py.mako
     # output_encoding: utf-8
-    sqlalchemy.url: &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
+    sqlalchemy.url: !FirstOf
+      - !EnvVar DATABASE_URL
+      - &db_url mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
   alembic.exclude:
     tables:
       - gdg_blog_posts_view  # exclude view, aggregating posts from all GDGs

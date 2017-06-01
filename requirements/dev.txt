@@ -1,6 +1,6 @@
 -r test-env.txt
 -r common.txt
-git+git://github.com/open-craft-guild/blueberrypy#egg=blueberrypy[speedups,dev]
+-e git+git://github.com/open-craft-guild/blueberrypy#egg=blueberrypy[speedups,dev]
 
 # For debugging purposes
 ipython

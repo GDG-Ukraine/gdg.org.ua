@@ -31,7 +31,7 @@ global:
     script_location: src/db
     sqlalchemy.url: &db_url !FirstOf
       - !EnvVar DATABASE_URL
-      - mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
+      - mysql+cymysql://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
   alembic.exclude:
     tables:
       - gdg_blog_posts_view  # exclude view, aggregating posts from all GDGs
@@ -138,6 +138,7 @@ controllers:
 
 sqlalchemy_engine:
   url: *db_url
+  module: !!python/module:cymysql
   pool_recycle: 60
 
 jinja2:

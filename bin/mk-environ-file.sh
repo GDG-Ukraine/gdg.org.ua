@@ -31,7 +31,7 @@ _main() {
     # Get variables
     local app_root=`_get_user_input 'Enter full path to your app root dir (use /work to run in vagga)' "$(pwd)"`
     local hostname=`_get_user_input 'Enter hostname (start with http:// or https://)' 'http://localhost:8080'`
-    local db_url=`_get_user_input 'Enter database connection dsn string' 'mysql+mysqlconnector://mysql:mysql@localhost:3307/gdg'`
+    local db_url=`_get_user_input 'Enter database connection dsn string' 'mysql+cymysql://mysql:mysql@localhost:3307/gdg'`
     local google_client_id=`_get_user_input 'Your Google client id' '<REPLACE_THIS>.apps.googleusercontent.com'`
     local google_client_secret=`_get_user_input 'Your Google client secret' '<REPLACE_THIS>'`
 

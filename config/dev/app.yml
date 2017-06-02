@@ -53,7 +53,7 @@ global:
     # output_encoding: utf-8
     sqlalchemy.url: &db_url !FirstOf
       - !EnvVar DATABASE_URL
-      - mysql+mysqlconnector://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
+      - mysql+cymysql://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
     #sqlalchemy.module: &db_module !!python/module:mysql.connector
   alembic.exclude:
     tables:
@@ -158,7 +158,7 @@ controllers:
 sqlalchemy_engine:
   url: *db_url
   #module: *db_module
-  module: &db_module !!python/module:mysql.connector
+  module: &db_module !!python/module:cymysql
   #pool_recycle: 3600
   pool_recycle: 60
 

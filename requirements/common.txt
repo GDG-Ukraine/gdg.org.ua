@@ -1,9 +1,9 @@
 # Do not remove as dependency links are deprecated and not installed by default
-https://cdn.mysql.com/Downloads/Connector-Python/mysql-connector-python-2.0.4.zip#md5=3df394d89300db95163f17c843ef49df
 -e git+https://github.com/open-craft-guild/blueberrypy.git@9cc0659#egg=blueberrypy[speedups]
 
 # lock versions:
 CherryPy[routes_dispatcher]==10.2.2
+cymysql==0.8.9
 
 -e .
 

@@ -44,6 +44,7 @@ for option, value in alembic_config.items():
         config.set_main_option(option, value)
     else:
         config.attributes[option] = value
+        continue  # internal ini type validation fails otherwise
     config.set_section_option(
         config.config_ini_section, option, value)
 

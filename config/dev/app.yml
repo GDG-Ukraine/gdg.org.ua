@@ -7,8 +7,12 @@ global:
   engine.sqlalchemy.on: true
   engine.oauth.on: true
   google_oauth:
-    id: <google_app_id>.apps.googleusercontent.com
-    secret: <google_app_secret>
+    id: !FirstOf
+      - !EnvVar GOOGLE_APP_ID
+      - <google_app_id>.apps.googleusercontent.com
+    secret: !FirstOf
+      - !EnvVar GOOGLE_APP_SECRET
+      - <google_app_secret>
     scope:
         - https://www.googleapis.com/auth/userinfo.email
         - https://www.googleapis.com/auth/userinfo.profile

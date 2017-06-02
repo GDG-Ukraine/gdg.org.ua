@@ -52,6 +52,7 @@ __pycache__
 /.sessions/
 /coverage.xml
 bower_components
+/src/blueberrypy
 
 # vagga files
 .vagga/

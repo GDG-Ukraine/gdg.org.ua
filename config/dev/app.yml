@@ -21,7 +21,9 @@ global:
         # Create a new file on Google Drive
         - https://www.googleapis.com/auth/drive.file
   #tools.trailing_slash.on: false
-  base_app_url: http://localhost:8080
+  base_app_url: !FirstOf
+    - !EnvVar BASE_APP_URL
+    - http://localhost:8080
   alembic:
     # path to migration scripts
     script_location: src/db

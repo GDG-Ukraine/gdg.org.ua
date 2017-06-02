@@ -54,7 +54,7 @@ global:
     sqlalchemy.url: &db_url !FirstOf
       - !EnvVar DATABASE_URL
       - mysql+cymysql://dbuser:dbpwd@/dbname?unix_socket=/var/run/mysqld/mysqld.sock
-    #sqlalchemy.module: &db_module !!python/module:mysql.connector
+    sqlalchemy.module: &db_module !!python/module:cymysql
   alembic.exclude:
     tables:
       - gdg_blog_posts_view  # exclude view, aggregating posts from all GDGs
@@ -157,8 +157,7 @@ controllers:
 
 sqlalchemy_engine:
   url: *db_url
-  #module: *db_module
-  module: &db_module !!python/module:cymysql
+  module: *db_module
   #pool_recycle: 3600
   pool_recycle: 60
 

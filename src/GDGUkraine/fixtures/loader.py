@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
+import argparse
 import importlib
-import sys
-
 import yaml
 
-from sqlalchemy import create_engine
+from blueberrypy.config import BlueberryPyConfiguration
+
+from sqlalchemy import engine_from_config, pool
 from sqlalchemy.orm import sessionmaker
 
 
 def import_class(what):
-    """ Imports a class by given full name
+    """Import a class by given full name.
+
     Args:
         what (str): a string with full classname to import
     Return:
@@ -22,7 +24,8 @@ def import_class(what):
 
 
 def load_fixtures(filepath):
-    """ Loads fixtures from given file
+    """Loads fixtures from given file.
+
     Args:
         filepath (str): path to file from which fixtures should be imported
     Returns:
@@ -38,14 +41,33 @@ def load_fixtures(filepath):
     return models
 
 
-def main():
-    db_url, *filepathes = sys.argv[1:]
+def _parse_args():
+    """Parse and return commandline args."""
+    parser = argparse.ArgumentParser(description='Pre-fill the DB with fixtures.')
+    parser.add_argument('--env', dest='environment', default='dev',
+                        help='Environment for picking the config (default: dev)')
+    parser.add_argument('fixture_files', metavar='N', type=str, nargs='+',
+                        default='fixture_files', help='Fixure files to apply to the DB')
+    return parser.parse_args()
 
-    engine = create_engine(db_url)
+
+def main():
+    """The fixtures rollout entrypoint."""
+    args = _parse_args()
+    conf = BlueberryPyConfiguration(environment=args.environment)
+    sqlalchemy_config = conf.sqlalchemy_config
+
+    engine = engine_from_config(
+        sqlalchemy_config['sqlalchemy_engine'],
+        prefix='',
+        poolclass=pool.NullPool
+    )
+
     Session = sessionmaker(bind=engine)
     session = Session()
-    for filepath in filepathes:
-        models = load_fixtures(filepath)
+
+    for fixture_file in args.fixture_files:
+        models = load_fixtures(fixture_file)
         session.add_all(models)
 
     session.commit()

@@ -153,9 +153,14 @@ sqlalchemy_engine:
 jinja2:
   loader: !!python/object:jinja2.loaders.FileSystemLoader
           encoding: utf-8
-          searchpath: [src/GDGUkraine/templates]
-  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache {directory: .cache,
-                                                                          pattern: __jinja2_%s.cache}
+          searchpath:
+          - src/GDGUkraine/templates
+          - !EnvVar TEMPLATES_ROOT
+  bytecode_cache: !!python/object:jinja2.bccache.FileSystemBytecodeCache
+    directory: !FirstOf
+      - !EnvVar CACHE_ROOT
+      - .cache
+    pattern: __jinja2_%s.cache
   auto_reload: false
   use_webassets: true
   globals:

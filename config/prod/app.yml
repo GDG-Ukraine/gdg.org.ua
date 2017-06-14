@@ -22,9 +22,17 @@ global:
         # Create a new file on Google Drive
         - https://www.googleapis.com/auth/drive.file
   #tools.trailing_slash.on: false
+  # needed for adjusting app paths in daemon mode:
+  CWD: !FirstOf
+    - !EnvVar APP_ROOT
+    - !!python/object/apply:os.getcwdu
   base_app_url: &base_url !FirstOf
     - !EnvVar BASE_APP_URL
     - https://gdg.org.ua
+  # needed for encrypting data into card URLs:
+  key: !FirstOf
+    - !EnvVar CARD_SECRET_KEY
+    - somerandomtestkeyhere
   tools.proxy.on: true
   tools.proxy.base: *base_url
   alembic:

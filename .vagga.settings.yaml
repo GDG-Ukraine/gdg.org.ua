@@ -1,2 +1,4 @@
-alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
+# blocked alpine-mirror: http://mirror.yandex.ru/mirrors/alpine/
+# alpine-mirror: http://liskamm.alpinelinux.uk/
+alpine-mirror: http://mirror.leaseweb.com/alpine/
 ubuntu-mirror: http://ua.archive.ubuntu.com/ubuntu

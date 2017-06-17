@@ -78,7 +78,7 @@ jobs:
     <<: *_base_vagga_job
     install: pip install codecov
     script: vagga test
-    after_success: bash <(curl -s https://codecov.io/bash) -f coverage.xml
+    after_success: bash <(curl -s https://codecov.io/bash) -cF python -f '!./.vagga/.*' -Z
   - stage: deploy
     <<: *_base_job
     deploy:

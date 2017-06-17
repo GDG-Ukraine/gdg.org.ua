@@ -13,6 +13,9 @@ function clean_up {
 
 trap clean_up SIGHUP SIGINT SIGTERM
 
+echo Unshallowing repo...
+git fetch --unshallow
+
 echo Decrypting a deployment key...
 openssl aes-256-cbc -K "$encrypted_237af1bf8448_key" -iv "$encrypted_237af1bf8448_iv" -in "${DEPLOYMENT_KEY}.enc" -out "$DEPLOYMENT_KEY" -d
 chmod 600 "$DEPLOYMENT_KEY"

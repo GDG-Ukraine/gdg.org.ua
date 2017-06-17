@@ -1,5 +1,5 @@
 # Do not remove as dependency links are deprecated and not installed by default
--e git+https://github.com/open-craft-guild/blueberrypy.git@9cc0659#egg=blueberrypy[speedups]
+git+git://github.com/open-craft-guild/blueberrypy.git@9cc0659#egg=blueberrypy[speedups]
 
 # lock versions:
 CherryPy[routes_dispatcher]==10.2.2

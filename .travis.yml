@@ -41,7 +41,6 @@ cache:
   directories:
   - .travis/.vagga-cache
   - .vagga/.cache
-  - src/blueberrypy
 
 jobs:
   include:

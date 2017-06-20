@@ -25,7 +25,7 @@ global:
   # needed for adjusting app paths in daemon mode:
   CWD: !FirstOf
     - !EnvVar APP_ROOT
-    - !!python/object/apply:os.getcwdu
+    - !!python/object/apply:os.getcwd {}
   base_app_url: &base_url !FirstOf
     - !EnvVar BASE_APP_URL
     - https://gdg.org.ua

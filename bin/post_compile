@@ -1,0 +1,5 @@
+#! /usr/bin/env bash
+
+echo Running pre_compile binary
+
+pip install -U setuptools pip

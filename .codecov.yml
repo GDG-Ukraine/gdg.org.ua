@@ -9,7 +9,8 @@ coverage:
   range: "70...100"
 
   status:
-    project: yes
+    # Only consider coverage of the code snippet changed in PR
+    project: no
     patch: yes
     changes: no
 

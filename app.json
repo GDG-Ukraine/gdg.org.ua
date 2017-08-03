@@ -1,7 +1,7 @@
 {
   "scripts": {
     "dokku": {
-      "predeploy": "(pip install -U pip setuptools || true) && (pip install -U -r requirements.txt || true)"
+      "predeploy": "(pip install -U setuptools || true) && (pip install -U pip || true) && (pip install -U -r requirements.txt || true)"
     }
   }
 }

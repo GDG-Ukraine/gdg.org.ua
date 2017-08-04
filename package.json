@@ -1,0 +1,38 @@
+{
+  "name": "gdg.org.ua",
+  "version": "1.0.0",
+  "description": "GDG Ukraine web-site",
+  "main": "setup.py",
+  "dependencies": {
+    "angular": "1.2.32",
+    "angular-resource": "1.2.32",
+    "angular-route": "1.2.32",
+    "bower": "1.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "bower install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GDG-Ukraine/gdg.org.ua.git"
+  },
+  "author": "Sviatoslav Sydorenko <wk+opensource-gdg-ukraine@sydorenko.org.ua>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GDG-Ukraine/gdg.org.ua/issues"
+  },
+  "homepage": "https://github.com/GDG-Ukraine/gdg.org.ua#readme",
+  "keywords": [
+    "gdg",
+    "python",
+    "cherrypy",
+    "blueberrypy",
+    "angular"
+  ],
+  "engines": {
+      "node": "8.2.x",
+      "npm": "5.3.x"
+  }
+}

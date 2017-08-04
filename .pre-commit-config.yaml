@@ -20,7 +20,7 @@
     -   id: check-docstring-first
     -   id: check-json
     -   id: pretty-format-json
-        exclude: bower.json
+        exclude: (package(-lock)?|bower).json
     -   id: check-symlinks
     -   id: check-yaml
         exclude: config/|vagga.yaml

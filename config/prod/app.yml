@@ -112,6 +112,11 @@ controllers:
       tools.sessions.on: false
       tools.staticdir.on: true
       tools.staticdir.dir: libs
+    /node_modules:  # explicitly expose node_modules
+        tools.sessions.on: false
+        tools.staticdir.on: true
+        tools.staticdir.root: .
+        tools.staticdir.dir: node_modules
     /admin:
       tools.sessions.on: false
       tools.staticfile.on: true

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "homepage": "https://gdg.org.ua/",
   "authors": [
-    "Sviatoslav Sydorenko <wk@sydorenko.org.ua>"
+    "Sviatoslav Sydorenko <wk+opensource-gdg-ukraine@sydorenko.org.ua>"
   ],
   "description": "GDG Ukraine web-site",
   "keywords": [
@@ -23,9 +23,6 @@
     "tests"
   ],
   "dependencies": {
-    "angular-directive.g-signin": "git://github.com/sirkitree/angular-directive.g-signin.git#87aac779fb",
-    "angular": "1.2.9",
-    "angular-route": "1.2.9",
-    "angular-resource": "1.2.9"
+    "angular-directive.g-signin": "git://github.com/sirkitree/angular-directive.g-signin.git#87aac779fb"
   }
 }

@@ -52,7 +52,7 @@ containers:
       - !Depends setup.py
       - !Depends setup.cfg
       - !Py3Requirements requirements/dev.txt
-      - !NpmInstall [bower]
+      - !NpmDependencies
       - !Sh bower install --allow-root
       - !EnsureDir /mnt/db_host
     environ-file: /work/.env

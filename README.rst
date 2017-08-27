@@ -10,6 +10,14 @@
    :target: https://codecov.io/gh/GDG-Ukraine/gdg.org.ua
    :alt: codecov
 
+.. image:: https://img.shields.io/uptimerobot/status/m776808319-0566b9b90c8f06639eba028a.svg
+   :target: https://stats.uptimerobot.com/M85gPiVAQ
+   :alt: Uptime Robot status
+
+.. image:: https://img.shields.io/uptimerobot/ratio/7/m776808319-0566b9b90c8f06639eba028a.svg
+   :target: https://stats.uptimerobot.com/M85gPiVAQ
+   :alt: Uptime Robot ratio (last 7 days)
+
 gdg.org.ua
 ==========
 This is the event registration system for GDG Ukraine events.

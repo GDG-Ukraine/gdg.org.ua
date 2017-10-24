@@ -46,6 +46,8 @@ jobs:
   include:
   - stage: build Vagga test container
     <<: *_base_vagga_job
+    env:
+    - Building containers for later reuse...
     # Tell vagga to fetch ubuntu images from certain location
     before_install:
     - export APP_SHASH=`vagga _version_hash --short app`
@@ -73,9 +75,13 @@ jobs:
       fi
   - stage: &tests_label tests and linters
     <<: *_base_vagga_job
+    env:
+    - Running linters...
     script: vagga lint
   - stage: *tests_label
     <<: *_base_vagga_job
+    env:
+    - Running tests in container and collecting coverage...
     install: pip install codecov
     script: vagga test
     after_success: bash <(curl -s https://codecov.io/bash) -cF python -f '!./.vagga/.*' -Z

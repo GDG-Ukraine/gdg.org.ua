@@ -80,6 +80,7 @@ jobs:
     script: vagga test
     after_success: bash <(curl -s https://codecov.io/bash) -cF python -f '!./.vagga/.*' -Z
   - stage: deploy
+    if: branch = master
     <<: *_base_job
     deploy:
       provider: script

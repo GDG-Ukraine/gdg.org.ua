@@ -17,6 +17,10 @@ global:
         - https://www.googleapis.com/auth/gmail.compose
         # Create a new file on Google Drive
         - https://www.googleapis.com/auth/drive.file
+  meetup_oauth:
+    id: OOOOOOOOOOOOOOOOOOOOOOOOOO
+    secret: SSSSSSSSSSSSSSSSSSSSSSSSSS
+    api_key: KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
   base_app_url: http://testhost:12345
   alembic:
     script_location: src/db

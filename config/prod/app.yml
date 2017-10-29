@@ -21,6 +21,16 @@ global:
         - https://www.googleapis.com/auth/gmail.compose
         # Create a new file on Google Drive
         - https://www.googleapis.com/auth/drive.file
+  meetup_oauth:
+    id: !FirstOf
+      - !EnvVar MEETUP_APP_ID
+      - OOOOOOOOOOOOOOOOOOOOOOOOOO
+    secret: !FirstOf
+      - !EnvVar MEETUP_APP_SECRET
+      - SSSSSSSSSSSSSSSSSSSSSSSSSS
+    api_key: !FirstOf
+      - !EnvVar MEETUP_API_KEY
+      - KKKKKKKKKKKKKKKKKKKKKKKKKKKKKK
   #tools.trailing_slash.on: false
   # needed for adjusting app paths in daemon mode:
   CWD: !FirstOf
